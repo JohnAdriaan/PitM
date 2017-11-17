@@ -7,7 +7,7 @@
 
 #include "Socket.hh"
 
-class Socket::Listen : public Socket {
+class BSD::Listen : public Socket {
 
 }; // Listen
 

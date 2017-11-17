@@ -6,7 +6,9 @@
 
 #include "../General.hh"
 
-namespace Socket {
+namespace BSD {
+
+class _BSD_;
 
 class Socket;
 
@@ -14,9 +16,12 @@ class Listen;
 
 class Raw;
 
-} // Socket
+} // BSD
 
-class Socket::Socket : private _General_ {
+class BSD::_BSD_ : private _General_ {
+}; // _BSD_
+
+class BSD::Socket : private _BSD_ {
 }; // Socket
 
 #endif // Socket_hh

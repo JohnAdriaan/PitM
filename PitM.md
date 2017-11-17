@@ -30,7 +30,8 @@ But I had some time on my hands, a spare Raspberry Pi 3 Model B, and a spare USB
 
 ### _The Name_
 I decided to name this project PitM, "Pi in the Middle", since it's a perfect example of the quintessential cryptographic scenario dubbed MitM, "Man in the Middle".
-While researching this name though (I didn't want to step on anyone else's project!) I found out that "PITM" also stands for "Prove It To Me". Perfect!
+While researching this name though (I didn't want to step on anyone else's project!) I found out that "PITM" also stands for
+["Prove It To Me"](https://acronyms.thefreedictionary.com/PITM). Perfect!
 
 ## Design
 A [Raspberry Pi](https://www.raspberrypi.org) is a small box that you normally connect to a monitor, keyboard and mouse to use.

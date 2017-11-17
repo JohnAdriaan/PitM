@@ -7,7 +7,7 @@
 
 #include "Socket.hh"
 
-class Socket::Raw : public Socket {
+class BSD::Raw : public Socket {
 
 }; // Raw
 
