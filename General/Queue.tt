@@ -1,0 +1,169 @@
+//
+// Queue.tt
+//
+// Usage:
+// I wanted two different kinds of Queues, each with two different kinds of Pop() operation.
+// The Queue types were either intra-thread or inter-thread (thus thread-safe);
+// The Pop() types were either Wait() or return with nothing.
+// Since this was going to be a template<> anyway, the first problem was solved by defining
+// the type of Mutex to use (Mutex or NoMutex - the default).
+// The Pop() was best done with two functions: Pop() and TryPop().
+// Warning! Don't mix-n-match calls to these! One type of Queue should only use one type of Pop()!
+//
+
+#ifndef Queue_tt
+#define Queue_tt
+
+#include "Mutex.hh"
+#include "NoMutex.hh"
+#include "Semaphore.hh"
+
+class _Queue_ : private _Template_ {
+protected:
+   class _Node_;
+}; // _Queue_
+
+class _Queue_::_Node_ : private _Queue_ {
+}; // _Queue_::_Node_
+
+template <typename Element, class Mutex=NoMutex, class Lock=NoMutex::Lock>
+class Queue : private _Queue_ {
+
+public: // Methods
+
+   Queue();
+
+   inline unsigned Count() const;
+
+   bool Push(Element &element);
+
+   // Returns nullptr if nothing on Queue
+   Element *TryPop();
+
+   // Waits until there's something to Pop
+   Element &Pop();
+
+   ~Queue();
+
+private: // Classes
+
+   class Node; friend Node;
+
+private: // Methods
+
+   Queue(const Queue &) = delete;
+
+   Element *Get();
+
+private: // Variables
+
+   Mutex mutex;
+
+   Semaphore semaphore;
+
+   Node *head;
+
+   Node *tail;
+
+   unsigned count;
+
+}; // Queue
+
+template <typename Element, class Mutex, class Lock>
+class Queue<Element,Mutex,Lock>::Node : private Queue::_Node_ {
+
+   friend Queue<Element,Mutex,Lock>;
+
+private: // Methods
+
+   inline explicit Node(Element &element);
+
+private: // Variables
+
+   Element &element;
+
+   Node *next;
+
+}; // Queue::Node
+
+template <typename Element, class Mutex, class Lock>
+inline Queue<Element,Mutex,Lock>::Node::Node(Element &element) :
+                                        element(element),
+                                        next(nullptr) {
+} // Node::Node(Eement)
+
+template <typename Element, class Mutex, class Lock>
+Queue<Element,Mutex,Lock>::Queue() :
+                           mutex(),
+                           semaphore(),
+                           head(nullptr),
+                           tail(nullptr),
+                           count(0) {
+} // Queue::Queue()
+
+template <typename Element, class Mutex, class Lock>
+inline unsigned Queue<Element,Mutex,Lock>::Count() const {
+   return count;
+} // Queue::Count()
+
+template <typename Element, class Mutex, class Lock>
+bool Queue<Element,Mutex,Lock>::Push(Element &element) {
+   Node *node = new Node(element);
+   if (node==nullptr) {
+      return false;
+   } // if
+   {
+      Lock lock(mutex);
+      if (head==nullptr) {
+         head = node;
+      } // if
+      if (tail!=nullptr) {
+         tail->next = node;
+      } // if
+      tail = node;
+      ++count;
+   }
+   semaphore.Post();
+   return true;
+} // Queue::Push(element)
+
+template <typename Element, class Mutex, class Lock>
+Element *Queue<Element,Mutex,Lock>::TryPop() {
+   return semaphore.Try() ?
+          Get() :
+          nullptr;
+} // Queue::TryPop()
+
+template <typename Element, class Mutex, class Lock>
+Element &Queue<Element,Mutex,Lock>::Pop() {
+   semaphore.Wait();
+   return *Get(); // !!!
+} // Queue::Pop()
+
+template <typename Element, class Mutex, class Lock>
+Element *Queue<Element,Mutex,Lock>::Get() {
+   Node *node;
+   {
+      Lock lock(mutex);
+      node = head;
+      if (node==nullptr) {
+         return nullptr;
+      } // if
+      head = node->next;
+      if (head==nullptr) {
+         tail = nullptr;
+      } // if
+      --count;
+   }
+   return &node->element;
+} // Queue::Get()
+
+template <typename Element, class Mutex, class Lock>
+Queue<Element,Mutex,Lock>::~Queue() {
+   Lock lock(mutex);
+   while (head!=nullptr) {
+      TryPop();
+   } // while
+} // Queue::~Queue()
+
+#endif // Queue_tt
