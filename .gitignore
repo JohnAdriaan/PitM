@@ -7,6 +7,9 @@
 *.o
 *.obj
 
+# Intermediate viewer files
+.*.md.html
+
 # Precompiled Headers
 *.gch
 *.pch
