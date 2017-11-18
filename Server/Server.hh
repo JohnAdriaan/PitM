@@ -7,6 +7,8 @@
 
 #include "../General/Socket/Listen.hh"
 
+#include "../Config/Config.hh"
+
 class Server : public BSD::Listen {
 
 }; // Server

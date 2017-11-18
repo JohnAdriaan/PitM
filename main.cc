@@ -6,11 +6,7 @@
 
 #include "General/Socket/Interface.hh"
 
-#include "Config/Config.hh"
-
 #include "Server/Server.hh"
-
-Config config;
 
 void ShowInterfaces(bool ipv4, bool up) {
    using namespace BSD;
