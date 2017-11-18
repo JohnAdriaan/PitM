@@ -11,6 +11,8 @@ namespace BSD {
 
 class _BSD_;
 
+class Interface;
+
 class Socket;
 
 class Listen;
