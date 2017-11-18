@@ -75,7 +75,7 @@ Interface::Interfaces Interface::GetList(Protocols protocols, States states) {
          break;
       } // switch
 
-      new Interface(interfaces, interface->ifa_name, protocol, state);
+      new Interface(interfaces, interface->ifa_name, interface->ifa_addr, protocol, state);
    } // for
    freeifaddrs(list);
 
@@ -84,10 +84,26 @@ Interface::Interfaces Interface::GetList(Protocols protocols, States states) {
 
 Interface::Interface(Interfaces &list,
                      const char *name,
+                     sockaddr *addr,
                      Protocols protocol,
                      States state) :
            name(name),
+           addr(addr),
            protocol(protocol),
            state(state),
            node(list, *this) {
 } // Interface::Interface(list, name, protocol, state)
+
+const in_addr BSD::Interface::IPv4Address() const {
+   static const in_addr null = {};
+   return addr!=nullptr ?
+          ((sockaddr_in *)addr)->sin_addr :
+          null;
+} // Interface::IPv4address()
+
+const in6_addr BSD::Interface::IPv6Address() const {
+   static const in6_addr null = {};
+   return addr!=nullptr ?
+         ((sockaddr_in6 *)addr)->sin6_addr :
+         null;
+} // Interface::IPv6Address()
