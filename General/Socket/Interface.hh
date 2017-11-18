@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "../List.tt"
 #include "BSD.hh"
 
 class BSD::Interface : private _BSD_ {
@@ -14,42 +15,56 @@ class BSD::Interface : private _BSD_ {
 public: // Enumerations
 
    enum Protocols {
+      NoProtocol,
       IPv4,
       IPv6,
-      IPv46,
-      Any
+      IPv46
    }; // Protocols
 
    enum States {
+      NoState,
+      Loopback,
       Down,
-      Up,
-      All
+      Up
    }; // States
+
+public: // Typedefs
+
+   typedef List<Interface> Interfaces;
 
 public: // Static methods
 
-   static void Populate(Protocols protocols, States states);
-
-   static Interface *Find(const char *name);
+   static Interfaces GetList(Protocols protocols, States states);
 
 public: // Methods
 
-   const char *Name() const;
+   inline const std::string &Name() const;
+
+   inline Protocols Protocol() const;
+
+   inline States State() const;
 
 private: // Methods
 
-   Interface(const char *name);
+   Interface(Interfaces &list,
+             const char *name,
+             Protocols protocol,
+             States state);
 
 private: // Variables
 
    std::string name;
 
-   Interface *next;
+   Protocols protocol;
 
-private: // Static variables
+   States state;
 
-   static Interface *head;
+   Interfaces::Node node;
 
 }; // Interface
+
+inline const std::string &BSD::Interface::Name() const {
+   return name;
+} // Interface::Name()
 
 #endif // Interface_hh
