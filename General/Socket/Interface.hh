@@ -6,7 +6,6 @@
 #define Interface_hh
 
 #include <netinet/in.h>
-#include <string>
 
 #include "../List.tt"
 #include "BSD.hh"
@@ -40,7 +39,7 @@ public: // Static methods
 
 public: // Methods
 
-   inline const std::string &Name() const;
+   inline const String &Name() const;
 
    const in_addr IPv4Address() const;
 
@@ -60,7 +59,7 @@ private: // Methods
 
 private: // Variables
 
-   std::string name;
+   String name;
 
    sockaddr *addr;
 
@@ -72,7 +71,7 @@ private: // Variables
 
 }; // Interface
 
-inline const std::string &BSD::Interface::Name() const {
+inline const String &BSD::Interface::Name() const {
    return name;
 } // Interface::Name()
 

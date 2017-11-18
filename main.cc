@@ -6,14 +6,21 @@
 
 #include "General/Socket/Interface.hh"
 
+#include "Config/Config.hh"
+
 #include "Server/Server.hh"
+
+Config config;
 
 void ShowInterfaces(bool ipv4, bool up) {
    using namespace BSD;
    printf("Interfaces that are %s:\n", up ? "Up" : "Down");
 
-   Interface::Interfaces interfaces = Interface::GetList(up ? ipv4 ? Interface::IPv4 : Interface::IPv6 : Interface::NoProtocol,
-                                                         up ? Interface::Up : Interface::Down);
+   Interface::Interfaces interfaces = Interface::GetList(up ? ipv4 ? Interface::IPv4 :
+                                                                     Interface::IPv6 :
+                                                              Interface::NoProtocol,
+                                                         up ? Interface::Up :
+                                                              Interface::Down);
    for (Interface *interface = interfaces.Head();
         interface!=nullptr;
         interface = interfaces.Next(interface)) {

@@ -5,8 +5,12 @@
 #ifndef General_hh
 #define General_hh
 
+#include <string>
+
 typedef unsigned char  byte;
 typedef unsigned short word;
+
+typedef std::string    String;
 
 class _General_ {
 }; // _General_

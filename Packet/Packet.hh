@@ -5,9 +5,9 @@
 #ifndef Packet_hh
 #define Packet_hh
 
-#include "../General/General.hh"
+#include "../PitM.hh"
 
-class Packet : private _General_ {
+class Packet : private _PitM_ {
 
 }; // Packet
 
