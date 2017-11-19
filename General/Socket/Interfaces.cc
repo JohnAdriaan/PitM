@@ -49,10 +49,11 @@ Interfaces::Interfaces(Protocols protocols,
          break;
       } // switch
 
-      States state = states;
       short flags = ifaddr->ifa_flags;
-      bool loopback = (flags & IFF_LOOPBACK)==IFF_LOOPBACK;
       bool up = (flags & IFF_UP)==IFF_UP;
+      bool loopback = (flags & IFF_LOOPBACK)==IFF_LOOPBACK;
+
+      States state = states;
       switch (state) {
       case NoState :
          break;
