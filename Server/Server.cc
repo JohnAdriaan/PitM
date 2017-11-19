@@ -6,7 +6,7 @@
 #include "Server.hh"
 
 Server::Server() :
-        BSD::Listen(Config::config.Port()) {
+        BSD::Listen(BSD::Address::any4, Config::config.Port()) {
 } // Server::Server()
 
 void Server::Heard(BSD::TCP &client) {

@@ -12,8 +12,6 @@ class BSD::Listen : public Socket {
 
 protected: // Methods
 
-   explicit Listen(Port port);
-
    Listen(const Address &address, Port port);
 
    virtual ~Listen();

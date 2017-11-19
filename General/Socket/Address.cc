@@ -8,9 +8,17 @@
 
 using namespace BSD;
 
+static const sockaddr_in any4 = { AF_INET, 0, INADDR_ANY };
+
+static const sockaddr_in6 any6 = { AF_INET6, 0, 0, in6addr_any };
+
+const Address Address::any4 = (sockaddr *)&::any4;
+
+const Address Address::any6 = (sockaddr *)&::any6;
+
 Address::Address(const sockaddr *addr) :
-         storage() {
-   switch (addr->sa_family) {
+         storage( { addr->sa_family }) {
+   switch (Family()) {
    case AF_INET :
       ipv4 = *(const sockaddr_in *)addr;
       break;
@@ -23,9 +31,9 @@ Address::Address(const sockaddr *addr) :
    } // switch
 } // Address::Address(sockaddr*)
 
-Address::Address(const Address &rhs, Port port) :
+Address::Address(const Address &rhs, BSD::Port port) :
          storage(rhs.storage) {
-   switch (address.sa_family) {
+   switch (Family()) {
    case AF_INET :
       ipv4.sin_port = port;
       break;
@@ -40,7 +48,7 @@ Address::Address(const Address &rhs, Port port) :
 Address::operator String() const {
    const void *data;
 
-   switch (address.sa_family) {
+   switch (Family()) {
    case AF_INET :
       data = &ipv4.sin_addr;
       break;
@@ -53,12 +61,23 @@ Address::operator String() const {
    } // switch
 
    char str[INET6_ADDRSTRLEN];
-   inet_ntop(address.sa_family, data, str, sizeof str);
+   ::inet_ntop(address.sa_family, data, str, sizeof str);
    return str;
 } // Address::operator String()
 
-Port Address::Service() const {
-   switch (address.sa_family) {
+socklen_t Address::Length() const {
+   switch (Family()) {
+   case AF_INET :
+      return sizeof ipv4;
+   case AF_INET6 :
+      return sizeof ipv6;
+   default :
+      return sizeof address;
+   } // switch
+} // Address::Length()
+
+BSD::Port Address::Port() const {
+   switch (Family()) {
    case AF_INET :
       return ipv4.sin_port;
    case AF_INET6 :
@@ -66,4 +85,4 @@ Port Address::Service() const {
    default :
       return 0;
    } // switch
-} // Address::Service()
+} // Address::Port()

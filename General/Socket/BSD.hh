@@ -31,6 +31,8 @@ namespace BSD {
 
    typedef in6_addr IPv6Addr;
 
+   typedef sa_family_t Families;
+
    class _BSD_;
 
    class Address;

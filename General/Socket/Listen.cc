@@ -6,13 +6,23 @@
 
 using namespace BSD;
 
-Listen::Listen(Port port) :
-        Socket() {
-} // Listen::Listen(Port)
-
 Listen::Listen(const Address &address, Port port) :
-        Socket() {
+        Socket(address.Family(), SOCK_STREAM) {
+   if (!Valid()) {
+      return;
+   } // if
+
+   Address local(address, port);
+   if (::bind(socket, local, local.Length())==-1) {
+      Close();
+      return;
+   } // if
+   if (::listen(socket, 5)==-1) {
+      Close();
+      return;
+   } // if
 } // Listen::Listen(Address,Port)
 
 Listen::~Listen() {
+   Close();
 } // Listen::~Listen()
