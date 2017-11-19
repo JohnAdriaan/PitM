@@ -35,5 +35,6 @@ int main(int /*argc*/,
    ShowInterfaces(false,false);
    ShowInterfaces(true,true);
    ShowInterfaces(false,true);
+   new Server();
    return 0;
 } // main(argc, argv, env)

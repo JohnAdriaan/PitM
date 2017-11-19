@@ -13,11 +13,11 @@ Listen::Listen(const Address &address, Port port) :
    } // if
 
    Address local(address, port);
-   if (::bind(socket, local, local.Length())==-1) {
+   if (::bind(fd, local, local.Length())==-1) {
       Close();
       return;
    } // if
-   if (::listen(socket, 5)==-1) {
+   if (::listen(fd, 5)==-1) {
       Close();
       return;
    } // if

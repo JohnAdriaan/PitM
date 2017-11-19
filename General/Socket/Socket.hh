@@ -4,15 +4,11 @@
 #ifndef Socket_hh
 #define Socket_hh
 
+#include "../FD/FD.hh"
+
 #include "BSD.hh"
 
-class BSD::Socket : private _BSD_ {
-
-public: // Methods
-
-   inline bool Valid() const;
-
-   void Close();
+class BSD::Socket : public FD {
 
 protected: // Methods
 
@@ -20,18 +16,6 @@ protected: // Methods
 
    Socket(Socket &socket);
 
-protected: // Variables
-
-   int socket;
-
-private: // Enums
-
-   enum { Invalid = -1 };
-
 }; // Socket
-
-inline bool BSD::Socket::Valid() const {
-   return socket!=Invalid;
-} // Socket::Valid()
 
 #endif // Socket_hh

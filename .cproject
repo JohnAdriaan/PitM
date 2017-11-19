@@ -48,7 +48,8 @@
 					<sourceEntries>
 						<entry excluding="Packet|Server|General|Config" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Config"/>
-						<entry excluding="Socket" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="General"/>
+						<entry excluding="FD|Socket" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="General"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/FD"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/Socket"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Packet"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Server"/>
@@ -88,7 +89,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.694773893" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.633436173" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
-								<option id="gnu.cpp.link.option.libs.1895848989" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.1895848989" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1386307159" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -102,8 +103,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="General/Socket|Config" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="General/FD|General/Socket|Config" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Config"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/FD"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/Socket"/>
 					</sourceEntries>
 				</configuration>
