@@ -12,31 +12,40 @@ Pool::Pool() :
 
 bool Pool::Poll() {
    unsigned count = Count(); // Get an instantaneous count. Note may change!
+   if (count==0) {
+      return false;
+   } // if
 
+   count += 4; // Allow for a few extra arrivals
    pollfd *fds = new pollfd[count];
    if (fds==nullptr) {
       return false;
    } // if
 
-   FD *fd = Head();
-   for (unsigned num=0;
-        num<count;
-        ++num) {
-      fds[num].fd = fd!=nullptr ? fd->fd : FD::Invalid;
-      fds[num].events = POLLIN|POLLOUT;
-      fd = Next(fd);
+   unsigned valid = 0;
+   for (FD *fd = Head();
+        fd!=nullptr && valid<count;
+        fd = Next(fd)) {
+      if (fd->fd==FD::Invalid) {
+         continue;
+      } // if
+      fds[valid].fd = fd->fd;
+      fds[valid].events = POLLIN|POLLOUT;
+      ++valid;
    } // for
-   if (::poll(fds, count, -1)==-1) { // Infinite timeout
-      delete [] fds;
-      return false;
+
+   bool polled = false;
+   if (valid!=0) {
+      if (::poll(fds, valid, -1)!=-1) { // Infinite timeout
+         polled = true;
+         // Call all Readables before any Writables
+         Call(fds, valid, POLLIN,  &FD::Readable);
+         Call(fds, valid, POLLOUT, &FD::Writable);
+      } // if
    } // if
 
-   // Call all Readables before any Writables
-   Call(fds, count, POLLIN,  &FD::Readable);
-   Call(fds, count, POLLOUT, &FD::Writable);
-
    delete [] fds;
-   return true;
+   return polled;
 } // Pool::Poll()
 
 void Pool::Call(pollfd *fds, unsigned count, unsigned flag, Fn FD::*fn) {
@@ -57,6 +66,7 @@ void Pool::Call(pollfd *fds, unsigned count, unsigned flag, Fn FD::*fn) {
          } // if
          // Found!
          if ((fds[num].revents & flag)==flag) {
+            // Triggered!
             (fd->*fn)();
          } // if
          break;
