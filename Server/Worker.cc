@@ -4,6 +4,6 @@
 
 #include "Worker.hh"
 
-Worker::Worker(TCP &client) :
+Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client) {
-} // Worker::Worker(client)
+} // Worker::Worker(client, address)

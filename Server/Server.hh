@@ -17,7 +17,7 @@ public: // Methods
 
 private: // Overrides
 
-   overrides void Heard(BSD::TCP &client);
+   overrides void Heard(BSD::TCP &client, const BSD::Address &address);
 
 }; // Server
 

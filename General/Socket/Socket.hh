@@ -14,7 +14,9 @@ protected: // Methods
 
    Socket(int domain, int type, int protocol=0);
 
-   Socket(Socket &socket);
+   explicit Socket(Socket &socket);
+
+   explicit Socket(FD::Type fd);
 
 }; // Socket
 

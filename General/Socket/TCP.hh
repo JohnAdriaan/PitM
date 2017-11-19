@@ -13,6 +13,12 @@ protected: // Methods
 
    TCP(TCP &tcp);
 
+private: // Listen hooks
+
+   friend Listen;
+
+   TCP(FD::Type client);
+
 }; // TCP
 
 #endif // TCP_hh

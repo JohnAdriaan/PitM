@@ -17,11 +17,13 @@ public: // Static variables
 
 public: // Methods
 
+   Address();
+
    implicit Address(const sockaddr *addr);
 
    Address(const Address &address, BSD::Port port);
 
-   inline Families Family() const;
+   inline BSD::Family Family() const;
 
    inline operator const sockaddr *() const;
 
@@ -30,6 +32,12 @@ public: // Methods
    socklen_t Length() const;
 
    BSD::Port Port() const;
+
+private: // Methods
+
+   friend Listen;
+
+   inline operator sockaddr *();
 
 private: // Variables
 
@@ -42,11 +50,15 @@ private: // Variables
 
 }; // Address
 
+inline BSD::Address::operator sockaddr *() {
+   return &address;
+} // Address::operator sockaddr *()
+
 inline BSD::Address::operator const sockaddr *() const {
    return &address;
 } // Address::operator const sockaddr *()
 
-inline BSD::Families BSD::Address::Family() const {
+inline BSD::Family BSD::Address::Family() const {
    return address.sa_family;
 } // Address:Family()
 

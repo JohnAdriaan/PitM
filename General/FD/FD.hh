@@ -20,9 +20,13 @@ public: // Methods
 
    void Close();
 
+protected: // Typedefs
+
+   typedef int Type;
+
 protected: // Methods
 
-   FD(int fd=Invalid);
+   FD(Type fd=Invalid);
 
    FD(FD &fd);
 
@@ -30,11 +34,11 @@ protected: // Methods
 
 protected: // Variables
 
-   int fd;
+   Type fd;
 
 private: // Enums
 
-   enum { Invalid = -1 };
+   enum { Invalid = (Type)-1 };
 
 private: // Pool hooks
 

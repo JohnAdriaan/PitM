@@ -15,7 +15,7 @@ friend Server;
 
 private: // Methods
 
-   Worker(TCP &client);
+   Worker(BSD::TCP &client, const BSD::Address &address);
 
 }; // TCP
 

@@ -9,6 +9,6 @@ Server::Server() :
         BSD::Listen(BSD::Address::any4, Config::config.Port()) {
 } // Server::Server()
 
-void Server::Heard(BSD::TCP &client) {
-   new Worker(client);
-} // Server::Heard(TCP)
+void Server::Heard(BSD::TCP &client, const BSD::Address &address) {
+   new Worker(client, address);
+} // Server::Heard(TCP, Address)

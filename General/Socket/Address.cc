@@ -16,8 +16,12 @@ const Address Address::any4 = (sockaddr *)&::any4;
 
 const Address Address::any6 = (sockaddr *)&::any6;
 
+Address::Address() :
+         storage( { 0 } ) {
+} // Address::Address()
+
 Address::Address(const sockaddr *addr) :
-         storage( { addr->sa_family }) {
+         address( { addr->sa_family }) {
    switch (Family()) {
    case AF_INET :
       ipv4 = *(const sockaddr_in *)addr;
@@ -67,6 +71,8 @@ Address::operator String() const {
 
 socklen_t Address::Length() const {
    switch (Family()) {
+   case 0 :
+      return sizeof storage;
    case AF_INET :
       return sizeof ipv4;
    case AF_INET6 :

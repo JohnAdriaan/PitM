@@ -16,9 +16,13 @@ protected: // Methods
 
    virtual ~Listen();
 
+private: // Overrides
+
+   overrides void Readable();
+
 private: // Hooks
 
-   hook void Heard(TCP &client) pure;
+   hook void Heard(TCP &client, const Address &address) pure;
 
 }; // Listen
 

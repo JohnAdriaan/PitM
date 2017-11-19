@@ -13,3 +13,7 @@ Socket::Socket(int domain, int type, int protocol/*=0*/) :
 Socket::Socket(Socket &socket) :
         FD(socket) {
 } // Socket::Socket(Socket)
+
+Socket::Socket(FD::Type fd) :
+        FD(fd) {
+} // Socket::Socket(fd)
