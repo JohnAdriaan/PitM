@@ -8,12 +8,19 @@
 
 using namespace BSD;
 
-static const sockaddr_storage nulladdr = { /*.sa_family=*/0 };
-
 Address::Address(const sockaddr *addr) :
-         storage(addr!=nullptr ?
-                 *(const sockaddr_storage *)addr :
-                 nulladdr) {
+         storage() {
+   switch (addr->sa_family) {
+   case AF_INET :
+      ipv4 = *(const sockaddr_in *)addr;
+      break;
+   case AF_INET6 :
+      ipv6 = *(const sockaddr_in6 *)addr;
+      break;
+   default :
+      address = *addr;
+      break;
+   } // switch
 } // Address::Address(sockaddr*)
 
 Address::Address(const Address &rhs, Port port) :

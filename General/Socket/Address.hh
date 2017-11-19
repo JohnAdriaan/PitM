@@ -32,10 +32,8 @@ private: // Variables
 
 }; // Address
 
-/*
 inline BSD::Address::operator const sockaddr *() const {
    return &address;
 } // Address::operator const sockaddr *()
-*/
 
 #endif // Address_hh
