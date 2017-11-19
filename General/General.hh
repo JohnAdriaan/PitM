@@ -7,6 +7,9 @@
 
 #include <string>
 
+// The opposite of explicit
+#define implicit
+
 // This is used to mark virtual base functions as pure.
 // This is easier to isolate in a global search than what C++ specifies.
 #define pure = 0

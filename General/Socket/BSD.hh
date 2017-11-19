@@ -5,37 +5,47 @@
 #ifndef BSD_hh
 #define BSD_hh
 
+#include <netinet/in.h> // For in_port_t, in_addr and in6_addr
+
 #include "../General.hh"
 
 namespace BSD {
 
-enum Protocols {
-   NoProtocol,
-   IPv4,
-   IPv6,
-   IPv46
-}; // Protocols
+   enum Protocols {
+      NoProtocol,
+      IPv4,
+      IPv6,
+      IPv46
+   }; // Protocols
 
-enum States {
-   NoState,
-   Loopback,
-   Down,
-   Up
-}; // States
+   enum States {
+      NoState,
+      Loopback,
+      Down,
+      Up
+   }; // States
 
-class _BSD_;
+   typedef in_port_t Port;
 
-class Interface;
+   typedef in_addr IPv4Addr;
 
-class Interfaces;
+   typedef in6_addr IPv6Addr;
 
-class Socket;
+   class _BSD_;
 
-class Listen;
+   class Address;
 
-class TCP;
+   class Interface;
 
-class Raw;
+   class Interfaces;
+
+   class Socket;
+
+   class Listen;
+
+   class TCP;
+
+   class Raw;
 
 } // BSD
 

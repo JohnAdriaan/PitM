@@ -20,11 +20,9 @@ void ShowInterfaces(bool ipv4, bool up) {
    for (Interface *interface = interfaces.Head();
         interface!=nullptr;
         interface = interfaces.Next(interface)) {
-      std::cout << interface->Name();
+      std::cout << interface->name;
       if (up) {
-         std::cout << '\t'
-                   << (ipv4 ? interface->IPv4String() :
-                              interface->IPv6String());
+         std::cout << '\t' << (String)interface->address;
       } // if
       std::cout << std::endl;
    } // for
