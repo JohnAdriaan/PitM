@@ -5,6 +5,8 @@
 #ifndef Config_hh
 #define Config_hh
 
+#include "../General/Socket/BSD.hh"
+
 #include "../PitM.hh"
 
 class Config : private _PitM_ {
@@ -21,11 +23,15 @@ public: // Methods
 
    inline const String &Server() const;
 
+   inline BSD::Port Port() const;
+
    void SetLeft(const String &newLeft);
 
    void SetRight(const String &newRight);
 
    void SetServer(const String &newServer);
+
+   void SetPort(BSD::Port newPort);
 
 private: // Methods
 
@@ -45,6 +51,8 @@ private: // Variables
 
    String server = "wlan0";
 
+   BSD::Port port = 80;
+
 }; // Config
 
 inline const String &Config::Left() const {
@@ -58,5 +66,9 @@ inline const String &Config::Right() const {
 inline const String &Config::Server() const {
    return server;
 } // Config::Server()
+
+inline BSD::Port Config::Port() const {
+   return port;
+} // Config::Port()
 
 #endif // Config_hh

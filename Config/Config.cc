@@ -28,5 +28,10 @@ void Config::SetServer(const String &newServer) {
    Save();
 } // Config::SetServer(newServer)
 
+void Config::SetPort(BSD::Port newPort) {
+   port = newPort;
+   Save();
+} // Config::SetPort(newPort)
+
 void Config::Save() {
 } // Config::Save()
