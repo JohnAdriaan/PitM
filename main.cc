@@ -23,7 +23,8 @@ void ShowInterfaces(bool ipv4, bool up) {
       std::cout << interface->Name();
       if (up) {
          std::cout << '\t'
-                   << (ipv4 ? interface->IPv4String() : interface->IPv6String());
+                   << (ipv4 ? interface->IPv4String() :
+                              interface->IPv6String());
       } // if
       std::cout << std::endl;
    } // for

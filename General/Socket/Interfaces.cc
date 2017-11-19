@@ -7,9 +7,11 @@
 
 #include "Interfaces.hh"
 
-BSD::Interfaces::Interfaces(Protocols protocols,
-                            States states) :
-                 List<Interface>(&Interface::node) {
+using namespace BSD;
+
+Interfaces::Interfaces(Protocols protocols,
+                       States states) :
+            List<Interface>(&Interface::node) {
    ifaddrs *list;
    if (getifaddrs(&list)!=0) {
       return;
@@ -76,7 +78,7 @@ BSD::Interfaces::Interfaces(Protocols protocols,
    freeifaddrs(list);
 } // Interfaces::Interfaces(Protocols,States)
 
-const BSD::Interface *BSD::Interfaces::Find(const String &name) {
+const Interface *Interfaces::Find(const String &name) {
    for (const Interface *interface = Head();
         interface!=nullptr;
         interface = Next(interface)) {

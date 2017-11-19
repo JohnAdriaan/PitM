@@ -5,7 +5,7 @@
 #ifndef Interface_hh
 #define Interface_hh
 
-#include <netinet/in.h>
+#include <netinet/in.h> // For in_addr and in6_addr
 
 #include "../List.tt"
 #include "BSD.hh"

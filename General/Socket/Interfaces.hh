@@ -5,7 +5,6 @@
 #ifndef Interfaces_hh
 #define Interfaces_hh
 
-#include "../List.tt"
 #include "Interface.hh"
 
 class BSD::Interfaces : public List<Interface> {
