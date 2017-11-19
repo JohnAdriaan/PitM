@@ -10,6 +10,8 @@ class BSD::Socket : private _BSD_ {
 
 protected: // Methods
 
+   Socket();
+
    Socket(Socket &socket);
 
 }; // Socket

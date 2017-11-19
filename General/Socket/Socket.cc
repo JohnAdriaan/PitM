@@ -6,5 +6,8 @@
 
 using namespace BSD;
 
+Socket::Socket() {
+} // Socket::Socket()
+
 Socket::Socket(Socket &socket) {
 } // Socket::Socket(Socket)

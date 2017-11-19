@@ -11,6 +11,10 @@
 
 class Server : public BSD::Listen {
 
+public: // Methods
+
+   Server();
+
 private: // Overrides
 
    overrides void Heard(BSD::TCP &client);

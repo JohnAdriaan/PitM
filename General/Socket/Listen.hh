@@ -12,7 +12,7 @@ class BSD::Listen : public Socket {
 
 protected: // Methods
 
-   Listen(Port port);
+   explicit Listen(Port port);
 
    Listen(const Address &address, Port port);
 
