@@ -1,0 +1,62 @@
+//
+// List.Node.ii
+//
+
+class _List_::_Node_ : private _List_ {
+}; // _List_::_Node
+
+template<typename Element>
+class List<Element>::Node : private List::_Node_ {
+
+   friend List;
+
+public: // Methods
+
+   Node(List &list, Element &element);
+
+   ~Node();
+
+private: // Variables
+
+   List &list;
+
+   Element &element;
+
+   Element *next;
+
+   Element *prev;
+
+}; // List::Node
+
+template <typename Element>
+List<Element>::Node::Node(List &list, Element &element) :
+                     list(list),
+                     element(element),
+                     next(nullptr),
+                     prev(list.tail) {
+   if (list.head==nullptr) {
+      list.head = &element;
+   } // if
+   if (list.tail!=nullptr) {
+      (list.tail->*(list.node)).next = &element;
+   } // if
+   list.tail = &element;
+   ++list.count;
+} // Node::Node(List, Element)
+
+template <typename Element>
+List<Element>::Node::~Node() {
+   if (prev!=nullptr) {
+      (prev->*(list.node)).next = next;
+   } // if
+   if (next!=nullptr) {
+      (next->*(list.node)).prev = prev;
+   } // if
+   if (list.head==&element) {
+      list.head = next;
+   } // if
+   if (list.tail==&element) {
+      list.tail = prev;
+   } // if
+   --list.count;
+} // Node::~Node()

@@ -14,17 +14,14 @@
 #ifndef Queue_tt
 #define Queue_tt
 
-#include "Mutex.hh"
-#include "NoMutex.hh"
 #include "Semaphore.hh"
+#include "Mutex.Lock.hh"
+#include "NoMutex.Lock.hh"
 
 class _Queue_ : private _Template_ {
 protected:
    class _Node_;
 }; // _Queue_
-
-class _Queue_::_Node_ : private _Queue_ {
-}; // _Queue_::_Node_
 
 template <typename Element, class Mutex=NoMutex, class Lock=NoMutex::Lock>
 class Queue : private _Queue_ {
@@ -69,28 +66,7 @@ private: // Variables
 
 }; // Queue
 
-template <typename Element, class Mutex, class Lock>
-class Queue<Element,Mutex,Lock>::Node : private Queue::_Node_ {
-
-   friend Queue<Element,Mutex,Lock>;
-
-private: // Methods
-
-   inline explicit Node(Element &element);
-
-private: // Variables
-
-   Element &element;
-
-   Node *next;
-
-}; // Queue::Node
-
-template <typename Element, class Mutex, class Lock>
-inline Queue<Element,Mutex,Lock>::Node::Node(Element &element) :
-                                        element(element),
-                                        next(nullptr) {
-} // Node::Node(Eement)
+#include "Queue.Node.ii"
 
 template <typename Element, class Mutex, class Lock>
 Queue<Element,Mutex,Lock>::Queue() :

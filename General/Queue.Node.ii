@@ -1,0 +1,29 @@
+//
+// Queue.Node.ii
+//
+
+class _Queue_::_Node_ : private _Queue_ {
+}; // _Queue_::_Node_
+
+template <typename Element, class Mutex, class Lock>
+class Queue<Element,Mutex,Lock>::Node : private Queue::_Node_ {
+
+   friend Queue<Element,Mutex,Lock>;
+
+private: // Methods
+
+   inline explicit Node(Element &element);
+
+private: // Variables
+
+   Element &element;
+
+   Node *next;
+
+}; // Queue::Node
+
+template <typename Element, class Mutex, class Lock>
+inline Queue<Element,Mutex,Lock>::Node::Node(Element &element) :
+                                        element(element),
+                                        next(nullptr) {
+} // Node::Node(Eement)
