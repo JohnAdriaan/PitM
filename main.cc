@@ -2,42 +2,33 @@
 // main.cc
 //
 
-#include <arpa/inet.h>
+#include <iostream>
 
-#include "General/Socket/Interface.hh"
+#include "General/Socket/Interfaces.hh"
 
 #include "Server/Server.hh"
 
 void ShowInterfaces(bool ipv4, bool up) {
-   using namespace BSD;
-   printf("Interfaces that are %s:\n", up ? "Up" : "Down");
+   std::cout << "Interfaces that are "<< (up ? "Up" : "Down") << std::endl;
 
-   Interface::Interfaces interfaces = Interface::GetList(up ? ipv4 ? Interface::IPv4 :
-                                                                     Interface::IPv6 :
-                                                              Interface::NoProtocol,
-                                                         up ? Interface::Up :
-                                                              Interface::Down);
+   using namespace BSD;
+   Interfaces interfaces(up ? ipv4 ? IPv4 :
+                                     IPv6 :
+                              NoProtocol,
+                         up ? Up :
+                              Down);
    for (Interface *interface = interfaces.Head();
         interface!=nullptr;
         interface = interfaces.Next(interface)) {
+      std::cout << interface->Name();
       if (up) {
-         char str[INET6_ADDRSTRLEN];
-         if (ipv4) {
-            in_addr addr = interface->IPv4Address();
-            inet_ntop(AF_INET, &addr, str, sizeof str);
-         } // if
-         else {
-            in6_addr addr = interface->IPv6Address();
-            inet_ntop(AF_INET6, &addr, str, sizeof str);
-         } // else
-         printf("%s:\t%s\n", interface->Name().c_str(), str);
+         std::cout << '\t'
+                   << (ipv4 ? interface->IPv4String() : interface->IPv6String());
       } // if
-      else {
-         printf("%s\n", interface->Name().c_str());
-      } // else
+      std::cout << std::endl;
    } // for
-   printf("\n");
-} // ShowInterfaces(up)
+   std::cout << std::endl;
+} // ShowInterfaces(ipv4,up)
 
 int main(int /*argc*/,
          char * /*argv*/[],

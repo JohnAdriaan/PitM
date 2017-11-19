@@ -12,30 +12,7 @@
 
 class BSD::Interface : private _BSD_ {
 
-public: // Enumerations
-
-   enum Protocols {
-      NoProtocol,
-      IPv4,
-      IPv6,
-      IPv46
-   }; // Protocols
-
-   enum States {
-      NoState,
-      Loopback,
-      Down,
-      Up
-   }; // States
-
-public: // Typedefs
-
-   typedef List<Interface> Interfaces;
-
-public: // Static methods
-
-   // If protocols=NoProtocol, or states=NoState, then ignore that aspect
-   static Interfaces GetList(Protocols protocols, States states);
+friend Interfaces;
 
 public: // Methods
 
@@ -43,7 +20,11 @@ public: // Methods
 
    const in_addr IPv4Address() const;
 
+   String IPv4String() const;
+
    const in6_addr IPv6Address() const;
+
+   String IPv6String() const;
 
    inline Protocols Protocol() const;
 
@@ -67,7 +48,7 @@ private: // Variables
 
    States state;
 
-   Interfaces::Node node;
+   List<Interface>::Node node;
 
 }; // Interface
 
@@ -75,11 +56,11 @@ inline const String &BSD::Interface::Name() const {
    return name;
 } // Interface::Name()
 
-inline BSD::Interface::Protocols BSD::Interface::Protocol() const {
+inline BSD::Protocols BSD::Interface::Protocol() const {
    return protocol;
 } // Interface::Protocol()
 
-inline BSD::Interface::States BSD::Interface::State() const {
+inline BSD::States BSD::Interface::State() const {
    return state;
 } // Interface::State()
 

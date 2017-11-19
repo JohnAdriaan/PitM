@@ -9,9 +9,25 @@
 
 namespace BSD {
 
+enum Protocols {
+   NoProtocol,
+   IPv4,
+   IPv6,
+   IPv46
+}; // Protocols
+
+enum States {
+   NoState,
+   Loopback,
+   Down,
+   Up
+}; // States
+
 class _BSD_;
 
 class Interface;
+
+class Interfaces;
 
 class Socket;
 

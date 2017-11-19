@@ -30,7 +30,7 @@ public: // Methods
 
    Element *Head() const;
 
-   Element *Next(Element *element) const;
+   Element *Next(const Element *element) const;
 
    ~List();
 
@@ -121,7 +121,7 @@ Element *List<Element>::Head() const {
 } // List::Head()
 
 template <typename Element>
-Element *List<Element>::Next(Element *element) const {
+Element *List<Element>::Next(const Element *element) const {
    if (element==nullptr) {
       return nullptr; // Don't start again: that'd loop!
    } // if
