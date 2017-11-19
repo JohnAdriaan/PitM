@@ -8,17 +8,23 @@ class _List_::_Node_ : private _List_ {
 template<typename Element>
 class List<Element>::Node : private List::_Node_ {
 
-   friend List;
+friend List;
 
 public: // Methods
 
+   explicit Node(Element &element);
+
    Node(List &list, Element &element);
+
+   void Add(List &newList);
+
+   void Remove();
 
    ~Node();
 
 private: // Variables
 
-   List &list;
+   List *list;
 
    Element &element;
 
@@ -29,34 +35,60 @@ private: // Variables
 }; // List::Node
 
 template <typename Element>
-List<Element>::Node::Node(List &list, Element &element) :
-                     list(list),
+List<Element>::Node::Node(Element &element) :
+                     list(nullptr),
                      element(element),
                      next(nullptr),
-                     prev(list.tail) {
-   if (list.head==nullptr) {
-      list.head = &element;
-   } // if
-   if (list.tail!=nullptr) {
-      (list.tail->*(list.node)).next = &element;
-   } // if
-   list.tail = &element;
-   ++list.count;
+                     prev(nullptr) {
+} // Node::Node(Element)
+
+template <typename Element>
+List<Element>::Node::Node(List &list, Element &element) :
+                     list(nullptr),
+                     element(element),
+                     next(nullptr),
+                     prev(nullptr) {
+   Add(list);
 } // Node::Node(List, Element)
 
 template <typename Element>
-List<Element>::Node::~Node() {
+void List<Element>::Node::Add(List &newList) {
+   Remove();
+   list = &newList;
+   next = nullptr;
+   prev = list->tail;
+   if (list->head==nullptr) {
+      list->head = &element;
+   } // if
+   if (list->tail!=nullptr) {
+      (list->tail->*(list->node)).next = &element;
+   } // if
+   list->tail = &element;
+   ++list->count;
+} // Node::Add()
+
+template <typename Element>
+void List<Element>::Node::Remove() {
+   if (list==nullptr) {
+      return;
+   } // if
    if (prev!=nullptr) {
-      (prev->*(list.node)).next = next;
+      (prev->*(list->node)).next = next;
    } // if
    if (next!=nullptr) {
-      (next->*(list.node)).prev = prev;
+      (next->*(list->node)).prev = prev;
    } // if
-   if (list.head==&element) {
-      list.head = next;
+   if (list->head==&element) {
+      list->head = next;
    } // if
-   if (list.tail==&element) {
-      list.tail = prev;
+   if (list->tail==&element) {
+      list->tail = prev;
    } // if
-   --list.count;
+   --list->count;
+   list = nullptr;
+} // Node::Remove()
+
+template <typename Element>
+List<Element>::Node::~Node() {
+   Remove();
 } // Node::~Node()
