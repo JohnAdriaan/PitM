@@ -7,9 +7,9 @@
 
 #include <pthread.h>
 
-#include "General.hh"
+#include "MT.hh"
 
-class Mutex : private _Mutex_ {
+class MT::Mutex : private _Mutex_ {
 
 public: // Classes
 

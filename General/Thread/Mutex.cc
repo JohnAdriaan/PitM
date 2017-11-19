@@ -4,6 +4,8 @@
 
 #include "Mutex.hh"
 
+using namespace MT;
+
 Mutex::Mutex() {
    pthread_mutex_init(&mutex, nullptr);
 } // Mutex::Mutex()

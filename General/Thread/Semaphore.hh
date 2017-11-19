@@ -7,9 +7,9 @@
 
 #include <semaphore.h>
 
-#include "General.hh"
+#include "MT.hh"
 
-class Semaphore : private _General_ {
+class MT::Semaphore : private _MT_ {
 
 public: // Methods
 

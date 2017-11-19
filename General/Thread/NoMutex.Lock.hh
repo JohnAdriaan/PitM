@@ -7,11 +7,11 @@
 
 #include "NoMutex.hh"
 
-class NoMutex::Lock : private NoMutex::_Lock_ {
+class MT::NoMutex::Lock : private NoMutex::_Lock_ {
 
 public: // Methods
 
-   inline Lock(NoMutex &);
+   inline explicit Lock(NoMutex &);
 
    inline ~Lock() = default;
 
@@ -21,7 +21,7 @@ private: // Methods
 
 }; // NoMutex::Lock
 
-inline NoMutex::Lock::Lock(NoMutex &) {
+inline MT::NoMutex::Lock::Lock(NoMutex &) {
 } // Lock::Lock(NoMutex)
 
 #endif // NoMutex_Lock_hh

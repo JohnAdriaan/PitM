@@ -18,13 +18,13 @@
 #include "Mutex.Lock.hh"
 #include "NoMutex.Lock.hh"
 
-class _Queue_ : private _Template_ {
+class MT::_Queue_ : private _Template_ {
 protected:
    class _Node_;
 }; // _Queue_
 
-template <typename Element, class Mutex=NoMutex, class Lock=NoMutex::Lock>
-class Queue : private _Queue_ {
+template <typename Element, class Mutex=MT::NoMutex, class Lock=MT::NoMutex::Lock>
+class MT::Queue : private _Queue_ {
 
 public: // Methods
 
@@ -56,7 +56,7 @@ private: // Variables
 
    Mutex mutex;
 
-   Semaphore semaphore;
+   MT::Semaphore semaphore;
 
    Node *head;
 
@@ -69,21 +69,21 @@ private: // Variables
 #include "Queue.Node.ii"
 
 template <typename Element, class Mutex, class Lock>
-Queue<Element,Mutex,Lock>::Queue() :
-                           mutex(),
-                           semaphore(),
-                           head(nullptr),
-                           tail(nullptr),
-                           count(0) {
+MT::Queue<Element,Mutex,Lock>::Queue() :
+                               mutex(),
+                               semaphore(),
+                               head(nullptr),
+                               tail(nullptr),
+                               count(0) {
 } // Queue::Queue()
 
 template <typename Element, class Mutex, class Lock>
-inline unsigned Queue<Element,Mutex,Lock>::Count() const {
+inline unsigned MT::Queue<Element,Mutex,Lock>::Count() const {
    return count;
 } // Queue::Count()
 
 template <typename Element, class Mutex, class Lock>
-bool Queue<Element,Mutex,Lock>::Push(Element &element) {
+bool MT::Queue<Element,Mutex,Lock>::Push(Element &element) {
    Node *node = new Node(element);
    if (node==nullptr) {
       return false;
@@ -104,20 +104,20 @@ bool Queue<Element,Mutex,Lock>::Push(Element &element) {
 } // Queue::Push(element)
 
 template <typename Element, class Mutex, class Lock>
-Element *Queue<Element,Mutex,Lock>::TryPop() {
+Element *MT::Queue<Element,Mutex,Lock>::TryPop() {
    return semaphore.Try() ?
           Get() :
           nullptr;
 } // Queue::TryPop()
 
 template <typename Element, class Mutex, class Lock>
-Element &Queue<Element,Mutex,Lock>::Pop() {
+Element &MT::Queue<Element,Mutex,Lock>::Pop() {
    semaphore.Wait();
    return *Get(); // !!!
 } // Queue::Pop()
 
 template <typename Element, class Mutex, class Lock>
-Element *Queue<Element,Mutex,Lock>::Get() {
+Element *MT::Queue<Element,Mutex,Lock>::Get() {
    Node *node;
    {
       Lock lock(mutex);
@@ -135,7 +135,7 @@ Element *Queue<Element,Mutex,Lock>::Get() {
 } // Queue::Get()
 
 template <typename Element, class Mutex, class Lock>
-Queue<Element,Mutex,Lock>::~Queue() {
+MT::Queue<Element,Mutex,Lock>::~Queue() {
    Lock lock(mutex);
    while (head!=nullptr) {
       TryPop();

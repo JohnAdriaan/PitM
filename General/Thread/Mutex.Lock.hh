@@ -7,7 +7,7 @@
 
 #include "Mutex.hh"
 
-class Mutex::Lock : private Mutex::_Lock_ {
+class MT::Mutex::Lock : private Mutex::_Lock_ {
 
 public: // Methods
 

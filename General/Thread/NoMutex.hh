@@ -5,9 +5,9 @@
 #ifndef NoMutex_hh
 #define NoMutex_hh
 
-#include "General.hh"
+#include "MT.hh"
 
-class NoMutex : private _Mutex_ {
+class MT::NoMutex : private _Mutex_ {
 
 public: // Classes
 

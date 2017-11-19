@@ -4,6 +4,8 @@
 
 #include "Semaphore.hh"
 
+using namespace MT;
+
 Semaphore::Semaphore(unsigned start/*=0*/) {
    sem_init(&semaphore, 0, start);
 } // Semaphore::Semaphore(start)
