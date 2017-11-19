@@ -9,6 +9,14 @@
 
 class BSD::Listen : public Socket {
 
+protected: // Methods
+
+   virtual ~Listen();
+
+private: // Hooks
+
+   hook void Heard(TCP &client) pure;
+
 }; // Listen
 
 #endif // Listen_hh

@@ -7,6 +7,13 @@
 
 #include <string>
 
+// This is used to mark virtual base functions as pure.
+// This is easier to isolate in a global search than what C++ specifies.
+#define pure = 0
+
+#define hook      virtual
+#define overrides virtual
+
 typedef unsigned char  byte;
 typedef unsigned short word;
 

@@ -7,6 +7,11 @@
 #include "BSD.hh"
 
 class BSD::Socket : private _BSD_ {
+
+protected: // Methods
+
+   Socket(Socket &socket);
+
 }; // Socket
 
 #endif // Socket_hh

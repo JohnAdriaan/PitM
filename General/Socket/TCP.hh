@@ -9,6 +9,10 @@
 
 class BSD::TCP : public Socket {
 
+protected: // Methods
+
+   TCP(TCP &tcp);
+
 }; // TCP
 
 #endif // TCP_hh
