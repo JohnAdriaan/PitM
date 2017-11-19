@@ -8,9 +8,9 @@
 
 using namespace BSD;
 
-static const sockaddr_in any4 = { AF_INET, 0, INADDR_ANY };
+static const sockaddr_in any4 = { AF_INET, htons(0), INADDR_ANY };
 
-static const sockaddr_in6 any6 = { AF_INET6, 0, 0, in6addr_any };
+static const sockaddr_in6 any6 = { AF_INET6, htons(0), 0, IN6ADDR_ANY_INIT };
 
 const Address Address::any4 = (sockaddr *)&::any4;
 
@@ -35,10 +35,10 @@ Address::Address(const Address &rhs, BSD::Port port) :
          storage(rhs.storage) {
    switch (Family()) {
    case AF_INET :
-      ipv4.sin_port = port;
+      ipv4.sin_port = htons(port);
       break;
    case AF_INET6 :
-      ipv6.sin6_port = port;
+      ipv6.sin6_port = htons(port);
       break;
    default :
       break;
@@ -56,7 +56,7 @@ Address::operator String() const {
       data = &ipv6.sin6_addr;
       break;
    default :
-      data = address.sa_data;
+      data = &address.sa_data;
       break;
    } // switch
 
@@ -79,9 +79,9 @@ socklen_t Address::Length() const {
 BSD::Port Address::Port() const {
    switch (Family()) {
    case AF_INET :
-      return ipv4.sin_port;
+      return ntohs(ipv4.sin_port);
    case AF_INET6 :
-      return ipv6.sin6_port;
+      return ntohs(ipv6.sin6_port);
    default :
       return 0;
    } // switch
