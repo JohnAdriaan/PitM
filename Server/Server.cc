@@ -42,5 +42,5 @@ void *Server::Run() {
 } // Server::Run()
 
 Server::~Server() {
-   current.Swap(this, nullptr);
+   current.Swap(nullptr, this); // If this, set null
 } // Server::~Server()
