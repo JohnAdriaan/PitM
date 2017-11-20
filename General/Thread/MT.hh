@@ -26,6 +26,9 @@ namespace MT {
    template <typename Element, class Mutex, class Lock>
    class Queue;
 
+   template <typename Type>
+   struct Atomic;
+
 } // MT
 
 class MT::_MT_ : private _General_ {
