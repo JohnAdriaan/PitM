@@ -34,11 +34,14 @@ public: // Methods
 
    bool Push(Element &element);
 
-   // Returns nullptr if nothing on Queue
-   Element *TryPop();
+   // A return of false means that nothing's on the Queue.
+   // A return of true may still leave element as nullptr. This means Quit() has been called.
+   bool TryPop(Element *&element);
 
-   // Waits until there's something to Pop
-   Element &Pop();
+   // If nullptr is returned, that means that Quit() has been called
+   Element *Pop();
+
+   void Quit();
 
    ~Queue();
 
@@ -104,17 +107,24 @@ bool MT::Queue<Element,Mutex,Lock>::Push(Element &element) {
 } // Queue::Push(element)
 
 template <typename Element, class Mutex, class Lock>
-Element *MT::Queue<Element,Mutex,Lock>::TryPop() {
-   return semaphore.Try() ?
-          Get() :
-          nullptr;
+bool MT::Queue<Element,Mutex,Lock>::TryPop(Element *&element) {
+   if (!semaphore.Try()) {
+      return false;
+   } // if
+   element = Get();
+   return true;
 } // Queue::TryPop()
 
 template <typename Element, class Mutex, class Lock>
-Element &MT::Queue<Element,Mutex,Lock>::Pop() {
+Element *MT::Queue<Element,Mutex,Lock>::Pop() {
    semaphore.Wait();
-   return *Get(); // !!!
+   return Get();
 } // Queue::Pop()
+
+template <typename Element, class Mutex, class Lock>
+void MT::Queue<Element,Mutex,Lock>::Quit() {
+   semaphore.Post(); // Post semaphore, with nothing to "back" it
+} // Queue::Quit()
 
 template <typename Element, class Mutex, class Lock>
 Element *MT::Queue<Element,Mutex,Lock>::Get() {
@@ -136,9 +146,9 @@ Element *MT::Queue<Element,Mutex,Lock>::Get() {
 
 template <typename Element, class Mutex, class Lock>
 MT::Queue<Element,Mutex,Lock>::~Queue() {
+   Element *element;
    Lock lock(mutex);
-   while (head!=nullptr) {
-      TryPop();
+   while (TryPop(element)) {
    } // while
 } // Queue::~Queue()
 
