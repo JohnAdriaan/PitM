@@ -29,6 +29,38 @@ void FD::Add(Pool &pool) {
    node.Add(pool);
 } // FD::Add(Pool)
 
+bool FD::Read(void *buffer, unsigned size, unsigned &read) {
+   if (!Valid()) {
+      return false;
+   } // if
+   read = ::read(fd, buffer, size);
+   return read!=(unsigned)-1;
+} // FD::Read(buffer, size, read)
+
+// Doesn't return until all written - or error
+bool FD::Write(void *buffer, unsigned size) {
+   if (!Valid()) {
+      return false;
+   } // if
+   unsigned wrote;
+   while (size>0) {
+      if (!Write(buffer, size, wrote)) {
+         return false;
+      } // if
+      (byte *&)buffer += wrote; // Avoid arithmetic warning
+      size -= wrote;
+   } // while
+   return true;
+} // FD::Write(buffer, size)
+
+bool FD::Write(void *buffer, unsigned size, unsigned &wrote) {
+   if (!Valid()) {
+      return false;
+   } // if
+   wrote = ::write(fd, buffer, size);
+   return wrote!=(unsigned)-1;
+} // FD::Write(buffer, size, wrote)
+
 bool FD::SendFile(FD &source, unsigned size) {
    if (!Valid()) {
       return false;
@@ -37,14 +69,14 @@ bool FD::SendFile(FD &source, unsigned size) {
       return false;
    } // if
    for (;;) {
-      ssize_t written = ::sendfile(fd, source.fd, nullptr, size); // From current
-      if (written<0) { // Error?
+      ssize_t wrote = ::sendfile(fd, source.fd, nullptr, size); // From current
+      if (wrote<0) { // Error?
          return false;
       } // if
-      if (written==0) {  // End of file?
+      if (wrote==0) {  // End of file?
          break;
       } // if
-      size -= written;
+      size -= wrote;
       if (size==0) {     // All she wrote?
          break;
       } // if
@@ -63,10 +95,12 @@ void FD::Writable() {
 } // FD::Writable()
 
 void FD::Close() {
+   Type old = fd;
    if (!Valid()) {
       return;
    } // if
-   ::close(fd);
+   fd = Invalid;
+   ::close(old);
 } // FD::Close()
 
 FD::~FD() {

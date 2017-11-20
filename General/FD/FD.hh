@@ -22,6 +22,15 @@ public: // Methods
 
    inline bool Valid() const;
 
+   // Returns false on error.
+   // Returns true, but read==0, for end of file
+   bool Read(void *buffer, unsigned size, unsigned &read);
+
+   // Doesn't return until all written - or error
+   bool Write(void *buffer, unsigned size);
+
+   bool Write(void *buffer, unsigned size, unsigned &wrote);
+
    bool SendFile(FD &source, unsigned length=MaxSendFile);
 
    void Close();
