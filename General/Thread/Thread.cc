@@ -2,22 +2,23 @@
 // Thread.cc
 //
 
-#include "Thread.hh"
+#include "Thread.Attr.hh"
 
 using namespace MT;
 
-void Thread::Start() {
-   pthread_t thread;
-   pthread_attr_t attr;
-   ::pthread_attr_init(&attr);
-   ::pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-   ::pthread_create(&thread, (pthread_attr_t *)nullptr, &Thread::Run, this);
-   ::pthread_attr_destroy(&attr);
+static Thread::Attr attr(Thread::Attr::Detached);
+
+Thread::Thread() :
+        thread(-1) {
+} // Thread::Thread()
+
+bool Thread::Start() {
+   return ::pthread_create(&thread, attr, &Thread::Run, this)==0;
 } // Thread::Start()
 
 void *Thread::Run(void *parameter) {
    Thread *thread = (Thread *)parameter;
-   thread->Run();
+   void *ret = thread->Run();
    delete thread;
-   return nullptr;
+   return ret;
 } // Thread::Run(parameter)

@@ -11,17 +11,25 @@
 
 class MT::Thread : private _MT_ {
 
+public: // Classes
+
+   class Attr;
+
 protected: // Methods
 
-   Thread() = default;
+   Thread();
 
-   void Start();
+   bool Start();
 
    virtual ~Thread() = default;
 
 private: // Hooks
 
-   hook void Run() pure;
+   hook void *Run() pure;
+
+private: // Variables
+
+   pthread_t thread;
 
 private: // Static methods
 
