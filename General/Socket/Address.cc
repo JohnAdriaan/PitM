@@ -8,9 +8,9 @@
 
 using namespace BSD;
 
-static const sockaddr_in any4 = { AF_INET, htons(0), INADDR_ANY };
+static const sockaddr_in any4 = { AF_INET, 0, INADDR_ANY };
 
-static const sockaddr_in6 any6 = { AF_INET6, htons(0), 0, IN6ADDR_ANY_INIT };
+static const sockaddr_in6 any6 = { AF_INET6, 0, 0, IN6ADDR_ANY_INIT };
 
 const Address Address::any4 = (sockaddr *)&::any4;
 
