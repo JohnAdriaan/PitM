@@ -18,6 +18,10 @@ protected: // Methods
 
    explicit Socket(FD::Type fd);
 
+   bool Set(int level, int option, bool on);
+
+   bool Set(int level, int option, void *data, socklen_t size);
+
 }; // Socket
 
 #endif // Socket_hh

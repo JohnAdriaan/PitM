@@ -14,9 +14,15 @@ class Pool;
 
 class FD : private _FD_ {
 
+public: // Constants
+
+   static const unsigned MaxSendFile = 0x7FFF0000;
+
 public: // Methods
 
    inline bool Valid() const;
+
+   bool SendFile(FD &source, unsigned length=MaxSendFile);
 
    void Close();
 

@@ -17,3 +17,12 @@ Socket::Socket(Socket &socket) :
 Socket::Socket(FD::Type fd) :
         FD(fd) {
 } // Socket::Socket(fd)
+
+bool Socket::Set(int level, int option, bool on) {
+   int value = on ? 1 : 0;
+   return Set(level, option, &value, sizeof value);
+} // Socket::Set(level, option, on)
+
+bool Socket::Set(int level, int option, void *data, socklen_t size) {
+   return ::setsockopt(fd, level, option, data, size)==0;
+} // Socket::Set(option, data, size)

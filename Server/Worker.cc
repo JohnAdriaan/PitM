@@ -4,20 +4,20 @@
 
 #include "Worker.hh"
 
-Worker::Worker(Pool &pool, BSD::TCP &client, const BSD::Address &address) :
-        TCP(client) {
-   if (!Valid()) {
+Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
+        TCP(client),
+        Thread() {
+   if (!TCP::Valid()) {
       delete this;
       return;
    } // if
-   pool.Add(*this);
-} // Worker::Worker(pool, client, address)
+   if (!Start()) {
+      delete this;
+      return;
+   } // if
+} // Worker::Worker(client, address)
 
-void Worker::Readable() {
-} // Worker::Readable()
-
-void Worker::Writable() {
-} // Worker::Writable()
-
-Worker::~Worker() {
-} // Worker::~Worker()
+void *Worker::Run() {
+   delete this;
+   return nullptr;
+} // Worker::Run()

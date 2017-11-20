@@ -14,6 +14,8 @@ protected: // Methods
 
    Listen(const Address &address, Port port);
 
+   bool Accept();
+
    virtual ~Listen();
 
 private: // Overrides
