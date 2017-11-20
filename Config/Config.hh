@@ -51,7 +51,7 @@ private: // Variables
 
    String server = "wlan0";
 
-   BSD::Port port = 80;
+   BSD::Port port = 8080;
 
 }; // Config
 
