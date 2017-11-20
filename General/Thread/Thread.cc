@@ -18,7 +18,5 @@ bool Thread::Start() {
 
 void *Thread::Run(void *parameter) {
    Thread *thread = (Thread *)parameter;
-   void *ret = thread->Run();
-   delete thread;
-   return ret;
+   return thread->Run();
 } // Thread::Run(parameter)
