@@ -22,7 +22,14 @@ private: // Methods
 
    Worker(BSD::TCP &client, const BSD::Address &address);
 
+   // Parse the next line
    bool Parse();
+
+   // Process the next line
+   bool Process();
+
+   // Reply to Request
+   bool Reply();
 
    virtual ~Worker();
 
@@ -35,7 +42,8 @@ private: // Enums
    enum States {
       RequestLine,
       RequestHeader,
-      RequestBody
+      RequestBody,
+      RequestDone
    }; // States
 
 private: // Variables

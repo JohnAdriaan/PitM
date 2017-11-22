@@ -206,9 +206,9 @@ Response::operator String() const {
          s += i;
          sep = ',';
       } // for
-      s += EOL;
+      s += HTTP::EOL;
    } // for
-   s += EOL;
+   s += HTTP::EOL; // Blank line between header and body
    s += body;
    return s;
 } // Response::operator String()
