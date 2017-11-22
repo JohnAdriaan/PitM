@@ -15,6 +15,12 @@ namespace WWW {
 
       class URI;
 
+      // This is just the Request Header - the body (if any) is separate
+      class Request;
+
+      // This is just the Response Header - the body (if any) is separate
+      class Response;
+
    } // HTTP
 
 } // WWW
