@@ -5,15 +5,9 @@
 #ifndef URI_hh
 #define URI_hh
 
-#include <map>
-
 #include "HTTP.hh"
 
 class WWW::HTTP::URI : private _HTTP_ {
-
-public: // Typedefs
-
-   typedef std::map<String, String> Parameters;
 
 public: // Static methods
 
@@ -23,45 +17,47 @@ public: // Methods
 
    explicit URI(const String &uri);
 
-   // Minimum URI is hostname and path
-   URI(const String &hostname,
+   // Minimum URI is host and path
+   URI(const String &host,
        const String &path);
 
-   URI(const String &protocol,
-       const String &hostname,
-       const String &port,
+   URI(const String &scheme,
+       const String &user,
+       const String &password,
+       const String &host,
+       BSD::Port port,
        const String &path,
-       Parameters &parameters,
-       const String &anchor);
+       Map &query,
+       const String &fragment);
 
    operator String() const;
 
-   inline BSD::Port Port() const;
-
 public: // Variables
 
-   // e.g. http or https
-   const String protocol;
+   // e.g. "http" or "https"
+   const String scheme;
 
-   // e.g. www.google.com.au
-   const String hostname;
+   // e.g. "John"
+   const String user;
 
-   // e.g. 80 (blank means protocol's default)
-   const String port;
+   // e.g. "Password1"
+   const String password;
 
-   // e.g. / or /index.html
+   // e.g. "www.google.com.au"
+   const String host;
+
+   // e.g. 80 (0 means protocol's default)
+   const BSD::Port port;
+
+   // e.g. "/" or "/sub/index.html"
    const String path;
 
-   // e.g. ?user=John&icon=mandelbrot.png
-   const Parameters parameters;
+   // e.g. "?user=John&icon=mandelbrot.png"
+   const Map query;
 
-   // e.g. #Heading
-   const String anchor;
+   // e.g. "#Heading"
+   const String fragment;
 
 }; // URI
-
-inline BSD::Port WWW::HTTP::URI::Port() const {
-   return ::atoi(port.c_str());
-} // URI::Port()
 
 #endif // URI_hh

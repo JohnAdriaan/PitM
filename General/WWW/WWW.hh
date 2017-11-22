@@ -5,11 +5,15 @@
 #ifndef WWW_hh
 #define WWW_hh
 
+#include <map>
+
 #include "../Socket/BSD.hh"
 
 namespace WWW {
 
    class _WWW_;
+
+   typedef std::map<String, String> Map;
 
    namespace HTTP {
    } // HTTP

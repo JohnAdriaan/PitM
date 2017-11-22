@@ -6,17 +6,18 @@
 
 using namespace WWW::HTTP;
 
-//static const String defaultProtocol = "http";
+//static const String defaultScheme = "http";
+static const BSD::Port defaultPort = 0;
 static const String defaultPath = "/";
 
-static URI::Parameters ParseParameters(String params) {
-   URI::Parameters parameters;
+static WWW::Map ParseQuery(String s) {
+   WWW::Map query;
 
    for (Pos start = 0;
-        start<params.length();
+        start<s.length();
         /*Nothing*/) {
-      Pos ampersand = params.find('&', start);
-      String pair = params.substr(start, ampersand-start);
+      Pos delim = s.find_first_of("&;", start); // Either/or
+      String pair = s.substr(start, delim-start);
 
       Pos equals = pair.find('=');
       String left = pair.substr(0,equals);
@@ -24,56 +25,64 @@ static URI::Parameters ParseParameters(String params) {
       if (equals!=String::npos) {
          right = pair.substr(equals+1);
       } // if
-      parameters[left] = right;
+      query[left] = right;
 
-      start += pair.length()+1; // Note NOT ampersand+1 - that'll become 0
+      start += pair.length()+1; // Note NOT delim+1 - that'll become 0
    } // for
 
-   return parameters;
-} // ParseParameters(params)
+   return query;
+} // ParseQuery(s)
 
 // This helper function breaks a string into its component parts,
 // then uses them to construct a full URI.
 // It does assume that the passed-in string passes URI::Valid(string);
 static URI Parse(String uri) {
-   String protocol;
-   String hostname;
-   String port;
+   String scheme;
+   String user;
+   String password;
+   String host;
+   BSD::Port port = defaultPort;
    String path;
-   URI::Parameters parameters;
-   String anchor;
+   WWW::Map query;
+   String fragment;
 
-   Pos colonSlashSlash = uri.find("://");
+   Pos colonSlashSlash = uri.find("://"); // Not strictly true! TODO
    if (colonSlashSlash!=String::npos) {
-      protocol = uri.substr(0,colonSlashSlash);
+      scheme = uri.substr(0,colonSlashSlash);
       uri.erase(0,colonSlashSlash+3);
    } // if
 
+   Pos colon = uri.find(':');
    Pos slash = uri.find('/');
-   if (slash!=String::npos) {
-      hostname = uri.substr(0,slash);
-      uri.erase(0,slash+1);
+   Pos min = std::min(colon, slash);
+   host = uri.substr(0,min);
+   if (colon<slash) {
+      String service = uri.substr(colon+1, slash-colon);
+      port = atoi(service.c_str());
+   } // if
 
+   if (slash!=String::npos) {
+      uri.erase(0, slash);
       // Now look for the end of the path
       Pos questionMark = uri.find('?');
       Pos hash = uri.find('#');
-      Pos pos = std::min(questionMark, hash);
-      path = uri.substr(0,pos);
+      Pos min = std::min(questionMark, hash);
+      path = uri.substr(0,min);
 
       if (questionMark<hash) {
-         parameters = ParseParameters(uri.substr(questionMark+1, hash-questionMark));
+         query = ParseQuery(uri.substr(questionMark+1, hash-questionMark));
       } // if
 
       if (hash!=String::npos) {
-         anchor = uri.substr(hash+1);
+         fragment = uri.substr(hash+1);
       } // if
    } // if
 
-   return URI(protocol,hostname,port,path,parameters,anchor);
+   return URI(scheme,user,password,host,port,path,query,fragment);
 } // Parse(uri)
 
 bool URI::Valid(const String &uri) {
-   Pos colonSlashSlash = uri.find("://");
+   Pos colonSlashSlash = uri.find("://"); // Not strictly true! TODO
 
    // Check for an earlier occurrence of '/' than above!
    Pos slash = uri.find('/');
@@ -100,38 +109,51 @@ URI::URI(const String &uri) :
      URI(Parse(uri)) {
 } // URI::URI(uri)
 
-URI::URI(const String &hostname,
+URI::URI(const String &host,
          const String &path) :
-     hostname(hostname),
+     host(host),
+     port(defaultPort),
      path(path) {
-} // URI::URI(hostname,path)
+} // URI::URI(host,path)
 
-URI::URI(const String &protocol,
-         const String &hostname,
-         const String &port,
+URI::URI(const String &scheme,
+         const String &user,
+         const String &password,
+         const String &host,
+         BSD::Port port,
          const String &path,
-         Parameters &parameters,
-         const String &anchor) :
-     protocol(protocol),
-     hostname(hostname),
+         Map &query,
+         const String &fragment) :
+     scheme(scheme),
+     user(user),
+     password(password),
+     host(host),
      port(port),
      path(!path.empty() ? path : defaultPath),
-     parameters(parameters),
-     anchor(anchor) {
-} // URI::URI(protocol,hostname,port,path,parameters,anchor)
+     query(query),
+     fragment(fragment) {
+} // URI::URI(scheme,user,password,host,port,path,query,fragment)
 
 URI::operator String() const {
    String s;
    s.reserve(2048);
 
-   if (!protocol.empty()) {
-      s += protocol;
+   if (!scheme.empty()) {
+      s += scheme;
       s += "://";
    } // if
 
-   s += hostname;
+   if (!user.empty()) {
+      s += user;
+      if (!password.empty()) {
+         s += ':';
+         s += password;
+      } // if
+      s += '@';
+   } // if
+   s += host;
 
-   if (!port.empty()) {
+   if (port!=defaultPort) {
       s += ':';
       s += port;
    } // if
@@ -139,17 +161,19 @@ URI::operator String() const {
    s += path;
 
    char sep = '?'; // Start separator
-   for (const auto i : parameters) {
+   for (const auto i : query) {
       s += sep;
       s += i.first;
-      s += '=';
-      s += i.second;
+      if (!i.second.empty()) {
+         s += '=';
+         s += i.second;
+      } // if
       sep = '&'; // Middle separator
    } // for
 
-   if (!anchor.empty()) {
+   if (!fragment.empty()) {
       s += '#';
-      s += anchor;
+      s += fragment;
    } // if
 
    return s;
