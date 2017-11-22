@@ -11,6 +11,12 @@ namespace WWW {
 
    namespace HTTP {
 
+      enum Versions {
+         Unknown,
+         HTTP10,
+         HTTP11
+      }; // Versions
+
       class _HTTP_;
 
       class URI;

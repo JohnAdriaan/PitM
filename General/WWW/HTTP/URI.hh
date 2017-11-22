@@ -25,9 +25,9 @@ public: // Methods
        const String &user,
        const String &password,
        const String &host,
-       BSD::Port port,
+       BSD::Port    port,
        const String &path,
-       Map &query,
+       Map          &query,
        const String &fragment);
 
    operator String() const;
