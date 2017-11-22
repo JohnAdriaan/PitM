@@ -27,9 +27,12 @@ public: // Methods
    bool Read(void *buffer, unsigned size, unsigned &read);
 
    // Doesn't return until all written - or error
-   bool Write(void *buffer, unsigned size);
+   bool Write(const String &string);
 
-   bool Write(void *buffer, unsigned size, unsigned &wrote);
+   // Doesn't return until all written - or error
+   bool Write(const void *buffer, unsigned size);
+
+   bool Write(const void *buffer, unsigned size, unsigned &wrote);
 
    bool SendFile(FD &source, unsigned length=MaxSendFile);
 

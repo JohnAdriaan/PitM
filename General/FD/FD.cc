@@ -37,8 +37,11 @@ bool FD::Read(void *buffer, unsigned size, unsigned &read) {
    return read!=(unsigned)-1;
 } // FD::Read(buffer, size, read)
 
-// Doesn't return until all written - or error
-bool FD::Write(void *buffer, unsigned size) {
+bool FD::Write(const String &string) {
+   return Write(string.c_str(), string.length());
+} // FD::Write(string)
+
+bool FD::Write(const void *buffer, unsigned size) {
    if (!Valid()) {
       return false;
    } // if
@@ -47,13 +50,13 @@ bool FD::Write(void *buffer, unsigned size) {
       if (!Write(buffer, size, wrote)) {
          return false;
       } // if
-      (byte *&)buffer += wrote; // Avoid arithmetic warning
+      (const byte *&)buffer += wrote; // Avoid arithmetic warning
       size -= wrote;
    } // while
    return true;
 } // FD::Write(buffer, size)
 
-bool FD::Write(void *buffer, unsigned size, unsigned &wrote) {
+bool FD::Write(const void *buffer, unsigned size, unsigned &wrote) {
    if (!Valid()) {
       return false;
    } // if
