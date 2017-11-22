@@ -2,6 +2,8 @@
 // Debug.cc
 //
 
+#if 0
+
 #ifndef NDEBUG
 
 #include <malloc.h>
@@ -110,3 +112,5 @@ void operator delete(void *ptr) {
 } // operator delete(ptr)
 
 #endif // !NDEBUG
+
+#endif // 0
