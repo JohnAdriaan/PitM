@@ -17,14 +17,26 @@ namespace WWW {
          HTTP11
       }; // Versions
 
+      static const String EOL = "\r\n";
+
+      Versions Version(const String &version);
+
+      String Version(Versions version);
+
       class _HTTP_;
 
       class URI;
 
-      // This is just the Request Header - the body (if any) is separate
+      // This is just the Request Message Header, consisting of
+      //    Request Line
+      //    Request Headers
+      // The body (if any) is separate
       class Request;
 
-      // This is just the Response Header - the body (if any) is separate
+      // This is just the Response Header, consisting of
+      //   Rwsponse Line
+      //   Response Headers
+      // The body (if any) is separate
       class Response;
 
    } // HTTP

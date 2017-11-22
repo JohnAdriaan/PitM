@@ -24,11 +24,15 @@ public: // Enums
       PATCH
    }; // Methods
 
+public: // Static methods
+
+   static Request *Parse(String line);
+
 public: // Methods
 
-   explicit Request(String request);
+   Request(Methods method, const String &path, Versions version);
 
-   bool Valid() const;
+   void Append(const String &header);
 
 public: // Variables
 
@@ -38,11 +42,11 @@ public: // Variables
 
    const Versions version;
 
-   const MapSet headers;
+   const MapSet &headers;
 
 private: // Variables
 
-   bool valid;
+   MapSet headerSet;
 
 }; // Request
 

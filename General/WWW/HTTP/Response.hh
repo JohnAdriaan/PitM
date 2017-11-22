@@ -11,15 +11,13 @@ class WWW::HTTP::Response {
 
 public: // Enums
 
-   enum Informationals {
+   enum Codes {
       Informational      = 100,
 
       Continue           = 100,
       SwitchingProtocols = 101,
-      Processing         = 102
-   }; // Informationals
+      Processing         = 102,
 
-   enum Successes {
       Success           = 200,
 
       OK                = 200,
@@ -31,10 +29,8 @@ public: // Enums
       PartialContent    = 206,
       MultiStatus       = 207,
       AlreadyReported   = 208,
-      IMUsed            = 226
-   }; // Successes
+      IMUsed            = 226,
 
-   enum Redirections {
       Redirection       = 300,
 
       MultipleChoices   = 300,
@@ -45,10 +41,8 @@ public: // Enums
       UseProxy          = 305,
       SwitchProxy       = 306,
       TemporaryRedirect = 307,
-      PermanentRedirect = 308
-   }; // Redirections
+      PermanentRedirect = 308,
 
-   enum ClientErrors {
       ClientError                 = 400,
 
       BadRequest                  = 400,
@@ -83,10 +77,8 @@ public: // Enums
 
       RequestHeaderFieldsTooLarge = 431,
 
-      UnavailableForLegalReasons  = 451  // Fahrenheit 451
-   }; // ClientErrors
+      UnavailableForLegalReasons  = 451, // Fahrenheit 451
 
-   enum ServerErrors {
       ServerError                   = 500,
 
       InternalServerError           = 500,
@@ -101,21 +93,29 @@ public: // Enums
 
       NotExtended                   = 510,
       NetworkAuthenticationRequired = 511
-   }; // ServerErrors
+   }; // Codes
 
 public: // Methods
 
-   explicit Response(String response);
+   Response(Versions version, Codes code, const String &body=String());
 
-public: // Variables
+   void Add(const String &key, Set &values);
 
-   const String version;
+   // If key is already there, add value as part of its Set
+   void Add(const String &key, const String &value);
 
-   const String code;
+   // Append to body
+   void Append(const String &lines);
 
-   const String reason;
+   operator String() const;
 
-   const MapSet headers;
+private: // Variables
+
+   String response;
+
+   MapSet headers;
+
+   String body;
 
 }; // Response
 

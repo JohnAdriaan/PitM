@@ -4,22 +4,19 @@
 
 #include "Response.hh"
 
-using namespace WWW::HTTP;
+using namespace WWW;
 
-static const char *Reason(Response::Informationals informational) {
-   switch (informational) {
+using namespace HTTP;
+
+static const char *Reason(Response::Codes code) {
+   switch (code) {
    case Response::Continue :
       return "Continue";
    case Response::SwitchingProtocols :
       return "Switching Protocols";
    case Response::Processing :
       return "Processing";
-   } // switch
-   return "Unknown Informational";
-} // Reason(Informationals)
 
-static const char *Reason(Response::Successes success) {
-   switch (success) {
    case Response::OK :
       return "OK";
    case Response::Created :
@@ -40,12 +37,7 @@ static const char *Reason(Response::Successes success) {
       return "Already Reported";
    case Response::IMUsed :
       return "IM Used";
-   } // switch
-   return "Unknown Success";
-} // Reason(Successes)
 
-static const char *Reason(Response::Redirections redirection) {
-   switch (redirection) {
    case Response::MultipleChoices :
       return "Multiple Choices";
    case Response::MovedPermanently :
@@ -64,12 +56,7 @@ static const char *Reason(Response::Redirections redirection) {
       return "Temporary Redirect";
    case Response::PermanentRedirect :
       return "Permanent Redirect";
-   } // switch
-   return "Unknown Redirection";
-} // Reason(Redirections)
 
-static const char *Reason(Response::ClientErrors clientError) {
-   switch (clientError) {
    case Response::BadRequest :
       return "Bad Request";
    case Response::Unauthorized :
@@ -126,12 +113,7 @@ static const char *Reason(Response::ClientErrors clientError) {
       return "Request Header Fields Too Large";
    case Response::UnavailableForLegalReasons :
       return "Unavailable For Legal Reasons";
-   } // switch
-   return "Unknown Client Error";
-}; // Reason(ClientErrors)
 
-static const char *Reason(Response::ServerErrors serverError) {
-   switch (serverError) {
    case Response::InternalServerError :
       return "Internal Server Error";
    case Response::NotImplemented :
@@ -155,10 +137,78 @@ static const char *Reason(Response::ServerErrors serverError) {
    case Response::NetworkAuthenticationRequired :
       return "Network Authentication Required";
    } // switch
-   return "Unknown Server Error";
-}; // Reason(ServerErrors)
 
-template <typename Code>
-const char *ReasonString(Code code) {
-   return Reason(code);
-} // ReasonString(Code)
+   // Unknown Code. Categorise it...
+   switch (code/100*100) {
+   case Response::Informational :
+      return "Unknown Informational Response";
+   case Response::Success :
+      return "Unknown Success Response";
+   case Response::Redirection :
+      return "Unknown Redirection Response";
+   case Response::ClientError :
+      return "Unknown Client Error Response";
+   case Response::ServerError :
+      return "Unknown Server Error Response";
+   default :
+      // Completely unknown code!
+      return "Unknown Response";
+   } // switch
+}; // Reason(Codes)
+
+static String Encode(HTTP::Versions version, Response::Codes code) {
+   String s = Version(version);
+   s += ' ';
+   s += (unsigned)code;
+   s += ' ';
+   s += Reason(code);
+   return s;
+} // Encode(version, code)
+
+Response::Response(Versions version, Codes code, const String &body) :
+          response(Encode(version,code)),
+          headers(),
+          body(body) {
+} // Response::Response(version, code, body)
+
+void Response::Add(const String &key, Set &values) {
+   headers[key] = values;
+} // Response::Add(key,values)
+
+void Response::Add(const String &key, const String &value) {
+   auto i = headers.find(key);
+   if (i==headers.end()) {
+      Set set;
+      set.insert(value);
+      headers[key] = set;
+   } // if
+   else {
+      i->second.insert(value);
+   } // else
+} // Response::Add(key,value)
+
+void Response::Append(const String &lines) {
+   body += lines;
+} // Response::Append(lines)
+
+Response::operator String() const {
+   String s;
+   s.reserve(2048);
+
+   s = response + HTTP::EOL;
+   for (auto h : headers) {
+      s += h.first;
+      s += ":";
+
+      char sep = ' ';
+      for (auto i : h.second) {
+         s += sep;
+         s += i;
+         sep = ',';
+      } // for
+      s += EOL;
+   } // for
+   s += EOL;
+   s += body;
+   return s;
+} // Response::operator String()

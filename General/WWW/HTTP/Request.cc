@@ -8,16 +8,6 @@ using namespace WWW;
 
 using namespace HTTP;
 
-static HTTP::Versions Version(const String &version) {
-   if (version=="HTTP/1.1") {
-      return HTTP::HTTP11;
-   } // if
-   if (version=="HTTP/1.0") {
-      return HTTP::HTTP10;
-   } // if
-   return HTTP::Versions::Unknown;
-} // Version(version)
-
 static Request::Methods Method(const String &method) {
    if (method=="GET") {
       return Request::GET;
@@ -48,3 +38,53 @@ static Request::Methods Method(const String &method) {
    } // if
    return Request::Methods::Unknown;
 } // Method(string)
+
+Request *Request::Parse(String line) {
+   String method;
+   String path;
+   String version;
+
+   Pos notSpace = 0;
+   Pos space = line.find(' ', notSpace);
+   method = line.substr(notSpace, space);
+
+   if (space!=String::npos) {
+      notSpace = line.find_first_not_of(' ', space);
+      space = line.find(' ', notSpace);
+      path = line.substr(notSpace, space);
+
+      if (space!=String::npos) {
+         notSpace = line.find_first_not_of(' ', space);
+         version = line.substr(notSpace);
+      } // if
+   } // if
+   return new Request(Method(method), path, Version(version));
+} // Parse(line)
+
+Request::Request(Methods method, const String &path, Versions version) :
+         method(method),
+         path(path),
+         version(version),
+         headers(headerSet),
+         headerSet() {
+} // Request::Request(method, path, version)
+
+void Request::Append(const String &header) {
+   Pos delim = header.find(':');
+   String key = header.substr(0, delim);
+   Set values;
+   auto i = headerSet.find(key);
+   Set &set = i!=headerSet.end() ?
+              i->second :
+              values;
+
+   while (delim!=String::npos) {
+      Pos start = header.find_first_not_of(' ', delim+1);
+      delim = header.find(',', start);
+      set.insert(header.substr(start, delim-start));
+   } // while
+
+   if (&set==&values) {
+      headerSet[key] = values;
+   } // if
+} // Request::Append(header)
