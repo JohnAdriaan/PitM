@@ -2,7 +2,7 @@
 // Debug.cc
 //
 
-#ifdef DEBUGGING // DEBUG_BUILD
+#ifndef NDEBUG
 
 #include <malloc.h>
 #include <iostream>
@@ -90,7 +90,7 @@ inline void List::Block::Unlink() {
    List::list.Unlink(*this);
 } // Block::Unlink()
 
-void *operator new(size_t size) {
+void *operator new(Size size) {
    size += sizeof(List::Block);
    List::Block *block = (List::Block *)malloc(size);
    if (block==nullptr) {
@@ -109,4 +109,4 @@ void operator delete(void *ptr) {
    free(block);
 } // operator delete(ptr)
 
-#endif // DEBUG_BUILD
+#endif // !NDEBUG
