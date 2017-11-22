@@ -70,7 +70,7 @@ bool Worker::Process() {
    case RequestLine :
       using namespace WWW::HTTP;
       request = Request::Parse(line);
-      state = RequestDone;
+      state = RequestDone; // Assume failure
       if (request==nullptr) {
          return false;
       } // if
@@ -89,7 +89,7 @@ bool Worker::Process() {
       case Request::GET :
          break;
       } // switch
-      state = RequestHeader;
+      state = RequestHeader; // Can continue!
       break;
    case RequestHeader : {
       if (!line.empty()) {

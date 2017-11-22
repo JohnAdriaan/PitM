@@ -46,12 +46,12 @@ Request *Request::Parse(String line) {
 
    Pos notSpace = 0;
    Pos space = line.find(' ', notSpace);
-   method = line.substr(notSpace, space);
+   method = line.substr(notSpace, space-notSpace);
 
    if (space!=String::npos) {
       notSpace = line.find_first_not_of(' ', space);
       space = line.find(' ', notSpace);
-      path = line.substr(notSpace, space);
+      path = line.substr(notSpace, space-notSpace);
 
       if (space!=String::npos) {
          notSpace = line.find_first_not_of(' ', space);
