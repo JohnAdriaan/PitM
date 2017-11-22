@@ -68,19 +68,27 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
 
 ## Modules
 - `[ ]` Framework
-   - `[ ]` main()
-   - `[ ]` Threads
+   - `[x]` main()
+   - `[x]` Threads
 - `[ ]` Configuration
    - `[ ]` Which interfaces to use for what
    - `[ ]` Which protocols to process:
       - `[ ]` Ethernet
       - `[ ]` PPPoE
       - `[ ]` PPPoA
+   - `[ ]` Which packet types to log
+      - `[ ]` ICMP (Logged by default?)
+      - `[ ]` DNS (UDP or TCP)
 - `[ ]` Packet pass-through
    - `[ ]` Statistics accumulation
    - `[ ]` Packet logging using pcap format
 - `[ ]` Web interface
-   - `[ ]` HTML Parser
+   - `[ ]` HTTP
+      - `[ ]` Parser
+      - `[ ]` Generator
+   - `[ ]` HTML
+      - `[ ]` Parser
+      - `[ ]` Generator
       - `[ ]` HTML5 server-side updates?
    - `[ ]` Status page
    - `[ ]` Statistics page
