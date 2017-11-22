@@ -52,8 +52,23 @@ static URI Parse(String uri) {
       uri.erase(0,colonSlashSlash+3);
    } // if
 
-   Pos colon = uri.find(':');
    Pos slash = uri.find('/');
+
+   Pos at = uri.find('@');
+   if (at<slash) {
+      Pos colon = uri.find(':');
+      if (colon<at) {
+         user = uri.substr(0,colon);
+         password = uri.substr(colon+1, at-colon-1);
+      } // if
+      else {
+         user = uri.substr(0,at);
+      } // else
+
+      uri.erase(0,at+1);
+   } // if
+
+   Pos colon = uri.find(':');
    Pos min = std::min(colon, slash);
    host = uri.substr(0,min);
    if (colon<slash) {
