@@ -20,6 +20,9 @@
 typedef unsigned char  byte;
 typedef unsigned short word;
 
+typedef size_t Pos;
+typedef size_t Size;
+
 typedef std::string    String;
 
 class _General_ {
