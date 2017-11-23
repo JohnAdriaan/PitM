@@ -176,7 +176,7 @@ URI::operator String() const {
    s += path;
 
    char sep = '?'; // Start separator
-   for (const auto i : query) {
+   for (const auto &i : query) {
       s += sep;
       s += i.first;
       if (!i.second.empty()) {
