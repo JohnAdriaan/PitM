@@ -23,7 +23,15 @@ typedef unsigned short word;
 typedef size_t Pos;
 typedef size_t Size;
 
-typedef std::string    String;
+typedef std::string String;
+
+inline String &operator +=(String &lhs, int number) {
+   return lhs += std::to_string(number);
+} // operator +=(String, number)
+
+inline String &operator +=(String &lhs, unsigned number) {
+   return lhs += std::to_string(number);
+} // operator +=(String, number)
 
 class _General_ {
 }; // _General_
