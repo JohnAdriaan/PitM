@@ -213,8 +213,7 @@ Response::operator String() const {
       s += HTTP::EOL;
    } // for
 
-   const auto &i = headers.find(ContentLength);
-   if (i==headers.end()) {
+   if (headers.find(ContentLength)==headers.end()) {
       s += ContentLength;
       s += ": ";
       s += body.length();

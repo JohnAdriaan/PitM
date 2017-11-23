@@ -2,7 +2,9 @@
 // Worker.cc
 //
 
-#include <iostream>
+#include <iostream> // TODO
+
+#include "../General/File/File.hh"
 
 #include "../General/WWW/HTTP/Response.hh"
 
@@ -35,6 +37,7 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
 bool Worker::Parse() {
    for (;;) {
       while (pos<read) {
+         // Don't manipulate CR/LF in Request Body...
          if (state==RequestBody) {
             ++pos;
             if (--contentLength>0) {
@@ -42,6 +45,7 @@ bool Worker::Parse() {
             } // if
             line.append(buffer+start, pos-start);
          } // if
+         // ...only Request Message Header
          else {
             if (buffer[pos++]!='\n') {
                continue;
@@ -60,6 +64,9 @@ bool Worker::Parse() {
       line.append(buffer+start, read-start);
       if (!Read(buffer, sizeof buffer, read)) {
         return false;
+      } // if
+      if (read==0) {
+         return false;
       } // if
       pos = 0;
       start = 0;
@@ -100,18 +107,18 @@ bool Worker::Process() {
       } // if
       state = RequestDone;
 
-      const auto &h = request->headers.find(ContentLength);
+      auto h = request->headers.find(ContentLength);
       if (h==request->headers.end()) {
          break;
       } // if
 
       const WWW::Set &set = h->second;
-      const auto &i = set.begin();
-      if (i==set.end()) {
+      if (set.empty()) {
          break;
       } // if
 
-      contentLength = atoi(i->c_str());
+      // Only look at first entry
+      contentLength = atoi(set.begin()->c_str());
       if (contentLength==0) {
          break;
       } // if
@@ -131,13 +138,11 @@ bool Worker::Process() {
 bool Worker::Reply() {
    using namespace WWW::HTTP;
    if (request==nullptr) {
-      std::cout << line << std::endl;
       Write(Response(HTTP10, Response::InsufficientStorage));
       return false;
    } // if
    switch (request->method) {
    case Request::Unknown :
-      std::cout << line << std::endl;
       Write(Response(HTTP10, Response::BadRequest));
       return false;
    case Request::HEAD    :
@@ -149,26 +154,44 @@ bool Worker::Reply() {
    case Request::CONNECT :
    case Request::PATCH   :
    default :
-      std::cout << line << std::endl;
       Write(Response(HTTP10, Response::MethodNotAllowed));
       return false;
    case Request::GET :
       break;
    } // switch
    std::cout << "GET " << request->path << std::endl;
-   for (const auto &h : request->headers) {
-      std::cout << h.first << ":";
-      char sep = ' ';
-      for (const auto &i : h.second) {
-         std::cout << sep << i;
-         sep = ',';
-      } // for
-      std::cout << std::endl;
-   } // for
-   std::cout << std::endl << line << std::endl;
+   if (request->path=="/") {
+      String body = "<html><body><h1>PitM</h1></body></html>";
+      return Write(Response(HTTP11, Response::OK, body));
+   } // if
+   if (request->path=="/favicon.ico") {
+      if (SendFile("./favicon.ico")) {
+         return true;
+      } // if
+   } // if
    Write(Response(HTTP10, Response::NotFound));
-   return true;
+   return false;
 } // Worker::Reply()
+
+bool Worker::SendFile(const char *path) {
+   File file(path);
+   if (!file.Valid()) {
+      return false;
+   } // if
+   Size length = file.Size();
+
+   using namespace WWW::HTTP;
+   Response response(HTTP11, Response::OK);
+   response.Add(ContentLength,std::to_string(length));
+
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!FD::SendFile(file)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendFile(path)
 
 void *Worker::Run() {
    while (Parse()) {
@@ -185,6 +208,7 @@ void *Worker::Run() {
       } // if
       line.clear();
    } // while
+   std::cout << "Shutting down" << std::endl;
    Close();
    delete this;
    return nullptr;

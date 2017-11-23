@@ -31,6 +31,8 @@ private: // Methods
    // Reply to Request
    bool Reply();
 
+   bool SendFile(const char *path);
+
    virtual ~Worker();
 
 private: // Thread overrides
