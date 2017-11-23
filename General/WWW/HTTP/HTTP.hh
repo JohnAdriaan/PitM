@@ -17,16 +17,18 @@ namespace WWW {
          HTTP11
       }; // Versions
 
-      static const String EOL = "\r\n";
+      // The defined end-of-line for HTTP headers
+      extern const String EOL;
 
-      // This is the header field for Keep-Alive
-      static const String Connection = "Connection";
+      // This is the header field for Keep-Alive or Close
+      extern const String Connection;
 
-      // ...and this is the value
-      static const String KeepAlive = "keep-alive";
+      // ...and these are the values
+      extern const String KeepAlive;
+      extern const String Close;
 
       // This header is signficant to Keep-Alive and HTTP/1.1
-      static const String ContentLength = "Content-Length";
+      extern const String ContentLength;
 
       Versions Version(const String &version);
 

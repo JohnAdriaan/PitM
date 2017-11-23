@@ -6,6 +6,13 @@
 
 using namespace WWW;
 
+const String HTTP::EOL = "\r\n";
+const String HTTP::Connection = "Connection";
+const String HTTP::KeepAlive = "keep-alive";
+const String HTTP::Close = "close";
+const String HTTP::ContentLength = "Content-Length";
+
+
 String HTTP::Version(HTTP::Versions version) {
    switch (version) {
    case HTTP::HTTP11 :
