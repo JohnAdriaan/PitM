@@ -11,6 +11,7 @@ const String HTTP::ContentLength = "Content-Length";
 const String HTTP::Connection = "Connection";
 const String HTTP::KeepAlive = "keep-alive";
 const String HTTP::Close = "close";
+const String HTTP::Allow = "Allow";
 const String HTTP::Location = "Location";
 
 
@@ -31,6 +32,9 @@ HTTP::Versions HTTP::Version(const String &version) {
       return HTTP::HTTP11;
    } // if
    if (version=="HTTP/1.0") {
+      return HTTP::HTTP10;
+   } // if
+   if (version=="") {
       return HTTP::HTTP10;
    } // if
    return HTTP::Versions::Unknown;

@@ -29,7 +29,10 @@ namespace WWW {
       extern const String KeepAlive;
       extern const String Close;
 
-      // The standard Location header for 303 POST replies
+      // The necessary Header for 405 MethodNotAllowed
+      extern const String Allow;
+
+      // The standard Location header for 303 SeeOther POST replies
       extern const String Location;
 
       Versions Version(const String &version);

@@ -26,28 +26,52 @@ public: // Enums
 
 public: // Static methods
 
-   static Request *Parse(String line);
+   static Request Parse(String line);
 
 public: // Methods
 
+   Request();
+
    Request(Methods method, const String &path, Versions version);
+
+   Request &operator =(const Request &rhs) = default;
 
    void Append(const String &header);
 
-public: // Variables
+   inline Methods Method() const;
 
-   const Methods method;
+   inline const String &Path() const;
 
-   const String path;
+   inline Versions Version() const;
 
-   const Versions version;
-
-   const MapSet &headers;
+   inline const MapSet &Headers() const;
 
 private: // Variables
 
-   MapSet headerSet;
+   Methods method;
+
+   String path;
+
+   Versions version;
+
+   MapSet headers;
 
 }; // Request
+
+inline WWW::HTTP::Request::Methods WWW::HTTP::Request::Method() const {
+   return method;
+} // Request::Method()
+
+inline const String &WWW::HTTP::Request::Path() const {
+   return path;
+} // Request::Path()
+
+inline WWW::HTTP::Versions WWW::HTTP::Request::Version() const {
+   return version;
+} // Request::Version()
+
+inline const WWW::MapSet &WWW::HTTP::Request::Headers() const {
+   return headers;
+} // Request::Headers()
 
 #endif // Request_hh

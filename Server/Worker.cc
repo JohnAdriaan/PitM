@@ -27,7 +27,7 @@ using namespace PitM;
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
         Thread(),
-        request(nullptr),
+        request(),
         state(RequestLine),
         line(),
         buffer(),
@@ -47,14 +47,14 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
 } // Worker::Worker(client, address)
 
 bool Worker::GET(bool head) {
-   std::cout << "GET " << request->path << std::endl;
-   if (request->path=="/") {
+   std::cout << "GET " << request.Path() << std::endl;
+   if (request.Path()=="/") {
       return SendHomePage(head);
    } // if
-   if (request->path=="/favicon.ico") {
+   if (request.Path()=="/favicon.ico") {
       return SendObj(head,favicon, &faviconSize);
    } // if
-   if (request->path=="/config") {
+   if (request.Path()=="/config") {
       return SendConfigPage(head);
    } // if
    Write(Response(HTTP10, Response::NotFound));
@@ -191,12 +191,12 @@ bool Worker::SendObj(bool head, const void *obj, const void *size) {
 } // Worker::SendObj(head,obj,size)
 
 bool Worker::POST() {
-   std::cout << "POST " << request->path << std::endl;
+   std::cout << "POST " << request.Path() << std::endl;
    std::cout << line << std::endl;
-   if (request->path=="/config") {
+   if (request.Path()=="/config") {
       return Config();
    } // if
-   if (request->path=="/quit") {
+   if (request.Path()=="/quit") {
       return Quit();
    } // if
    Write(Response(HTTP10, Response::NotFound));
@@ -279,37 +279,19 @@ bool Worker::Parse() {
 bool Worker::Process() {
    switch (state) {
    case RequestLine :
-      state = RequestDone; // Assume failure
       request = Request::Parse(line);
-      if (request==nullptr) {
-         return false;
-      } // if
-      switch (request->method) {
-      case Request::Unknown :
-      case Request::PUT     :
-      case Request::DELETE  :
-      case Request::TRACE   :
-      case Request::OPTIONS :
-      case Request::CONNECT :
-      case Request::PATCH   :
-      default :
-         return false;
-      case Request::GET  :
-      case Request::HEAD :
-      case Request::POST :
-         break;
-      } // switch
-      state = RequestHeader; // Can continue!
+      state = RequestHeader;
       break;
    case RequestHeader : {
       if (!line.empty()) {
-         request->Append(line);
+         request.Append(line);
          break;
       } // if
       state = RequestDone;
 
-      auto h = request->headers.find(ContentLength);
-      if (h==request->headers.end()) {
+      const WWW::MapSet &headers = request.Headers();
+      auto h = headers.find(ContentLength);
+      if (h==headers.end()) {
          break;
       } // if
 
@@ -337,11 +319,7 @@ bool Worker::Process() {
 } // Worker::Process()
 
 bool Worker::Reply() {
-   if (request==nullptr) {
-      Write(Response(HTTP10, Response::InsufficientStorage));
-      return false;
-   } // if
-   switch (request->method) {
+   switch (request.Method()) {
    case Request::Unknown :
       Write(Response(HTTP10, Response::BadRequest));
       return false;
@@ -357,10 +335,15 @@ bool Worker::Reply() {
    case Request::OPTIONS :
    case Request::CONNECT :
    case Request::PATCH   :
+      Write(Response(HTTP10, Response::NotImplemented));
+      return false;
    default :
       break;
    } // switch
-   Write(Response(HTTP10, Response::NotImplemented));
+   WWW::Set set = { "GET", "HEAD", "POST" };
+   Response response(HTTP10, Response::MethodNotAllowed);
+   response.Add(Allow, set);
+   Write(response);
    return false;
 } // Worker::Reply()
 
@@ -374,8 +357,6 @@ void *Worker::Run() {
             break;
          } // if
          state = RequestLine;
-         delete request;
-         request = nullptr;
       } // if
       line.clear();
    } // while
@@ -384,7 +365,3 @@ void *Worker::Run() {
    delete this;
    return nullptr;
 } // Worker::Run()
-
-Worker::~Worker() {
-   delete request;
-} // Worker::~Worker()

@@ -39,7 +39,7 @@ static Request::Methods Method(const String &method) {
    return Request::Methods::Unknown;
 } // Method(string)
 
-Request *Request::Parse(String line) {
+Request Request::Parse(String line) {
    String method;
    String path;
    String version;
@@ -58,23 +58,29 @@ Request *Request::Parse(String line) {
          version = line.substr(notSpace);
       } // if
    } // if
-   return new Request(Method(method), path, Version(version));
+   return Request(::Method(method), path, HTTP::Version(version));
 } // Parse(line)
+
+Request::Request() :
+         method(Methods::Unknown),
+         path(),
+         version(Versions::Unknown),
+         headers() {
+} // Request::Request()
 
 Request::Request(Methods method, const String &path, Versions version) :
          method(method),
          path(path),
          version(version),
-         headers(headerSet),
-         headerSet() {
+         headers() {
 } // Request::Request(method, path, version)
 
 void Request::Append(const String &header) {
    Pos delim = header.find(':');
    String key = header.substr(0, delim);
    Set values;                     // Might need this new one
-   auto i = headerSet.find(key);
-   Set &set = i!=headerSet.end() ?
+   auto i = headers.find(key);
+   Set &set = i!=headers.end() ?
               i->second :          // Nope
               values;              // Yep!
 
@@ -85,6 +91,6 @@ void Request::Append(const String &header) {
    } // while
 
    if (&set==&values) {            // Did we use the new one?
-      headerSet[key] = values;     // Add it in then
+      headers[key] = values;     // Add it in then
    } // if
 } // Request::Append(header)

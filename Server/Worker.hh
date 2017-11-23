@@ -22,7 +22,7 @@ private: // Methods
 
    Worker(BSD::TCP &client, const BSD::Address &address);
 
-   virtual ~Worker();
+   virtual ~Worker() = default;
 
 private: // GET Responses
 
@@ -78,7 +78,7 @@ private: // Enums
 
 private: // Variables
 
-   WWW::HTTP::Request *request;
+   WWW::HTTP::Request request;
 
    States state;
 
