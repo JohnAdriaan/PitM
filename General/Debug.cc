@@ -2,7 +2,7 @@
 // Debug.cc
 //
 
-#if 0
+#if 0 // 1
 
 #ifndef NDEBUG
 
@@ -31,11 +31,12 @@ private: // Static variables
 class List::Block : private _General_ {
 friend List;
 public: // Methods
-   inline void Link();
+   inline void Link(Size size);
    inline void Unlink();
 private: // Variables
    Block *prev;
    Block *next;
+   Size size;
 }; // List::Block
 
 List List::list;
@@ -56,7 +57,7 @@ void List::Link(Block &block) {
       tail->next = &block;
    } // if
    block.prev = tail;
-   block.next = nullptr;
+   tail = &block;
    ++total;
    ++count;
 } // List::Link(Block)
@@ -74,13 +75,44 @@ void List::Unlink(const Block &block) {
 List::~List() {
    std::cerr << "There were " << total
              << " blocks allocated in total." << std::endl;
+   char c = (count==0) ? '.' : ':';
    std::cerr << "There were " << count
-             << " blocks that weren't deleted." << std::endl;
+             << " blocks that weren't deleted" << c << std::endl;;
+   if (count==0) {
+      return;
+   } // if
+   Block *ptr = head;
+   while (ptr!=nullptr) {
+      std::cerr << ptr->size;
+      bool chars = true;
+      char *s = (char *)(ptr+1);
+      for (unsigned i=0;i<ptr->size;++i) {
+         char c = *s++;
+         if (c=='\0') {
+            break;
+         } // if
+         if ((c=='\t') || (c=='\n') || (c=='\r')) {
+            continue;
+         } // if
+         if ((c<' ') || (c>'~')) {
+            chars = false;
+            break;
+         } // if
+      } // for
+      if (chars) {
+         std::cerr << ": " << String((const char*)(ptr+1));
+      } // if
+      std::cerr << std::endl;
+      ptr = ptr->next;
+   } // while
+   std::cerr << std::endl;
 } // List::~List()
 
-inline void List::Block::Link() {
+inline void List::Block::Link(Size size) {
+   this->next = nullptr;
+   this->size = size;
    List::list.Link(*this);
-} // Block::Link()
+} // Block::Link(size)
 
 inline void List::Block::Unlink() {
    if (prev!=nullptr) {
@@ -93,12 +125,11 @@ inline void List::Block::Unlink() {
 } // Block::Unlink()
 
 void *operator new(Size size) {
-   size += sizeof(List::Block);
-   List::Block *block = (List::Block *)malloc(size);
+   List::Block *block = (List::Block *)malloc(sizeof(List::Block)+size);
    if (block==nullptr) {
       return nullptr;
    } // if
-   block->Link();
+   block->Link(size);
    return block+1;
 } // operator new(size)
 
