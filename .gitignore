@@ -10,6 +10,8 @@ Release/
 *.lo
 *.o
 *.obj
+# Except these special cases! They're from objcopy
+!Server/favicon.o
 
 # Intermediate viewer files
 .*.md.html

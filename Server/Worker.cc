@@ -12,6 +12,10 @@
 
 #include "../PitM.hh"
 
+extern const char favicon[];
+
+extern char faviconSize; // Get the ADDRESS of this!!!
+
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
         Thread(),
@@ -165,9 +169,7 @@ bool Worker::Reply() {
       return Write(Response(HTTP11, Response::OK, body));
    } // if
    if (request->path=="/favicon.ico") {
-      if (SendFile("./favicon.ico")) {
-         return true;
-      } // if
+      return Write(Response(HTTP11, Response::OK, String(favicon, (Size)&faviconSize)));
    } // if
    Write(Response(HTTP10, Response::NotFound));
    return false;
