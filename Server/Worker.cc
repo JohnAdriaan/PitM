@@ -19,6 +19,7 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         buffer(),
         read(),
         pos(),
+        start(),
         contentLength() {
    line.reserve(2048);
    if (!TCP::Valid()) {
@@ -63,14 +64,15 @@ bool Worker::Parse() {
       pos = 0;
       start = 0;
    } // for
+   return false; // Impossible!
 } // Worker::Parse()
 
 bool Worker::Process() {
    switch (state) {
    case RequestLine :
       using namespace WWW::HTTP;
-      request = Request::Parse(line);
       state = RequestDone; // Assume failure
+      request = Request::Parse(line);
       if (request==nullptr) {
          return false;
       } // if
@@ -98,13 +100,13 @@ bool Worker::Process() {
       } // if
       state = RequestDone;
 
-      auto h = request->headers.find("Content-Length");
+      const auto &h = request->headers.find(ContentLength);
       if (h==request->headers.end()) {
          break;
       } // if
 
       const WWW::Set &set = h->second;
-      auto i = set.begin();
+      const auto &i = set.begin();
       if (i==set.end()) {
          break;
       } // if
@@ -154,18 +156,18 @@ bool Worker::Reply() {
       break;
    } // switch
    std::cout << "GET " << request->path << std::endl;
-   for (auto h : request->headers) {
+   for (const auto &h : request->headers) {
       std::cout << h.first << ":";
       char sep = ' ';
-      for (auto i : h.second) {
+      for (const auto &i : h.second) {
          std::cout << sep << i;
          sep = ',';
       } // for
       std::cout << std::endl;
    } // for
    std::cout << std::endl << line << std::endl;
-   Write(Response(HTTP10, Response::InternalServerError));
-   return false;
+   Write(Response(HTTP10, Response::NotFound));
+   return true;
 } // Worker::Reply()
 
 void *Worker::Run() {
