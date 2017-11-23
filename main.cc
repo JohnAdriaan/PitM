@@ -5,17 +5,19 @@
 #include "Packet/Packet.hh"
 #include "Server/Server.hh"
 
-MT::Semaphore quit;
+const String PitM::version = "0.1.0.0";
+
+MT::Semaphore PitM::quit;
 
 int main(int /*argc*/,
          char * /*argv*/[],
          char * /*env*/[]) {
-   if (!Server::Start()) {
+   if (!PitM::Server::Start()) {
       return 1;
    } // if
-   if (!Packet::Start()) {
+   if (!PitM::Packet::Start()) {
       return 2;
    } // if
-   quit.Wait();
+   PitM::quit.Wait();
    return 0;
 } // main(argc, argv, env)

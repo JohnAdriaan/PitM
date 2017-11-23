@@ -7,9 +7,25 @@
 
 #include "General/Thread/Semaphore.hh"
 
-class _PitM_ : private _General_ {
-}; // _PitM_
+namespace PitM {
 
-extern MT::Semaphore quit;
+   class _PitM_;
+
+   class Config;
+
+   class Packet;
+
+   class Server;
+
+   class Worker;
+
+   extern const String version;
+
+   extern MT::Semaphore quit;
+
+} // PitM
+
+class PitM::_PitM_ : private _General_ {
+}; // _PitM_
 
 #endif // PitM_hh

@@ -9,7 +9,7 @@
 
 #include "../PitM.hh"
 
-class Config : private _PitM_ {
+class PitM::Config : private _PitM_ {
 
 public: // Static variables
 
@@ -55,19 +55,19 @@ private: // Variables
 
 }; // Config
 
-inline const String &Config::Left() const {
+inline const String &PitM::Config::Left() const {
    return left;
 } // Config::Left()
 
-inline const String &Config::Right() const {
+inline const String &PitM::Config::Right() const {
    return right;
 } // Config::Right()
 
-inline const String &Config::Server() const {
+inline const String &PitM::Config::Server() const {
    return server;
 } // Config::Server()
 
-inline BSD::Port Config::Port() const {
+inline BSD::Port PitM::Config::Port() const {
    return port;
 } // Config::Port()
 

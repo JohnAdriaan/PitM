@@ -7,7 +7,7 @@
 
 #include "../PitM.hh"
 
-class Packet : private _PitM_ {
+class PitM::Packet : private _PitM_ {
 
 public: // Static methods
 

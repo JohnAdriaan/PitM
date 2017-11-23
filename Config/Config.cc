@@ -4,6 +4,8 @@
 
 #include "Config.hh"
 
+using namespace PitM;
+
 Config Config::config;
 
 Config::Config() {
