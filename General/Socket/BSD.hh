@@ -5,6 +5,8 @@
 #ifndef BSD_hh
 #define BSD_hh
 
+#include <list>
+
 #include <netinet/in.h> // For in_port_t, in_addr and in6_addr
 
 #include "../General.hh"
@@ -39,7 +41,7 @@ namespace BSD {
 
    class Interface;
 
-   class Interfaces;
+   typedef std::list<Interface> Interfaces;
 
    class Socket;
 
