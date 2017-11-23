@@ -170,8 +170,7 @@ Response::Categories Response::Category(Codes code) {
 } // Response::Categroy(code)
 
 Response::Response(Versions version, Codes code, Size length) :
-          response(Encode(version,code)),
-          headers() {
+          Response(version,code) {
    Add(ContentLength, length);
 } // Response::Response(version, code, length)
 
@@ -179,6 +178,14 @@ Response::Response(Versions version, Codes code, const String &body) :
           response(Encode(version,code)),
           headers(),
           body(body) {
+   time_t now = ::time(0);
+
+   tm gmt;
+   ::gmtime_r(&now,&gmt);
+
+   char buf[32];
+   ::strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &gmt);
+   Add("Date", buf);
 } // Response::Response(version, code, body)
 
 void Response::Add(const String &key, Set &values) {
