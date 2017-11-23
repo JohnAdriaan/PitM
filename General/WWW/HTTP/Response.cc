@@ -138,8 +138,8 @@ static const char *Reason(Response::Codes code) {
       return "Network Authentication Required";
    } // switch
 
-   // Unknown Code. Categorise it...
-   switch (code/100*100) {
+   // Unknown Code
+   switch (Response::Category(code)) {
    case Response::Informational :
       return "Unknown Informational Response";
    case Response::Success :
@@ -159,11 +159,15 @@ static const char *Reason(Response::Codes code) {
 static String Encode(HTTP::Versions version, Response::Codes code) {
    String s = Version(version);
    s += ' ';
-   s += (unsigned)code;
+   s += code;
    s += ' ';
    s += Reason(code);
    return s;
 } // Encode(version, code)
+
+Response::Categories Response::Category(Codes code) {
+   return (Categories)(code / 100 * 100);
+} // Response::Categroy(code)
 
 Response::Response(Versions version, Codes code, const String &body) :
           response(Encode(version,code)),
@@ -196,18 +200,27 @@ Response::operator String() const {
    s.reserve(2048);
 
    s = response + HTTP::EOL;
-   for (auto h : headers) {
+   for (const auto &h : headers) {
       s += h.first;
       s += ":";
 
       char sep = ' ';
-      for (auto i : h.second) {
+      for (const auto &i : h.second) {
          s += sep;
          s += i;
          sep = ',';
       } // for
       s += HTTP::EOL;
    } // for
+
+   const auto &i = headers.find(ContentLength);
+   if (i==headers.end()) {
+      s += ContentLength;
+      s += ": ";
+      s += body.length();
+      s += HTTP::EOL;
+   } // if
+
    s += HTTP::EOL; // Blank line between header and body
    s += body;
    return s;
