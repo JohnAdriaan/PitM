@@ -11,14 +11,19 @@ class WWW::HTTP::Response {
 
 public: // Enums
 
-   enum Codes {
-      Informational      = 100,
+   enum Categories {
+      Informational = 100,
+      Success       = 200,
+      Redirection   = 300,
+      ClientError   = 400,
+      ServerError   = 500
+   }; // Categories
 
+   enum Codes {
       Continue           = 100,
       SwitchingProtocols = 101,
       Processing         = 102,
 
-      Success           = 200,
 
       OK                = 200,
       Created           = 201,
@@ -31,7 +36,6 @@ public: // Enums
       AlreadyReported   = 208,
       IMUsed            = 226,
 
-      Redirection       = 300,
 
       MultipleChoices   = 300,
       MovedPermanently  = 301,
@@ -43,7 +47,6 @@ public: // Enums
       TemporaryRedirect = 307,
       PermanentRedirect = 308,
 
-      ClientError                 = 400,
 
       BadRequest                  = 400,
       Unauthorized                = 401,
@@ -79,7 +82,6 @@ public: // Enums
 
       UnavailableForLegalReasons  = 451, // Fahrenheit 451
 
-      ServerError                   = 500,
 
       InternalServerError           = 500,
       NotImplemented                = 501,
@@ -94,6 +96,10 @@ public: // Enums
       NotExtended                   = 510,
       NetworkAuthenticationRequired = 511
    }; // Codes
+
+public: // Static methods
+
+   static Categories Category(Codes code);
 
 public: // Methods
 
