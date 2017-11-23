@@ -7,10 +7,11 @@
 using namespace WWW;
 
 const String HTTP::EOL = "\r\n";
+const String HTTP::ContentLength = "Content-Length";
 const String HTTP::Connection = "Connection";
 const String HTTP::KeepAlive = "keep-alive";
 const String HTTP::Close = "close";
-const String HTTP::ContentLength = "Content-Length";
+const String HTTP::Location = "Location";
 
 
 String HTTP::Version(HTTP::Versions version) {

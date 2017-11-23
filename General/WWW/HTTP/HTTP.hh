@@ -20,15 +20,17 @@ namespace WWW {
       // The defined end-of-line for HTTP headers
       extern const String EOL;
 
+      // This header is signficant to Keep-Alive and HTTP/1.1
+      extern const String ContentLength;
+
       // This is the header field for Keep-Alive or Close
       extern const String Connection;
-
       // ...and these are the values
       extern const String KeepAlive;
       extern const String Close;
 
-      // This header is signficant to Keep-Alive and HTTP/1.1
-      extern const String ContentLength;
+      // The standard Location header for 303 POST replies
+      extern const String Location;
 
       Versions Version(const String &version);
 

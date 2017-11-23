@@ -205,7 +205,9 @@ bool Worker::POST() {
 
 bool Worker::Config() {
    // Decode line into Config parameters // TODO
-   return Write(Response(HTTP11, Response::OK));
+   Response response(HTTP11, Response::SeeOther);
+   response.Add(Location, "/config");
+   return Write(response);
 } // Worker::Config()
 
 bool Worker::Quit() {
