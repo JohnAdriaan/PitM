@@ -169,6 +169,12 @@ Response::Categories Response::Category(Codes code) {
    return (Categories)(code / 100 * 100);
 } // Response::Categroy(code)
 
+Response::Response(Versions version, Codes code, Size length) :
+          response(Encode(version,code)),
+          headers() {
+   Add(ContentLength, length);
+} // Response::Response(version, code, length)
+
 Response::Response(Versions version, Codes code, const String &body) :
           response(Encode(version,code)),
           headers(),
@@ -178,6 +184,14 @@ Response::Response(Versions version, Codes code, const String &body) :
 void Response::Add(const String &key, Set &values) {
    headers[key] = values;
 } // Response::Add(key,values)
+
+void Response::Add(const String &key, int value) {
+   Add(key, std::to_string(value));
+} // Response::Add(key, value)
+
+void Response::Add(const String &key, unsigned value) {
+   Add(key, std::to_string(value));
+} // Response::Add(key, value)
 
 void Response::Add(const String &key, const String &value) {
    auto i = headers.find(key);

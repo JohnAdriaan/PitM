@@ -103,11 +103,17 @@ public: // Static methods
 
 public: // Methods
 
+   // Use this version if you know the body length, but don't have the String.
+   // A ContentLength will be added with that length
+   Response(Versions version, Codes code, Size length);
+
    Response(Versions version, Codes code, const String &body=String());
 
    void Add(const String &key, Set &values);
 
    // If key is already there, add value as part of its Set
+   void Add(const String &key, int value);
+   void Add(const String &key, unsigned value);
    void Add(const String &key, const String &value);
 
    // Append to body
