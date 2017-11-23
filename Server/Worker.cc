@@ -149,7 +149,10 @@ bool Worker::Reply() {
    case Request::Unknown :
       Write(Response(HTTP10, Response::BadRequest));
       return false;
+   case Request::GET :
+      return GET(false);
    case Request::HEAD    :
+      return GET(true);
    case Request::POST    :
    case Request::PUT     :
    case Request::DELETE  :
@@ -158,24 +161,40 @@ bool Worker::Reply() {
    case Request::CONNECT :
    case Request::PATCH   :
    default :
-      Write(Response(HTTP10, Response::MethodNotAllowed));
-      return false;
-   case Request::GET :
       break;
    } // switch
-   std::cout << "GET " << request->path << std::endl;
-   if (request->path=="/") {
-      String body = "<html><body><h1>PitM</h1></body></html>";
-      return Write(Response(HTTP11, Response::OK, body));
-   } // if
-   if (request->path=="/favicon.ico") {
-      return Write(Response(HTTP11, Response::OK, String(favicon, (Size)&faviconSize)));
-   } // if
-   Write(Response(HTTP10, Response::NotFound));
+   Write(Response(HTTP10, Response::NotImplemented));
    return false;
 } // Worker::Reply()
 
-bool Worker::SendFile(const char *path) {
+bool Worker::GET(bool head) {
+   using namespace WWW::HTTP;
+   std::cout << "GET " << request->path << std::endl;
+   if (request->path=="/") {
+      return SendHomePage(head);
+   } // if
+   if (request->path=="/favicon.ico") {
+      return SendObj(head,favicon, &faviconSize);
+   } // if
+   Write(Response(HTTP10, Response::NotFound));
+   return false;
+} // Worker::GET(head)
+
+bool Worker::SendHomePage(bool head) {
+   String body = "<html><body><h1>PitM</h1></body></html>";
+
+   using namespace WWW::HTTP;
+   Response response(HTTP11, Response::OK, body.length());
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !Write(body)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendHomePage(head)
+
+bool Worker::SendFile(bool head,const char *path) {
    File file(path);
    if (!file.Valid()) {
       return false;
@@ -183,17 +202,30 @@ bool Worker::SendFile(const char *path) {
    Size length = file.Size();
 
    using namespace WWW::HTTP;
-   Response response(HTTP11, Response::OK);
-   response.Add(ContentLength,std::to_string(length));
+   Response response(HTTP11, Response::OK, length);
 
    if (!Write(response)) {
       return false;
    } // if
-   if (!FD::SendFile(file)) {
+   if (!head && !FD::SendFile(file)) {
       return false;
    } // if
    return true;
-} // Worker::SendFile(path)
+} // Worker::SendFile(head,path)
+
+bool Worker::SendObj(bool head, const void *obj, const void *size) {
+   Size length = (Size)size; // Convert (absolute) address to size
+
+   using namespace WWW::HTTP;
+   Response response(HTTP11, Response::OK, length);
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !FD::Write(obj,length)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendObj(head,obj,size)
 
 void *Worker::Run() {
    while (Parse()) {

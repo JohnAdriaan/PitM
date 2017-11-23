@@ -28,12 +28,24 @@ private: // Methods
    // Process the next line
    bool Process();
 
-   // Reply to Request
+   // Reply to Process()ed Request
    bool Reply();
 
-   bool SendFile(const char *path);
+   // Reply to GET or HEAD Request
+   bool GET(bool head);
 
    virtual ~Worker();
+
+private: // Page Responses
+
+   // Create and send Home Page
+   bool SendHomePage(bool head);
+
+   // Send file using Linux's ::sendfile()
+   bool SendFile(bool head,const char *path);
+
+   // Send a linked-in binary 'file'
+   bool SendObj(bool head,const void *obj, const void *size);
 
 private: // Thread overrides
 
