@@ -14,11 +14,11 @@ namespace WWW {
 
    class _WWW_;
 
-   typedef std::set<String> Set;
+   typedef std::set<String, NoCase> Set;
 
-   typedef std::map<String, String> Map;
+   typedef std::map<String, String, NoCase> Map;
 
-   typedef std::map<String, Set> MapSet;
+   typedef std::map<String, Set, NoCase> MapSet;
 
    namespace HTTP {
    } // HTTP
