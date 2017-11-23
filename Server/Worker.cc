@@ -38,6 +38,66 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
    } // if
 } // Worker::Worker(client, address)
 
+bool Worker::GET(bool head) {
+   using namespace WWW::HTTP;
+   std::cout << "GET " << request->path << std::endl;
+   if (request->path=="/") {
+      return SendHomePage(head);
+   } // if
+   if (request->path=="/favicon.ico") {
+      return SendObj(head,favicon, &faviconSize);
+   } // if
+   Write(Response(HTTP10, Response::NotFound));
+   return false;
+} // Worker::GET(head)
+
+bool Worker::SendHomePage(bool head) {
+   String body = "<html><body><h1>PitM</h1></body></html>";
+
+   using namespace WWW::HTTP;
+   Response response(HTTP11, Response::OK, body.length());
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !Write(body)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendHomePage(head)
+
+bool Worker::SendFile(bool head,const char *path) {
+   File file(path);
+   if (!file.Valid()) {
+      return false;
+   } // if
+   Size length = file.Size();
+
+   using namespace WWW::HTTP;
+   Response response(HTTP11, Response::OK, length);
+
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !FD::SendFile(file)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendFile(head,path)
+
+bool Worker::SendObj(bool head, const void *obj, const void *size) {
+   Size length = (Size)size; // Convert (absolute) address to size
+
+   using namespace WWW::HTTP;
+   Response response(HTTP11, Response::OK, length);
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !FD::Write(obj,length)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendObj(head,obj,size)
+
 bool Worker::Parse() {
    for (;;) {
       while (pos<read) {
@@ -166,66 +226,6 @@ bool Worker::Reply() {
    Write(Response(HTTP10, Response::NotImplemented));
    return false;
 } // Worker::Reply()
-
-bool Worker::GET(bool head) {
-   using namespace WWW::HTTP;
-   std::cout << "GET " << request->path << std::endl;
-   if (request->path=="/") {
-      return SendHomePage(head);
-   } // if
-   if (request->path=="/favicon.ico") {
-      return SendObj(head,favicon, &faviconSize);
-   } // if
-   Write(Response(HTTP10, Response::NotFound));
-   return false;
-} // Worker::GET(head)
-
-bool Worker::SendHomePage(bool head) {
-   String body = "<html><body><h1>PitM</h1></body></html>";
-
-   using namespace WWW::HTTP;
-   Response response(HTTP11, Response::OK, body.length());
-   if (!Write(response)) {
-      return false;
-   } // if
-   if (!head && !Write(body)) {
-      return false;
-   } // if
-   return true;
-} // Worker::SendHomePage(head)
-
-bool Worker::SendFile(bool head,const char *path) {
-   File file(path);
-   if (!file.Valid()) {
-      return false;
-   } // if
-   Size length = file.Size();
-
-   using namespace WWW::HTTP;
-   Response response(HTTP11, Response::OK, length);
-
-   if (!Write(response)) {
-      return false;
-   } // if
-   if (!head && !FD::SendFile(file)) {
-      return false;
-   } // if
-   return true;
-} // Worker::SendFile(head,path)
-
-bool Worker::SendObj(bool head, const void *obj, const void *size) {
-   Size length = (Size)size; // Convert (absolute) address to size
-
-   using namespace WWW::HTTP;
-   Response response(HTTP11, Response::OK, length);
-   if (!Write(response)) {
-      return false;
-   } // if
-   if (!head && !FD::Write(obj,length)) {
-      return false;
-   } // if
-   return true;
-} // Worker::SendObj(head,obj,size)
 
 void *Worker::Run() {
    while (Parse()) {

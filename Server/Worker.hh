@@ -22,18 +22,6 @@ private: // Methods
 
    Worker(BSD::TCP &client, const BSD::Address &address);
 
-   // Parse the next line
-   bool Parse();
-
-   // Process the next line
-   bool Process();
-
-   // Reply to Process()ed Request
-   bool Reply();
-
-   // Reply to GET or HEAD Request
-   bool GET(bool head);
-
    virtual ~Worker();
 
 private: // Page Responses
@@ -46,6 +34,20 @@ private: // Page Responses
 
    // Send a linked-in binary 'file'
    bool SendObj(bool head,const void *obj, const void *size);
+
+private: // Run() methods
+
+   // Parse the next line
+   bool Parse();
+
+   // Process the next line
+   bool Process();
+
+   // Reply to Process()ed Request
+   bool Reply();
+
+   // Reply to GET or HEAD Request
+   bool GET(bool head);
 
 private: // Thread overrides
 
