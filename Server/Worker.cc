@@ -6,15 +6,23 @@
 
 #include "../General/File/File.hh"
 
+#include "../General/Socket/Interface.hh"
+
 #include "../General/WWW/HTTP/Response.hh"
 
-#include "Worker.hh"
+#include "../Config/Config.hh"
 
-#include "../PitM.hh"
+#include "Worker.hh"
 
 extern const char favicon[];
 
 extern char faviconSize; // Get the ADDRESS of this!!!
+
+using namespace WWW;
+
+using namespace WWW::HTTP;
+
+using namespace PitM;
 
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
@@ -39,7 +47,6 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
 } // Worker::Worker(client, address)
 
 bool Worker::GET(bool head) {
-   using namespace WWW::HTTP;
    std::cout << "GET " << request->path << std::endl;
    if (request->path=="/") {
       return SendHomePage(head);
@@ -47,14 +54,41 @@ bool Worker::GET(bool head) {
    if (request->path=="/favicon.ico") {
       return SendObj(head,favicon, &faviconSize);
    } // if
+   if (request->path=="/config") {
+      return SendConfigPage(head);
+   } // if
    Write(Response(HTTP10, Response::NotFound));
    return false;
 } // Worker::GET(head)
 
 bool Worker::SendHomePage(bool head) {
-   String body = "<html><body><h1>PitM</h1></body></html>";
+   static const String body =
+      "<!DOCTYPE html>\n"
+      "<html lang=en-AU>\n"
+      "<head>\n"
+      "<meta charset=UTF-8 />\n"
+      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
+      "<title>Pi in the Middle (PitM)</title>\n"
+      "</head>\n"
+      "<body>\n"
+      "<h1>\n"
+      "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />"
+      "&nbsp;Pi in the Middle (PitM)<br />\n"
+      "<small><small><small><small>"
+      "Ver: " + PitM::version + ", by John Burger"
+      "</small></small></small></small>\n"
+      "</h1>\n"
+      "<h3><a href=\"/status\">Status</a></h3>\n"
+      "<h3><a href=\"/stats\">Statistics</a></h3>\n"
+      "<h3><a href=\"/config\">Configuration</a></h3>\n"
+      "<h3><a href=\"/logs\">Logs</a></h3>\n"
+      "<form action=\"/quit\" method=\"POST\""
+      " onsubmit=\"return confirm('Are you sure you want to quit?')\">\n"
+      "<input type=submit value=\"Quit\" style=\"color:red\" />\n"
+      "</form>\n"
+      "</body>\n"
+      "</html>";
 
-   using namespace WWW::HTTP;
    Response response(HTTP11, Response::OK, body.length());
    if (!Write(response)) {
       return false;
@@ -65,6 +99,66 @@ bool Worker::SendHomePage(bool head) {
    return true;
 } // Worker::SendHomePage(head)
 
+static String Selection(const BSD::Interfaces &interfaces,
+                        const String &label,
+                        String current) {
+   String selection;
+   selection.reserve(256);
+   selection += "<br />";
+   selection += "<label for=" + label + ">" + label + ": </label>\n";
+   selection += "<select name=" + label + " id=" + label + ">\n";
+   selection += "  <option value=\"None\"";
+   if (current.empty()) {
+      selection += " selected";
+   } // if
+   selection += ">None</option>\n";
+   for (const auto &i : interfaces) {
+      selection += "  <option value=\"" + i.name + '"';
+      if (current==i.name) {
+         selection += " selected";
+      } // if
+      selection += ">" + i.name + "</option>\n";
+   } // for
+   selection += "</select>\n";
+   return selection;
+} // Selection(Interfaces, label, current)
+
+bool Worker::SendConfigPage(bool head) {
+   BSD::Interfaces interfaces = BSD::Interface::List(BSD::IPv4, BSD::Up);
+
+   const String body =
+         "<!DOCTYPE html>\n"
+         "<html lang=en-AU>\n"
+         "<head>\n"
+         "<meta charset=UTF-8 />\n"
+         "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
+         "<title>PitM: Configuration</title>\n"
+         "</head>\n"
+         "<body>\n"
+         "<h1>\n"
+         "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />"
+         "&nbsp;PitM: Configuration"
+         "</h1>\n"
+         "<form method=\"POST\">\n" // action="/config" is assumed
+         + Selection(interfaces, "Left", Config::config.Left())
+         + Selection(interfaces, "Right", Config::config.Right())
+         + Selection(interfaces, "Server", Config::config.Server()) +
+         "<br />Port: <input type=number name=Port value=" + std::to_string(Config::config.Port()) + ">\n"
+         "<br /><input type=submit>\n"
+         "</form>\n"
+         "</body>\n"
+         "</html>";
+
+   Response response(HTTP11, Response::OK, body.length());
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !Write(body)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendConfigPage(head)
+
 bool Worker::SendFile(bool head,const char *path) {
    File file(path);
    if (!file.Valid()) {
@@ -72,7 +166,6 @@ bool Worker::SendFile(bool head,const char *path) {
    } // if
    Size length = file.Size();
 
-   using namespace WWW::HTTP;
    Response response(HTTP11, Response::OK, length);
 
    if (!Write(response)) {
@@ -87,7 +180,6 @@ bool Worker::SendFile(bool head,const char *path) {
 bool Worker::SendObj(bool head, const void *obj, const void *size) {
    Size length = (Size)size; // Convert (absolute) address to size
 
-   using namespace WWW::HTTP;
    Response response(HTTP11, Response::OK, length);
    if (!Write(response)) {
       return false;
@@ -97,6 +189,50 @@ bool Worker::SendObj(bool head, const void *obj, const void *size) {
    } // if
    return true;
 } // Worker::SendObj(head,obj,size)
+
+bool Worker::POST() {
+   std::cout << "POST " << request->path << std::endl;
+   std::cout << line << std::endl;
+   if (request->path=="/config") {
+      return Config();
+   } // if
+   if (request->path=="/quit") {
+      return Quit();
+   } // if
+   Write(Response(HTTP10, Response::NotFound));
+   return false;
+} // Worker::POST()
+
+bool Worker::Config() {
+   // Decode line into Config parameters // TODO
+   return Write(Response(HTTP11, Response::OK));
+} // Worker::Config()
+
+bool Worker::Quit() {
+   static const String body =
+      "<!DOCTYPE html>\n"
+      "<html lang=en-AU>\n"
+      "<head>\n"
+      "<meta charset=UTF-8 />\n"
+      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
+      "<title>Pi in the Middle (PitM)</title>\n"
+      "</head>\n"
+      "<body>\n"
+      "<h1>\n"
+      "Pi in the Middle (PitM)<br />\n"
+      "<small><small><small><small>"
+      "Ver: " + PitM::version + ", by John Burger"
+      "</small></small></small></small>\n"
+      "</h1>\n"
+      "<p>Thank you for using PitM!</p>\n"
+      "</body>\n"
+      "</html>\n";
+   Response response(HTTP11, Response::OK, body);
+   response.Add(HTTP::Connection, HTTP::Close);
+   Write(response);
+   PitM::quit.Post();
+   return false; // Might as well close; shutting down anyway!
+} // Worker::Quit()
 
 bool Worker::Parse() {
    for (;;) {
@@ -141,7 +277,6 @@ bool Worker::Parse() {
 bool Worker::Process() {
    switch (state) {
    case RequestLine :
-      using namespace WWW::HTTP;
       state = RequestDone; // Assume failure
       request = Request::Parse(line);
       if (request==nullptr) {
@@ -149,8 +284,6 @@ bool Worker::Process() {
       } // if
       switch (request->method) {
       case Request::Unknown :
-      case Request::HEAD    :
-      case Request::POST    :
       case Request::PUT     :
       case Request::DELETE  :
       case Request::TRACE   :
@@ -159,7 +292,9 @@ bool Worker::Process() {
       case Request::PATCH   :
       default :
          return false;
-      case Request::GET :
+      case Request::GET  :
+      case Request::HEAD :
+      case Request::POST :
          break;
       } // switch
       state = RequestHeader; // Can continue!
@@ -200,7 +335,6 @@ bool Worker::Process() {
 } // Worker::Process()
 
 bool Worker::Reply() {
-   using namespace WWW::HTTP;
    if (request==nullptr) {
       Write(Response(HTTP10, Response::InsufficientStorage));
       return false;
@@ -214,6 +348,7 @@ bool Worker::Reply() {
    case Request::HEAD    :
       return GET(true);
    case Request::POST    :
+      return POST();
    case Request::PUT     :
    case Request::DELETE  :
    case Request::TRACE   :

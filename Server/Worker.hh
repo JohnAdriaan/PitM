@@ -11,10 +11,10 @@
 
 #include "../General/WWW/HTTP/Request.hh"
 
-class Server;
+#include "../PitM.hh"
 
-class Worker : public BSD::TCP,
-               private MT::Thread {
+class PitM::Worker : public BSD::TCP,
+                     private MT::Thread {
 
 friend Server;
 
@@ -24,16 +24,33 @@ private: // Methods
 
    virtual ~Worker();
 
-private: // Page Responses
+private: // GET Responses
+
+   // Reply to GET or HEAD Request
+   bool GET(bool head);
 
    // Create and send Home Page
    bool SendHomePage(bool head);
+
+   // Create and send Config Page
+   bool SendConfigPage(bool head);
 
    // Send file using Linux's ::sendfile()
    bool SendFile(bool head,const char *path);
 
    // Send a linked-in binary 'file'
    bool SendObj(bool head,const void *obj, const void *size);
+
+private: // POST Responses
+
+   // Accept submitted data
+   bool POST();
+
+   // Configure
+   bool Config();
+
+   // Close the application
+   bool Quit();
 
 private: // Run() methods
 
@@ -45,9 +62,6 @@ private: // Run() methods
 
    // Reply to Process()ed Request
    bool Reply();
-
-   // Reply to GET or HEAD Request
-   bool GET(bool head);
 
 private: // Thread overrides
 
@@ -80,6 +94,6 @@ private: // Variables
 
    unsigned contentLength;
 
-}; // TCP
+}; // Worker
 
 #endif // Worker_hh

@@ -5,6 +5,8 @@
 #include "Worker.hh"
 #include "Server.hh"
 
+using namespace PitM;
+
 MT::Atomic<Server *> Server::current;
 
 bool Server::Start() {

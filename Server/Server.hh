@@ -12,8 +12,8 @@
 
 #include "../Config/Config.hh"
 
-class Server : public BSD::Listen,
-               private MT::Thread {
+class PitM::Server : public BSD::Listen,
+                     private MT::Thread {
 
 public: // Static methods
 
