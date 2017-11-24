@@ -115,6 +115,8 @@ public: // Methods
    void Add(const String &key, int value);
    void Add(const String &key, unsigned value);
    void Add(const String &key, const String &value);
+   void Add(const String &key, const String &field, int value);
+   void Add(const String &key, const String &field, unsigned value);
 
    // Append to body
    void Append(const String &lines);

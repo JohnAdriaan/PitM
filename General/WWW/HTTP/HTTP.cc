@@ -13,7 +13,8 @@ const String HTTP::KeepAlive = "keep-alive";
 const String HTTP::Close = "close";
 const String HTTP::Allow = "Allow";
 const String HTTP::Location = "Location";
-
+const String HTTP::CacheControl = "Cache-Control";
+const String HTTP::MaxAge = "max-age=";
 
 String HTTP::Version(HTTP::Versions version) {
    switch (version) {

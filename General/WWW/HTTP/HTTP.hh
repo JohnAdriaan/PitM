@@ -35,6 +35,10 @@ namespace WWW {
       // The standard Location header for 303 SeeOther POST replies
       extern const String Location;
 
+      // The standard Cache indicator for content
+      extern const String CacheControl;
+      extern const String MaxAge;
+
       Versions Version(const String &version);
 
       String Version(Versions version);

@@ -200,6 +200,14 @@ void Response::Add(const String &key, unsigned value) {
    Add(key, std::to_string(value));
 } // Response::Add(key, value)
 
+void Response::Add(const String &key, const String &field, int value) {
+   Add(key, field+std::to_string(value));
+} // Response::Add(key, field, value)
+
+void Response::Add(const String &key, const String &field, unsigned value) {
+   Add(key, field+std::to_string(value));
+} // Response::Add(key, field, value)
+
 void Response::Add(const String &key, const String &value) {
    auto i = headers.find(key);
    if (i==headers.end()) {
