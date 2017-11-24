@@ -30,6 +30,8 @@ public: // Methods
                  Accesses access=ReadOnly,
                  Creates create=Exists);
 
+   explicit File(File &rhs) = default;
+
    ::Size Size() const;
 
 }; // File

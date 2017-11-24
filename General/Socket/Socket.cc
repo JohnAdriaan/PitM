@@ -6,17 +6,13 @@
 
 using namespace BSD;
 
-Socket::Socket(int domain, int type, int protocol/*=0*/) :
-        FD(::socket(domain,type,protocol)) {
-} // Socket::Socket(domain, type, protocol)
-
-Socket::Socket(Socket &socket) :
-        FD(socket) {
-} // Socket::Socket(Socket)
-
 Socket::Socket(FD::Type fd) :
         FD(fd) {
 } // Socket::Socket(fd)
+
+Socket::Socket(int domain, int type, int protocol/*=0*/) :
+        FD(::socket(domain,type,protocol)) {
+} // Socket::Socket(domain, type, protocol)
 
 bool Socket::Set(int level, int option, bool on) {
    int value = on ? 1 : 0;

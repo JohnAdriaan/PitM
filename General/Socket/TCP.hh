@@ -11,13 +11,13 @@ class BSD::TCP : public Socket {
 
 protected: // Methods
 
-   TCP(TCP &tcp);
+   explicit TCP(TCP &tcp) = default;
 
 private: // Listen hooks
 
    friend Listen;
 
-   TCP(FD::Type client);
+   explicit TCP(FD::Type client);
 
 }; // TCP
 

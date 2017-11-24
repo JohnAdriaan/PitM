@@ -12,11 +12,11 @@ class BSD::Socket : public FD {
 
 protected: // Methods
 
+   explicit Socket(FD::Type fd);
+
    Socket(int domain, int type, int protocol=0);
 
-   explicit Socket(Socket &socket);
-
-   explicit Socket(FD::Type fd);
+   explicit Socket(Socket &socket) = default;
 
    bool Set(int level, int option, bool on);
 

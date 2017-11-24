@@ -44,9 +44,9 @@ protected: // Typedefs
 
 protected: // Methods
 
-   FD(Type fd=Invalid);
+   explicit FD(Type fd=Invalid);
 
-   FD(FD &fd);
+   explicit FD(FD &fd);
 
    virtual ~FD();
 
