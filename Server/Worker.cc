@@ -83,7 +83,7 @@ bool Worker::GET(bool head) {
       return SendHomePage(head);
    } // if
    if (request.Path()=="/favicon.ico") {
-      return SendObj(head,favicon, &faviconSize);
+      return SendObj(head, favicon, &faviconSize);
    } // if
    if (request.Path()=="/style.css") {
       return SendStyleSheet(head);
