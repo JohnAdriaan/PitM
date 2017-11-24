@@ -23,8 +23,9 @@ namespace BSD {
    enum States {
       NoState,
       Loopback,
+      Up,
       Down,
-      Up
+      UpDown
    }; // States
 
    typedef in_port_t Port;

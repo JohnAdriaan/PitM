@@ -63,13 +63,18 @@ Interfaces Interface::List(Protocols protocols,
             continue;
          } // if
          break;
+      case Up   :
+         if (loopback || !up) {
+            continue;
+         } // if
+         break;
       case Down :
          if (loopback || up) {
             continue;
          } // if
          break;
-      case Up   :
-         if (loopback || !up) {
+      case UpDown :
+         if (loopback) {
             continue;
          } // if
          break;
