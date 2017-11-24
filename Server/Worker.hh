@@ -32,6 +32,9 @@ private: // GET Responses
    // Create and send Home Page
    bool SendHomePage(bool head);
 
+   // Create and send Style Sheet
+   bool SendStyleSheet(bool head);
+
    // Create and send Config Page
    bool SendConfigPage(bool head);
 

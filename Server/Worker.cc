@@ -24,6 +24,36 @@ using namespace WWW::HTTP;
 
 using namespace PitM;
 
+static const String html =
+      "<!DOCTYPE html>\n"
+      "<html lang=en-AU>\n"
+      "<head>\n"
+      "<meta charset=UTF-8 />\n"
+      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
+      "<link rel=stylesheet type=text/css href=style.css />\n"
+      "<title>Pi in the Middle (PitM)</title>\n"
+      "</head>\n";
+
+static const String badge =
+      "<body>\n"
+      "<h1 class=left>\n"
+      "<a href=\"/\"><img src=favicon.ico alt=\"John Burger\" height=64 width=64 /></a>\n"
+      "PitM"
+      "</h1>";
+
+static const String fullHeading =
+      badge +
+      "<h1 class=right>\n"
+      "Pi in the Middle<br />\n"
+      "<small><small><small><small>"
+      "Ver: " + PitM::Version() + ", by John Burger"
+      "</small></small></small></small>\n"
+      "</h1>\n";
+
+static const String tail =
+      "</body>\n"
+      "</html>";
+
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
         Thread(),
@@ -54,6 +84,9 @@ bool Worker::GET(bool head) {
    if (request.Path()=="/favicon.ico") {
       return SendObj(head,favicon, &faviconSize);
    } // if
+   if (request.Path()=="/style.css") {
+      return SendStyleSheet(head);
+   } // if
    if (request.Path()=="/config") {
       return SendConfigPage(head);
    } // if
@@ -63,31 +96,17 @@ bool Worker::GET(bool head) {
 
 bool Worker::SendHomePage(bool head) {
    static const String body =
-      "<!DOCTYPE html>\n"
-      "<html lang=en-AU>\n"
-      "<head>\n"
-      "<meta charset=UTF-8 />\n"
-      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
-      "<title>Pi in the Middle (PitM)</title>\n"
-      "</head>\n"
-      "<body>\n"
-      "<h1>\n"
-      "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />"
-      "&nbsp;Pi in the Middle (PitM)<br />\n"
-      "<small><small><small><small>"
-      "Ver: " + PitM::version + ", by John Burger"
-      "</small></small></small></small>\n"
-      "</h1>\n"
+      html +
+      fullHeading +
       "<h3><a href=\"/status\">Status</a></h3>\n"
       "<h3><a href=\"/stats\">Statistics</a></h3>\n"
       "<h3><a href=\"/config\">Configuration</a></h3>\n"
       "<h3><a href=\"/logs\">Logs</a></h3>\n"
-      "<form action=\"/quit\" method=\"POST\""
+      "<form action=\"/quit\" method=POST"
       " onsubmit=\"return confirm('Are you sure you want to quit?')\">\n"
       "<input type=submit value=\"Quit\" style=\"color:red\" />\n"
-      "</form>\n"
-      "</body>\n"
-      "</html>";
+      "</form>\n" +
+      tail;
 
    Response response(HTTP11, Response::OK, body.length());
    if (!Write(response)) {
@@ -99,12 +118,27 @@ bool Worker::SendHomePage(bool head) {
    return true;
 } // Worker::SendHomePage(head)
 
+bool Worker::SendStyleSheet(bool head) {
+   static const String body =
+      "h1.left  { display: inline-block; position: relative; width: 96px }\n"
+      "h1.right { display: inline-block; position: relative }\n"
+      "fieldset { display: inline-block }\n";
+   Response response(HTTP11, Response::OK, body.length());
+//   response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do! // TODO
+   if (!Write(response)) {
+      return false;
+   } // if
+   if (!head && !Write(body)) {
+      return false;
+   } // if
+   return true;
+} // Worker::SendStyleSheet(head)
+
 static String Selection(const BSD::Interfaces &interfaces,
                         const String &label,
                         String current) {
    String selection;
    selection.reserve(256);
-   selection += "<br />";
    selection += "<label for=" + label + ">" + label + ": </label>\n";
    selection += "<select name=" + label + " id=" + label + ">\n";
    selection += "  <option value=\"None\"";
@@ -124,30 +158,25 @@ static String Selection(const BSD::Interfaces &interfaces,
 } // Selection(Interfaces, label, current)
 
 bool Worker::SendConfigPage(bool head) {
-   BSD::Interfaces interfaces = BSD::Interface::List(BSD::IPv4, BSD::Up);
+   BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
+   BSD::Interfaces upDown = BSD::Interface::List(BSD::IPv4, BSD::UpDown);
 
    const String body =
-         "<!DOCTYPE html>\n"
-         "<html lang=en-AU>\n"
-         "<head>\n"
-         "<meta charset=UTF-8 />\n"
-         "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
-         "<title>PitM: Configuration</title>\n"
-         "</head>\n"
-         "<body>\n"
-         "<h1>\n"
-         "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />"
-         "&nbsp;PitM: Configuration"
-         "</h1>\n"
-         "<form method=\"POST\">\n" // action="/config" is assumed
-         + Selection(interfaces, "Left", Config::config.Left())
-         + Selection(interfaces, "Right", Config::config.Right())
-         + Selection(interfaces, "Server", Config::config.Server()) +
-         "<br />Port: <input type=number name=Port value=" + std::to_string(Config::config.Port()) + ">\n"
-         "<br /><input type=submit>\n"
-         "</form>\n"
-         "</body>\n"
-         "</html>";
+      html +
+      badge +
+      "<h1 class=right>Configuration</h1>\n"
+      "<form method=POST>\n" + // action="/config" is assumed
+      Selection(upDown, "Left ", Config::config.Left())  +
+      Selection(upDown, "Right", Config::config.Right()) +
+      "<br /><fieldset>\n"
+      "<legend>Web</legend>\n" +
+      Selection(up, "Server", Config::config.Server()) +
+      " Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=" +
+        std::to_string(Config::config.Port()) + " />\n"
+      "</fieldset>\n"
+      "<p /><input type=submit>\n"
+      "</form>\n" +
+      tail;
 
    Response response(HTTP11, Response::OK, body.length());
    if (!Write(response)) {
@@ -181,6 +210,7 @@ bool Worker::SendObj(bool head, const void *obj, const void *size) {
    Size length = (Size)size; // Convert (absolute) address to size
 
    Response response(HTTP11, Response::OK, length);
+   response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do!
    if (!Write(response)) {
       return false;
    } // if
@@ -205,30 +235,17 @@ bool Worker::POST() {
 
 bool Worker::Config() {
    // Decode line into Config parameters // TODO
-   Response response(HTTP11, Response::SeeOther);
-   response.Add(Location, "/config");
+   Response response(HTTP11, Response::NoContent); // Response::SeeOther);
+// response.Add(Location, "/config");
    return Write(response);
 } // Worker::Config()
 
 bool Worker::Quit() {
    static const String body =
-      "<!DOCTYPE html>\n"
-      "<html lang=en-AU>\n"
-      "<head>\n"
-      "<meta charset=UTF-8 />\n"
-      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
-      "<title>Pi in the Middle (PitM)</title>\n"
-      "</head>\n"
-      "<body>\n"
-      "<h1>\n"
-      "Pi in the Middle (PitM)<br />\n"
-      "<small><small><small><small>"
-      "Ver: " + PitM::version + ", by John Burger"
-      "</small></small></small></small>\n"
-      "</h1>\n"
-      "<p>Thank you for using PitM!</p>\n"
-      "</body>\n"
-      "</html>\n";
+      html +
+      fullHeading +
+      "<p>Thank you for using PitM!</p>\n" +
+      tail;
    Response response(HTTP11, Response::OK, body);
    response.Add(HTTP::Connection, HTTP::Close);
    Write(response);
