@@ -32,7 +32,7 @@ static const String html =
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
       "<link rel=\"shortcut icon\" href=/favicon.ico />\n"
       "<link rel=stylesheet type=text/css href=style.css />\n"
-      "<title>Pi in the Middle (PitM)</title>\n"
+      "<title>PitM: Pi in the Middle</title>\n"
       "</head>\n";
 
 static const String badge =
@@ -135,45 +135,58 @@ bool Worker::SendStyleSheet(bool head) {
    return true;
 } // Worker::SendStyleSheet(head)
 
-static String Selection(const BSD::Interfaces &interfaces,
-                        const String &label,
-                        String current) {
+template <typename Element>
+String Selection(const std::list<Element> &list,
+                 const String &label,
+                 const String &current,
+                 bool none) {
    String selection;
    selection.reserve(256);
    selection += "<label for=" + label + ">" + label + ": </label>\n";
    selection += "<select name=" + label + " id=" + label + ">\n";
-   selection += "  <option value=\"None\"";
-   if (current.empty()) {
-      selection += " selected";
-   } // if
-   selection += ">None</option>\n";
-   for (const auto &i : interfaces) {
-      selection += "  <option value=\"" + i.name + '"';
-      if (current==i.name) {
+   if (none) {
+      selection += "  <option value=\"None\"";
+      if (current.empty()) {
          selection += " selected";
       } // if
-      selection += ">" + i.name + "</option>\n";
+      selection += ">None</option>\n";
+   } // if
+   for (const auto &i : list) {
+      selection += "  <option value=\"";
+      selection += i;
+      selection += '"';
+      if (current==(String)i) {
+         selection += " selected";
+      } // if
+      selection += ">";
+      selection += i;
+      selection += "</option>\n";
    } // for
    selection += "</select>\n";
    return selection;
-} // Selection(Interfaces, label, current)
+} // Selection(list, label, current, none)
 
 bool Worker::SendConfigPage(bool head) {
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
    BSD::Interfaces upDown = BSD::Interface::List(BSD::IPv4, BSD::UpDown);
 
+   std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
    const String body =
       html +
       badge +
       "<h1 class=right>Configuration</h1>\n"
-      "<form method=POST>\n" + // action="/config" is assumed
-      Selection(upDown, "Left ", Config::config.Left())  +
-      Selection(upDown, "Right", Config::config.Right()) +
+      "<form method=POST>\n" // action="/config" is assumed
+      "<fieldset>\n"
+      "<legend>Packets</legend>\n" +
+      Selection(upDown, "Left ", Config::master.left, true)  +
+      Selection(upDown, "Right", Config::master.right, true) +
+      Selection(protocols, "Protocol", Config::master.protocol, false) +
+      "</fieldset>\n"
       "<br /><fieldset>\n"
       "<legend>Web</legend>\n" +
-      Selection(up, "Server", Config::config.Server()) +
+      Selection(up, "Server", Config::master.server, true) +
       " Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=" +
-        std::to_string(Config::config.Port()) + " />\n"
+        std::to_string(Config::master.port) + " />\n"
       "</fieldset>\n"
       "<p /><input type=submit>\n"
       "</form>\n" +
@@ -235,12 +248,14 @@ bool Worker::POST() {
 } // Worker::POST()
 
 bool Worker::Config() {
-   String left = request.Get("Left=", "None");
-   String right = request.Get("Right=", "None");
-   String server = request.Get("Server=", "None");
-   String port = request.Get("Port=");
+   PitM::Config config;
+   config.left     = request.Get("Left=",   "None");
+   config.right    = request.Get("Right=",  "None");
+   config.protocol = request.Get("Protocol=");
+   config.server   = request.Get("Server=", "None");
+   config.port     = ToNumber(request.Get("Port="));
 
-   Config::config.Set(left, right, server, port);
+   Config::master.Set(config);
    Response response(HTTP11, Response::NoContent);
    return Write(response);
 } // Worker::Config()
@@ -324,7 +339,7 @@ bool Worker::Process() {
       } // if
 
       // Only look at first entry
-      contentLength = atoi(set.begin()->c_str());
+      contentLength = ToNumber(*set.begin());
       if (contentLength==0) {
          break;
       } // if
@@ -372,6 +387,7 @@ bool Worker::Reply() {
 } // Worker::Reply()
 
 void *Worker::Run() {
+   std::cout << "Starting " << fd << std::endl;
    while (Parse()) {
       if (!Process()) {
          break;
@@ -384,7 +400,7 @@ void *Worker::Run() {
       } // if
       line.clear();
    } // while
-   std::cout << "Shutting down" << std::endl;
+   std::cout << "Stopping " << fd << std::endl;
    Close();
    delete this;
    return nullptr;
