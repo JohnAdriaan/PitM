@@ -30,6 +30,7 @@ static const String html =
       "<head>\n"
       "<meta charset=UTF-8 />\n"
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
+      "<link rel=\"shortcut icon\" href=/favicon.ico />\n"
       "<link rel=stylesheet type=text/css href=style.css />\n"
       "<title>Pi in the Middle (PitM)</title>\n"
       "</head>\n";
@@ -124,7 +125,7 @@ bool Worker::SendStyleSheet(bool head) {
       "h1.right { display: inline-block; position: relative }\n"
       "fieldset { display: inline-block }\n";
    Response response(HTTP11, Response::OK, body.length());
-//   response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do! // TODO
+   response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do!
    if (!Write(response)) {
       return false;
    } // if
@@ -186,7 +187,7 @@ bool Worker::SendConfigPage(bool head) {
       return false;
    } // if
    return true;
-} // Worker::SendConfigPage(head)
+} // Worker::SendConfigPage(head,badLeft,badRight,badServer,badPort)
 
 bool Worker::SendFile(bool head,const char *path) {
    File file(path);
@@ -222,7 +223,7 @@ bool Worker::SendObj(bool head, const void *obj, const void *size) {
 
 bool Worker::POST() {
    std::cout << "POST " << request.Path() << std::endl;
-   std::cout << line << std::endl;
+   std::cout << request.Body() << std::endl;
    if (request.Path()=="/config") {
       return Config();
    } // if
@@ -234,9 +235,13 @@ bool Worker::POST() {
 } // Worker::POST()
 
 bool Worker::Config() {
-   // Decode line into Config parameters // TODO
-   Response response(HTTP11, Response::NoContent); // Response::SeeOther);
-// response.Add(Location, "/config");
+   String left = request.Get("Left=", "None");
+   String right = request.Get("Right=", "None");
+   String server = request.Get("Server=", "None");
+   String port = request.Get("Port=");
+
+   Config::config.Set(left, right, server, port);
+   Response response(HTTP11, Response::NoContent);
    return Write(response);
 } // Worker::Config()
 
@@ -272,9 +277,10 @@ bool Worker::Parse() {
             line.append(buffer+start, pos-start-1);
             unsigned len = line.length();
             while (len-->0) {
-               if (line[len]=='\r') {
-                  line.pop_back();
+               if (line[len]!='\r') {
+                  break;
                } // if
+               line.pop_back();
             } // while
          } // else
          start = pos;
@@ -327,6 +333,7 @@ bool Worker::Process() {
       break;
    } // RequestHeader
    case RequestBody :
+      request.Body(line);
       state = RequestDone;
       break;
    case RequestDone :

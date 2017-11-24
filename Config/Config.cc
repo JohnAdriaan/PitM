@@ -2,6 +2,9 @@
 // Config.cc
 //
 
+#include "../Packet/Packet.hh"
+#include "../Server/Server.hh"
+
 #include "Config.hh"
 
 using namespace PitM;
@@ -12,28 +15,45 @@ Config::Config() {
    Load();
 } // Config::Config()
 
-void Config::Load() {
+void Config::Load() { // TODO
 } // Config::Load()
 
-void Config::SetLeft(const String &newLeft) {
-   left = newLeft;
-   Save();
-} // Config::SetLeft(newLeft)
+void Config::Set(const String &newLeft,
+                 const String &newRight,
+                 const String &newServer,
+                 const String &newPort) {
+   bool packetChanged = false;
+   if (left!=newLeft) {
+      left = newLeft;
+      packetChanged = true;
+   } // if
+   if (right!=newRight) {
+      right = newRight;
+      packetChanged = true;
+   } // if
 
-void Config::SetRight(const String &newRight) {
-   right = newRight;
-   Save();
-} // Config::SetRight(newRight)
+   bool serverChanged = false;
+   if (server!=newServer) {
+      server = newServer;
+      serverChanged = true;
+   } // if
+   BSD::Port newP = atoi(newPort.c_str());
+   if (port!=newP) {
+      port = newP;
+      serverChanged = true;
+   } // if
 
-void Config::SetServer(const String &newServer) {
-   server = newServer;
+   if (!packetChanged && !serverChanged) {
+      return;
+   } // if
    Save();
-} // Config::SetServer(newServer)
+   if (packetChanged) {
+      Packet::Start();
+   } // if
+   if (serverChanged) {
+      Server::Start();
+   } // if
+} // Config::Set(newLeft,newRight,newServer,newPort)
 
-void Config::SetPort(BSD::Port newPort) {
-   port = newPort;
-   Save();
-} // Config::SetPort(newPort)
-
-void Config::Save() {
+void Config::Save() { // TODO
 } // Config::Save()

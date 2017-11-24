@@ -25,13 +25,10 @@ public: // Methods
 
    inline BSD::Port Port() const;
 
-   void SetLeft(const String &newLeft);
-
-   void SetRight(const String &newRight);
-
-   void SetServer(const String &newServer);
-
-   void SetPort(BSD::Port newPort);
+   void Set(const String &newLeft,
+            const String &newRight,
+            const String &newServer,
+            const String &newPort);
 
 private: // Methods
 
