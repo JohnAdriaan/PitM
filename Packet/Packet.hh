@@ -13,6 +13,8 @@ public: // Static methods
 
    static bool Start();
 
+   static void Reconfigure();
+
 }; // Packet
 
 #endif // Packet_hh

@@ -9,51 +9,62 @@
 
 using namespace PitM;
 
-Config Config::config;
+Config config;
+
+const Config &Config::master = config;
 
 Config::Config() {
-   Load();
+   if (this==&master) {
+      Load();
+   } // if
 } // Config::Config()
 
 void Config::Load() { // TODO
 } // Config::Load()
 
-void Config::Set(const String &newLeft,
-                 const String &newRight,
-                 const String &newServer,
-                 const String &newPort) {
+void Config::Set(const Config &newConfig) {
    bool packetChanged = false;
-   if (left!=newLeft) {
-      left = newLeft;
+   if (config.left!=newConfig.left) {
+      config.left = newConfig.left;
       packetChanged = true;
    } // if
-   if (right!=newRight) {
-      right = newRight;
+   if (config.right!=newConfig.right) {
+      config.right = newConfig.right;
       packetChanged = true;
+   } // if
+
+   bool configChanged = false;
+   if (config.protocol!=newConfig.protocol) {
+      config.protocol = newConfig.protocol;
+      configChanged = true;
    } // if
 
    bool serverChanged = false;
-   if (server!=newServer) {
-      server = newServer;
+   if (config.server!=newConfig.server) {
+      config.server = newConfig.server;
       serverChanged = true;
    } // if
-   BSD::Port newP = atoi(newPort.c_str());
-   if (port!=newP) {
-      port = newP;
+   if (config.port!=newConfig.port) {
+      config.port = newConfig.port;
       serverChanged = true;
    } // if
 
-   if (!packetChanged && !serverChanged) {
+   if (!packetChanged &&
+       !configChanged &&
+       !serverChanged) {
       return;
    } // if
-   Save();
+   config.Save();
    if (packetChanged) {
       Packet::Start();
    } // if
+   else if (configChanged) { // If the former, no need to do this!
+      Packet::Reconfigure();
+   } // else if
    if (serverChanged) {
       Server::Start();
    } // if
-} // Config::Set(newLeft,newRight,newServer,newPort)
+} // Config::Set(newLeft,newRight,newProtocol,newServer,newPort)
 
 void Config::Save() { // TODO
 } // Config::Save()

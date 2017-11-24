@@ -15,7 +15,8 @@ bool Server::Start() {
 } // Server::Start()
 
 Server::Server() :
-        BSD::Listen(BSD::Address::any4, Config::config.Port()),
+        BSD::Listen(BSD::Address::any4,
+                    Config::master.port),
         MT::Thread() {
    if (!Listen::Valid()) {
       delete this;

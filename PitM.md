@@ -71,7 +71,7 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
    - `[x]` main()
    - `[x]` Threads
 - `[ ]` Configuration
-   - `[ ]` Which interfaces to use for what
+   - `[x]` Which interfaces to use for what
    - `[ ]` Which protocols to process:
       - `[ ]` Ethernet
       - `[ ]` PPPoE
@@ -93,6 +93,6 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
    - `[ ]` Status page
    - `[ ]` Statistics page
    - `[ ]` Log download page
-   - `[ ]` Configuration page
+   - `[x]` Configuration page
 
 ## Testing
