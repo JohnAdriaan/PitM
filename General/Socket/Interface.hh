@@ -13,6 +13,10 @@ public: // Static methods
 
    static Interfaces List(Protocols protocol, States state);
 
+public: // Methods
+
+   inline operator const String &() const;
+
 public: // Variables
 
    const String name;
@@ -31,5 +35,9 @@ private: // Methods
              States state);
 
 }; // Interface
+
+inline BSD::Interface::operator const String &() const {
+   return name;
+} // Interface::operator String()
 
 #endif // Interface_hh

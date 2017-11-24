@@ -73,7 +73,7 @@ static URI Parse(String uri) {
    host = uri.substr(0,min);
    if (colon<slash) {
       String service = uri.substr(colon+1, slash-colon);
-      port = atoi(service.c_str());
+      port = ToNumber(service);
    } // if
 
    if (slash!=String::npos) {

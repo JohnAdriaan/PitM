@@ -27,12 +27,24 @@ typedef size_t Size;
 
 typedef std::string String;
 
+inline unsigned ToNumber(const String &string) {
+   return ::atoi(string.c_str());
+} // ToNumber(String)
+
+inline String ToString(int number) {
+   return std::to_string(number);
+} // ToString(number)
+
+inline String ToString(unsigned number) {
+   return std::to_string(number);
+} // ToString(number)
+
 inline String &operator +=(String &lhs, int number) {
-   return lhs += std::to_string(number);
+   return lhs += ToString(number);
 } // operator +=(String, number)
 
 inline String &operator +=(String &lhs, unsigned number) {
-   return lhs += std::to_string(number);
+   return lhs += ToString(number);
 } // operator +=(String, number)
 
 // For case-insensitive comparisons in the STL
