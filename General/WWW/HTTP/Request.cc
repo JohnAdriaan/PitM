@@ -94,3 +94,21 @@ void Request::Append(const String &header) {
       headers[key] = values;     // Add it in then
    } // if
 } // Request::Append(header)
+
+void Request::Body(const String &body) {
+   this->body = body;
+} // Request::Body(body)
+
+String Request::Get(const String &field, const String &none) const {
+   Pos pos = body.find(field);
+   if (pos==String::npos) {
+      return String();
+   } // if
+   pos += field.length();
+   Pos end = body.find('&', pos);
+   String value = body.substr(pos, end-pos);
+   if (value==none) {
+      return String();
+   } // if
+   return value;
+} // Request::Get(field, none)

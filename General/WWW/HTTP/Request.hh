@@ -38,6 +38,11 @@ public: // Methods
 
    void Append(const String &header);
 
+   void Body(const String &body);
+
+   // Get "field=" from POST body. If value==none, return empty string
+   String Get(const String &field, const String &none=String()) const;
+
    inline Methods Method() const;
 
    inline const String &Path() const;
@@ -45,6 +50,8 @@ public: // Methods
    inline Versions Version() const;
 
    inline const MapSet &Headers() const;
+
+   inline const String &Body() const;
 
 private: // Variables
 
@@ -55,6 +62,8 @@ private: // Variables
    Versions version;
 
    MapSet headers;
+
+   String body;
 
 }; // Request
 
@@ -73,5 +82,9 @@ inline WWW::HTTP::Versions WWW::HTTP::Request::Version() const {
 inline const WWW::MapSet &WWW::HTTP::Request::Headers() const {
    return headers;
 } // Request::Headers()
+
+inline const String &WWW::HTTP::Request::Body() const {
+   return body;
+} // Request::Body()
 
 #endif // Request_hh
