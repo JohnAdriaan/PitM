@@ -19,7 +19,7 @@ namespace PitM {
 
    class Worker;
 
-   extern const String version;
+   const String &Version();
 
    extern MT::Semaphore quit;
 

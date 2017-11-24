@@ -5,9 +5,12 @@
 #include "Packet/Packet.hh"
 #include "Server/Server.hh"
 
-const String PitM::version = "0.1.0.0";
-
 MT::Semaphore PitM::quit;
+
+const String &PitM::Version() {
+   static const String version = "0.1.0.0";
+   return version;
+} // PitM::Version()
 
 int main(int /*argc*/,
          char * /*argv*/[],
