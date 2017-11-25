@@ -9,11 +9,9 @@
 
 using namespace BSD;
 
-static BSD::Ports ports;
-
-static BSD::Services services;
-
 const BSD::Ports &Service::Ports() {
+   static BSD::Ports ports;
+
    if (!ports.empty()) {
       return ports;
    } // if
@@ -37,6 +35,8 @@ const BSD::Ports &Service::Ports() {
 } // Service::Ports()
 
 const BSD::Services &Service::Services() {
+   static BSD::Services services;
+
    if (!services.empty()) {
       return services;
    } // if
@@ -59,7 +59,7 @@ BSD::Port BSD::Service::Find(const String &name) {
    if (port!=BSD::NoPort) {
       return port;                  // Yes, so return it!
    } // if
-   const BSD::Services &services = Services();
+   const BSD::Services &services = Service::Services();
    const auto &s = services.find(name);
    return s!=services.end() ?
           s->second.Port() :
@@ -95,12 +95,7 @@ void Service::Add(BSD::Services &services, const ::servent &entry) {
 } // Service::Add(Services, entry)
 
 Service::Service() :
-         name(),
-         port(NoPort),
-         alias(false),
-         tcp(false),
-         udp(false),
-         ddp(false) {
+         Service(String(), BSD::NoPort, false) {
 } // Service::Service()
 
 Service::Service(const String &name, BSD::Port port, bool alias) :
