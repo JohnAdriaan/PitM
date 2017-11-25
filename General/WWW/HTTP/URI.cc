@@ -7,7 +7,7 @@
 using namespace WWW::HTTP;
 
 //static const String defaultScheme = "http";
-static const BSD::Port defaultPort = 0;
+static const BSD::Port defaultPort = BSD::NoPort;
 static const String defaultPath = "/";
 
 static WWW::Map ParseQuery(String s) {

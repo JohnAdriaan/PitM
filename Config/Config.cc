@@ -64,7 +64,7 @@ void Config::Set(const Config &newConfig) {
    if (serverChanged) {
       Server::Start();
    } // if
-} // Config::Set(newLeft,newRight,newProtocol,newServer,newPort)
+} // Config::Set(newConfig)
 
 void Config::Save() { // TODO
 } // Config::Save()

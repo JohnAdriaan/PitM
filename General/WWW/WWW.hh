@@ -5,9 +5,6 @@
 #ifndef WWW_hh
 #define WWW_hh
 
-#include <set>
-#include <map>
-
 #include "../Socket/BSD.hh"
 
 namespace WWW {

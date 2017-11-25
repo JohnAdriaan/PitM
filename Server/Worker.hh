@@ -52,6 +52,12 @@ private: // POST Responses
    // Configure
    bool Config();
 
+      // Copy config from POST
+      void POSTConfig();
+
+      // Update config (not Submit, yet!)
+      bool ConfigUpdate();
+
    // Close the application
    bool Quit();
 
