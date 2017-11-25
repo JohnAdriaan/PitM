@@ -5,6 +5,8 @@
 #ifndef BSD_hh
 #define BSD_hh
 
+#include <set>
+#include <map>
 #include <list>
 
 #include <netinet/in.h> // For in_port_t, in_addr and in6_addr
@@ -30,6 +32,8 @@ namespace BSD {
 
    typedef in_port_t Port;
 
+   static const Port NoPort = 0;
+
    typedef in_addr IPv4Addr;
 
    typedef in6_addr IPv6Addr;
@@ -45,6 +49,16 @@ namespace BSD {
    typedef std::list<Interface> Interfaces;
 
    class Socket;
+
+   // A named Port
+   class Service;
+
+   // Service names are unique
+   typedef std::map<String, Service, NoCase> Services;
+
+   // Service ports are not unique.
+   // There may be a number of Services for each port
+   typedef std::map<Port, Services> Ports;
 
    class Listen;
 
