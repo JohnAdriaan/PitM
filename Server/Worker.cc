@@ -55,6 +55,8 @@ static const String tail =
       "</body>\n"
       "</html>";
 
+static PitM::Config config = Config::master; // Holds intermediate configuration
+
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
         Thread(),
@@ -89,6 +91,7 @@ bool Worker::GET(bool head) {
       return SendStyleSheet(head);
    } // if
    if (request.Path()=="/config") {
+      config = Config::master; // TODO
       return SendConfigPage(head);
    } // if
    Write(Response(HTTP10, Response::NotFound));
@@ -139,12 +142,12 @@ template <typename Element>
 String Selection(const std::list<Element> &list,
                  const String &label,
                  const String &current,
-                 bool none) {
+                 bool hasNone) {
    String selection;
    selection.reserve(256);
    selection += "<label for=" + label + ">" + label + ": </label>\n";
    selection += "<select name=" + label + " id=" + label + ">\n";
-   if (none) {
+   if (hasNone) {
       selection += "  <option value=\"None\"";
       if (current.empty()) {
          selection += " selected";
@@ -164,7 +167,7 @@ String Selection(const std::list<Element> &list,
    } // for
    selection += "</select>\n";
    return selection;
-} // Selection(list, label, current, none)
+} // Selection(list, label, current, hasNone)
 
 bool Worker::SendConfigPage(bool head) {
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
@@ -178,15 +181,15 @@ bool Worker::SendConfigPage(bool head) {
       "<form method=POST>\n" // action="/config" is assumed
       "<fieldset>\n"
       "<legend>Packets</legend>\n" +
-      Selection(upDown, "Left ", Config::master.left, true)  +
-      Selection(upDown, "Right", Config::master.right, true) +
-      Selection(protocols, "Protocol", Config::master.protocol, false) +
+      Selection(upDown, "Left ", config.left, true)  +
+      Selection(upDown, "Right", config.right, true) +
+      Selection(protocols, "Protocol", config.protocol, false) +
       "</fieldset>\n"
       "<br /><fieldset>\n"
       "<legend>Web</legend>\n" +
-      Selection(up, "Server", Config::master.server, true) +
+      Selection(up, "Server", config.server, true) +
       " Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=" +
-        std::to_string(Config::master.port) + " />\n"
+        std::to_string(config.port) + " />\n"
       "</fieldset>\n"
       "<p /><input type=submit>\n"
       "</form>\n" +
@@ -200,7 +203,7 @@ bool Worker::SendConfigPage(bool head) {
       return false;
    } // if
    return true;
-} // Worker::SendConfigPage(head,badLeft,badRight,badServer,badPort)
+} // Worker::SendConfigPage(head)
 
 bool Worker::SendFile(bool head,const char *path) {
    File file(path);
@@ -240,6 +243,13 @@ bool Worker::POST() {
    if (request.Path()=="/config") {
       return Config();
    } // if
+   if (request.Path()=="/config/reset") {
+      config = Config::master;
+      return SendConfigPage(false); // Not head
+   } // if
+   if (request.Path()=="/config/update") {
+      return ConfigUpdate();
+   } // if
    if (request.Path()=="/quit") {
       return Quit();
    } // if
@@ -248,17 +258,24 @@ bool Worker::POST() {
 } // Worker::POST()
 
 bool Worker::Config() {
-   PitM::Config config;
+   POSTConfig();
+   Config::master.Set(config);
+   Response response(HTTP11, Response::NoContent);
+   return Write(response);
+} // Worker::Config()
+
+void Worker::POSTConfig() {
    config.left     = request.Get("Left=",   "None");
    config.right    = request.Get("Right=",  "None");
    config.protocol = request.Get("Protocol=");
    config.server   = request.Get("Server=", "None");
    config.port     = ToNumber(request.Get("Port="));
+} // Worker::CopyConfig()
 
-   Config::master.Set(config);
-   Response response(HTTP11, Response::NoContent);
-   return Write(response);
-} // Worker::Config()
+bool Worker::ConfigUpdate() {
+   POSTConfig();
+   return SendConfigPage(false); // not head
+} // Worker::ConfigUpdate()
 
 bool Worker::Quit() {
    static const String body =
