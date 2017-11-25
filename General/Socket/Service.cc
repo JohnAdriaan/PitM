@@ -54,6 +54,18 @@ const BSD::Services &Service::Services() {
    return services;
 } // Service::Services()
 
+BSD::Port BSD::Service::Find(const String &name) {
+   BSD::Port port = ToNumber(name); // Already a number?
+   if (port!=BSD::NoPort) {
+      return port;                  // Yes, so return it!
+   } // if
+   const BSD::Services &services = Services();
+   const auto &s = services.find(name);
+   return s!=services.end() ?
+          s->second.Port() :
+          BSD::NoPort;
+} // Service::Find(name)
+
 void Service::Add(BSD::Services &services, const ::servent &entry) {
    bool tcp = ::strcmp(entry.s_proto,"tcp")==0;
    bool udp = ::strcmp(entry.s_proto,"udp")==0;

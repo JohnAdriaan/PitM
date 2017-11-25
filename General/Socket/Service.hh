@@ -17,6 +17,10 @@ public: // Static methods
    // Get map of Names->Service
    static const BSD::Services &Services();
 
+   // Get port from name.
+   // Returns BSD::NoPort if not found
+   static BSD::Port Find(const String &name);
+
 public: // Methods
 
    Service();

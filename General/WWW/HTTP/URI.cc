@@ -73,7 +73,7 @@ static URI Parse(String uri) {
    host = uri.substr(0,min);
    if (colon<slash) {
       String service = uri.substr(colon+1, slash-colon);
-      port = ToNumber(service);
+      port = BSD::Service::Find(service);
    } // if
 
    if (slash!=String::npos) {

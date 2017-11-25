@@ -269,7 +269,7 @@ void Worker::POSTConfig() {
    config.right    = request.Get("Right=",  "None");
    config.protocol = request.Get("Protocol=");
    config.server   = request.Get("Server=", "None");
-   config.port     = ToNumber(request.Get("Port="));
+   config.port     = BSD::Service::Find(request.Get("Port="));
 } // Worker::CopyConfig()
 
 bool Worker::ConfigUpdate() {
