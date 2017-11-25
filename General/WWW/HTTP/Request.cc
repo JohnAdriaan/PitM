@@ -78,21 +78,16 @@ Request::Request(Methods method, const String &path, Versions version) :
 void Request::Append(const String &header) {
    Pos delim = header.find(':');
    String key = header.substr(0, delim);
-   Set values;                     // Might need this new one
    auto i = headers.find(key);
-   Set &set = i!=headers.end() ?
-              i->second :          // Nope
-              values;              // Yep!
+   Set &set = i==headers.end() ?
+              headers[key] = Set() : // Need new one
+              i->second;             // Use existing one
 
    while (delim!=String::npos) {
       Pos start = header.find_first_not_of(' ', delim+1);
       delim = header.find(',', start);
       set.insert(header.substr(start, delim-start));
    } // while
-
-   if (&set==&values) {            // Did we use the new one?
-      headers[key] = values;     // Add it in then
-   } // if
 } // Request::Append(header)
 
 void Request::Body(const String &body) {
