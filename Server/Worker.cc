@@ -6,6 +6,7 @@
 
 #include "../General/File/File.hh"
 
+#include "../General/Socket/Service.hh"
 #include "../General/Socket/Interface.hh"
 
 #include "../General/WWW/HTTP/Response.hh"

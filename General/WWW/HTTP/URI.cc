@@ -2,6 +2,8 @@
 // URI.cc
 //
 
+#include "../../Socket/Service.hh"
+
 #include "URI.hh"
 
 using namespace WWW::HTTP;
