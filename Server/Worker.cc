@@ -181,13 +181,13 @@ bool Worker::SendConfigPage(bool head) {
       "<h1 class=right>Configuration</h1>\n"
       "<form method=POST>\n" // action="/config" is assumed
       "<fieldset>\n"
-      "<legend>Packets</legend>\n" +
+      "<legend>Monitor</legend>\n" +
       Selection(upDown, "Left ", config.left, true)  +
       Selection(upDown, "Right", config.right, true) +
       Selection(protocols, "Protocol", config.protocol, false) +
       "</fieldset>\n"
       "<br /><fieldset>\n"
-      "<legend>Web</legend>\n" +
+      "<legend>Control</legend>\n" +
       Selection(up, "Server", config.server, true) +
       " Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=" +
         std::to_string(config.port) + " />\n"

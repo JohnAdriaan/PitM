@@ -38,6 +38,14 @@ void Config::Set(const Config &newConfig) {
       config.protocol = newConfig.protocol;
       configChanged = true;
    } // if
+   if (config.icmp!=newConfig.icmp) {
+      config.icmp = newConfig.icmp;
+      configChanged = true;
+   } // if
+   if (config.ports!=newConfig.ports) {
+      config.ports = newConfig.ports;
+      configChanged = true;
+   } // if
 
    bool serverChanged = false;
    if (config.server!=newConfig.server) {

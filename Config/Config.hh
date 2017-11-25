@@ -14,9 +14,13 @@
 // but the only one that is actually used by the system is Config::master. See Config::Set()
 class PitM::Config : private _PitM_ {
 
+public: // Typedefs
+
+   typedef std::set<String, NoCase> Ports;
+
 public: // Static variables
 
-   // You can look at the Config - but you can only Config::Set() it
+   // You can look at Config::master - but you can only Config::Set() it
    static const Config &master;
 
 public: // Static methods
@@ -35,14 +39,6 @@ public: // Methods
    // You can copy Configs - but there's only one Config::master.
    Config &operator =(const Config &config) = default;
 
-private: // Methods
-
-   // Load Config::master
-   void Load();
-
-   // Save Config::master
-   void Save();
-
 public: // Variables
 
    // These are the names of the Interfaces, with their defaults.
@@ -52,9 +48,22 @@ public: // Variables
 
    String protocol = "Ethernet";
 
+   // Monitor ICMP?
+   bool icmp = true;
+
+   Ports ports;
+
    String server = "wlan0";
 
    BSD::Port port = 8080;
+
+private: // Methods
+
+   // Load Config::master
+   void Load();
+
+   // Save Config::master
+   void Save();
 
 }; // Config
 
