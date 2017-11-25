@@ -5,6 +5,8 @@
 #ifndef Config_hh
 #define Config_hh
 
+#include <vector>
+
 #include "../General/Socket/BSD.hh"
 
 #include "../PitM.hh"
@@ -16,7 +18,8 @@ class PitM::Config : private _PitM_ {
 
 public: // Typedefs
 
-   typedef std::set<String, NoCase> Ports;
+   // The order of Ports in the list is important for the user interface only
+   typedef std::vector<String> Ports;
 
 public: // Static variables
 

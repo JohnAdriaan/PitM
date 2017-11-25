@@ -11,7 +11,7 @@
 
 #include "../General/WWW/HTTP/Request.hh"
 
-#include "../PitM.hh"
+#include "../Config/Config.hh"
 
 class PitM::Worker : public BSD::TCP,
                      private MT::Thread {
@@ -52,11 +52,12 @@ private: // POST Responses
    // Configure
    bool Config();
 
-      // Copy config from POST
-      void POSTConfig();
+      // Copy config from POST.
+      // Return false if the Ports have changed (thus no Config::Set())
+      bool POSTConfig();
 
-      // Update config (not Submit, yet!)
-      bool ConfigUpdate();
+      // Re-display current config
+      bool Refresh();
 
    // Close the application
    bool Quit();
@@ -86,6 +87,8 @@ private: // Enums
    }; // States
 
 private: // Variables
+
+   PitM::Config config;
 
    WWW::HTTP::Request request;
 

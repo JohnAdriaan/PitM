@@ -11,8 +11,6 @@
 
 #include "../General/WWW/HTTP/Response.hh"
 
-#include "../Config/Config.hh"
-
 #include "Worker.hh"
 
 extern const char favicon[];
@@ -56,11 +54,10 @@ static const String tail =
       "</body>\n"
       "</html>";
 
-static PitM::Config config = Config::master; // Holds intermediate configuration
-
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
         Thread(),
+        config(Config::master),
         request(),
         state(RequestLine),
         line(),
@@ -92,7 +89,6 @@ bool Worker::GET(bool head) {
       return SendStyleSheet(head);
    } // if
    if (request.Path()=="/config") {
-      config = Config::master; // TODO
       return SendConfigPage(head);
    } // if
    Write(Response(HTTP10, Response::NotFound));
@@ -162,7 +158,7 @@ String Selection(const std::list<Element> &list,
       if (current==(String)i) {
          selection += " selected";
       } // if
-      selection += ">";
+      selection += '>';
       selection += i;
       selection += "</option>\n";
    } // for
@@ -170,31 +166,101 @@ String Selection(const std::list<Element> &list,
    return selection;
 } // Selection(list, label, current, hasNone)
 
+// If current is empty, then show "Select..."
+static String Ports(unsigned selection,const String &current=String()) {
+   String select;
+   select.reserve(1024);
+
+   select += "<select name=P";
+   select += ToString(selection);
+   select += " onchange=\"this.form.submit()\">\n";
+
+   select += "<option value=\"\"";
+   if (current.empty()) {
+      select += " selected";
+   } // if
+   select += ">Select&hellip;</option>\n"; // ellipsis
+
+   for (const auto &p : BSD::Service::Ports()) {
+      String port = ToString(p.first);
+      select += " <option value=";
+      select += port;
+      if (current==port) {
+         select += " selected";
+      } // if
+      select += '>';
+      select += port;
+      for (const auto &s : p.second) {
+         if (!s.second.Alias()) {
+            select += " - ";
+            select += s.first;
+            break;
+         } // if
+      } // for
+      select += "</option>\n";
+   } // for
+   for (const auto &s : BSD::Service::Services()) {
+      select += " <option value=\"";
+      select += s.first;
+      select += "\"";
+      if (current==s.first) {
+         select += " selected";
+      } // if
+      select += '>';
+      select += s.first;
+      select += " - ";
+      select += ToString(s.second.Port());
+      select += "</option>\n";
+   } // for
+
+   select += "</select>\n";
+   return select;
+} // Ports(current)
+
 bool Worker::SendConfigPage(bool head) {
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
    BSD::Interfaces upDown = BSD::Interface::List(BSD::IPv4, BSD::UpDown);
 
    std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
-   const String body =
-      html +
-      badge +
-      "<h1 class=right>Configuration</h1>\n"
-      "<form method=POST>\n" // action="/config" is assumed
-      "<fieldset>\n"
-      "<legend>Monitor</legend>\n" +
-      Selection(upDown, "Left ", config.left, true)  +
-      Selection(upDown, "Right", config.right, true) +
-      Selection(protocols, "Protocol", config.protocol, false) +
-      "</fieldset>\n"
-      "<br /><fieldset>\n"
-      "<legend>Control</legend>\n" +
-      Selection(up, "Server", config.server, true) +
-      " Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=" +
-        std::to_string(config.port) + " />\n"
-      "</fieldset>\n"
-      "<p /><input type=submit>\n"
-      "</form>\n" +
-      tail;
+   String body;
+   body.reserve(2048);
+   body += html;
+   body += badge;
+   body += "<h1 class=right>Configuration</h1>\n";
+   body += "<form method=POST>\n"; // action="/config" is assumed
+   body += "<fieldset>\n";
+   body += "<legend>Control</legend>\n";
+   body += Selection(up, "Server", config.server, true);
+   body +=" Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=";
+   body += ToString(config.port);
+   body += " />\n";
+   body += "</fieldset><br />\n";
+   body += "<fieldset>\n";
+   body += "<legend>Monitor</legend>\n";
+   body += Selection(upDown, "Left ", config.left, true);
+   body += Selection(upDown, "Right", config.right, true);
+   body += Selection(protocols, "Protocol", config.protocol, false);
+   body += " ICMP: <input type=checkbox name=ICMP value=Y"; // If checked - not present if not
+   if (config.icmp) {
+      body += " checked";
+   } // if
+   body += " /> (ping etc.)<br />\n";
+   body += "<fieldset>\n";
+   body += "<legend>Ports</legend>\n";
+   unsigned selection = 1;
+   for (const auto &p : config.ports) {
+      body += Ports(selection, p);
+      body += ' ';
+      ++selection;
+   } // for
+   body += Ports(selection);
+   body += "</fieldset>\n";
+   body += "</fieldset>\n";
+   body += "<p />\n";
+   body += "<input type=submit value=Reset formaction=\"/config/reset\" />\n"; // Not a Reset button!
+   body += "<input type=submit />\n";
+   body += "</form>\n";
+   body += tail;
 
    Response response(HTTP11, Response::OK, body.length());
    if (!Write(response)) {
@@ -246,10 +312,7 @@ bool Worker::POST() {
    } // if
    if (request.Path()=="/config/reset") {
       config = Config::master;
-      return SendConfigPage(false); // Not head
-   } // if
-   if (request.Path()=="/config/update") {
-      return ConfigUpdate();
+      return Refresh();
    } // if
    if (request.Path()=="/quit") {
       return Quit();
@@ -259,24 +322,44 @@ bool Worker::POST() {
 } // Worker::POST()
 
 bool Worker::Config() {
-   POSTConfig();
+   if (!POSTConfig()) {
+      return Refresh();
+   } // if
    Config::master.Set(config);
    Response response(HTTP11, Response::NoContent);
    return Write(response);
 } // Worker::Config()
 
-void Worker::POSTConfig() {
+bool Worker::POSTConfig() {
+   config.server   = request.Get("Server=", "None");
+   config.port     = BSD::Service::Find(request.Get("Port="));
    config.left     = request.Get("Left=",   "None");
    config.right    = request.Get("Right=",  "None");
    config.protocol = request.Get("Protocol=");
-   config.server   = request.Get("Server=", "None");
-   config.port     = BSD::Service::Find(request.Get("Port="));
-} // Worker::CopyConfig()
+   config.icmp     = request.Get("ICMP=")=="Y";
 
-bool Worker::ConfigUpdate() {
-   POSTConfig();
-   return SendConfigPage(false); // not head
-} // Worker::ConfigUpdate()
+   Config::Ports ports;
+   for (unsigned p=1;;++p) {
+      String port = "P" + ToString(p) + '=';
+      if (line.find(port)==String::npos) {
+         break;
+      } // if
+      port = request.Get(port);
+      if (!port.empty()) {
+         ports.push_back(port);
+      } // if
+   } // for
+
+   bool same = config.ports==ports;
+   config.ports = ports;
+   return same;
+} // Worker::POSTConfig()
+
+bool Worker::Refresh() {
+   Response response(HTTP11, Response::SeeOther);
+   response.Add(HTTP::Location, "/config");
+   return Write(response);
+} // Worker::Refresh()
 
 bool Worker::Quit() {
    static const String body =
