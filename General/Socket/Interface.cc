@@ -26,8 +26,15 @@ Interfaces Interface::List(Protocols protocols,
                               0;
       Protocols protocol = protocols;
       switch (protocol) {
-      case IPv46 :      // Either...
-      case NoProtocol : // ...or none
+      case NoProtocol :
+         if (family==AF_INET) {
+            continue;
+         } // if
+         if (family==AF_INET6) {
+            continue;
+         } // if
+         break;
+      case IPv46 :
          if (family==AF_INET) {
             protocol = IPv4;
          } // if

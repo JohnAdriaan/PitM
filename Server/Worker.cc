@@ -239,7 +239,7 @@ bool Worker::SendConfigPage(bool head) {
       "</script>\n";
 
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
-   BSD::Interfaces upDown = BSD::Interface::List(BSD::NoProtocol, BSD::UpDown);
+   BSD::Interfaces upDown = BSD::Interface::List(BSD::NoProtocol, BSD::Down);
 
    std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
    String body;
