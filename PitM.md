@@ -67,18 +67,18 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
 - And with a bit more work, that same Web server could be used to reconfigure the program.
 
 ## Modules
-- `[ ]` Framework
+- `[x]` Framework
    - `[x]` main()
    - `[x]` Threads
-- `[ ]` Configuration
+- `[x]` Configuration
    - `[x]` Which interfaces to use for what
-   - `[ ]` Which protocols to process:
-      - `[ ]` Ethernet
-      - `[ ]` PPPoE
-      - `[ ]` PPPoA
-   - `[ ]` Which packet types to log
-      - `[ ]` ICMP (Logged by default?)
-      - `[ ]` DNS (UDP or TCP)
+   - `[x]` Which protocols to process:
+      - `[x]` Ethernet
+      - `[x]` PPPoE
+      - `[x]` PPPoA
+   - `[x]` Which packet types to log
+      - `[x]` ICMP
+      - `[x]` /etc/services
 - `[ ]` Packet pass-through
    - `[ ]` Statistics accumulation
    - `[ ]` Packet logging using pcap format
@@ -87,10 +87,9 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
       - `[ ]` Parser
       - `[ ]` Generator
    - `[ ]` HTML
-      - `[ ]` Parser
-      - `[ ]` Generator
+      - `[x]` Parser
+      - `[x]` Generator
       - `[ ]` HTML5 server-side updates?
-   - `[ ]` Status page
    - `[ ]` Statistics page
    - `[ ]` Log download page
    - `[x]` Configuration page

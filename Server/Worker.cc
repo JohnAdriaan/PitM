@@ -11,6 +11,8 @@
 
 #include "../General/WWW/HTTP/Response.hh"
 
+#include "../Packet/Packet.hh"
+
 #include "Worker.hh"
 
 extern const char favicon[];
@@ -34,20 +36,17 @@ static const String html =
       "<title>PitM: Pi in the Middle</title>\n"
       "</head>\n";
 
-static const String badge =
+static const String heading =
       "<body>\n"
       "<h1 class=left>\n"
-      "<a href=\"/\"><img src=favicon.ico alt=\"John Burger\" height=64 width=64 /></a>\n"
-      "PitM"
-      "</h1>";
-
-static const String fullHeading =
-      badge +
+      "<a style=\"color:black\" href=\"/\">\n"
+      "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />\n"
+      "PitM</a></h1>\n"
       "<h1 class=right>\n"
-      "Pi in the Middle<br />\n"
-      "<small><small><small><small>"
-      "Ver: " + PitM::Version() + ", by John Burger"
-      "</small></small></small></small>\n"
+      "Pi in the Middle\n"
+      "<div style=\"font-size:10pt\">"
+      "Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
+      "<div id=heading style=\"font-size:16pt;font-family:sans-serif\">&nbsp;</div>\n"
       "</h1>\n";
 
 static const String tail =
@@ -98,22 +97,31 @@ bool Worker::GET(bool head) {
 bool Worker::SendHomePage(bool head) {
    static const String body =
       html +
-      fullHeading +
-      "<h3><a href=\"/status\">Status</a></h3>\n"
+      heading +
       "<h3><a href=\"/stats\">Statistics</a></h3>\n"
       "<h3><a href=\"/config\">Configuration</a></h3>\n"
       "<h3><a href=\"/logs\">Logs</a></h3>\n"
       "<form action=\"/quit\" method=POST"
       " onsubmit=\"return confirm('Are you sure you want to quit?')\">\n"
       "<input type=submit value=\"Quit\" style=\"color:red\" />\n"
-      "</form>\n" +
-      tail;
+      "</form>\n";
 
-   Response response(HTTP11, Response::OK, body.length());
+   String status = body;
+   status += "<script>\n"
+             " document.getElementById(\"heading\").innerHTML = \""
+             "Packets: ";
+   status += ToCommas(Packet::Total());
+   status += " Logged: ";
+   status += ToCommas(Packet::Logged());
+   status += "\";\n"
+             "</script>\n";
+   status += tail;
+
+   Response response(HTTP11, Response::OK, status.length());
    if (!Write(response)) {
       return false;
    } // if
-   if (!head && !Write(body)) {
+   if (!head && !Write(status)) {
       return false;
    } // if
    return true;
@@ -177,9 +185,12 @@ static String Ports(unsigned selection,const String &current=String()) {
 
    select += "<option value=\"\"";
    if (current.empty()) {
-      select += " selected";
+      select += " selected>Select&hellip;"; // ellipsis
    } // if
-   select += ">Select&hellip;</option>\n"; // ellipsis
+   else {
+      select += ">REMOVE";
+   } // else
+   select += "</option>\n";
 
    for (const auto &p : BSD::Service::Ports()) {
       String port = ToString(p.first);
@@ -218,25 +229,30 @@ static String Ports(unsigned selection,const String &current=String()) {
 } // Ports(current)
 
 bool Worker::SendConfigPage(bool head) {
+   static const String header =
+      html +
+      heading +
+      "<script>\n"
+      " document.getElementById(\"heading\").innerHTML = \"Configuration\";"
+      "</script>\n";
+
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
-   BSD::Interfaces upDown = BSD::Interface::List(BSD::IPv4, BSD::UpDown);
+   BSD::Interfaces upDown = BSD::Interface::List(BSD::NoProtocol, BSD::UpDown);
 
    std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
    String body;
    body.reserve(2048);
-   body += html;
-   body += badge;
-   body += "<h1 class=right>Configuration</h1>\n";
-   body += "<form method=POST>\n"; // action="/config" is assumed
-   body += "<fieldset>\n";
-   body += "<legend>Control</legend>\n";
+   body += header;
+   body += "<form method=POST>\n" // action="/config" is assumed
+           "<fieldset>\n"
+           "<legend>Control</legend>\n";
    body += Selection(up, "Server", config.server, true);
    body +=" Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=";
    body += ToString(config.port);
-   body += " />\n";
-   body += "</fieldset><br />\n";
-   body += "<fieldset>\n";
-   body += "<legend>Monitor</legend>\n";
+   body += " />\n"
+           "</fieldset><p />\n"
+           "<fieldset>\n"
+           "<legend>Monitor</legend>\n";
    body += Selection(upDown, "Left ", config.left, true);
    body += Selection(upDown, "Right", config.right, true);
    body += Selection(protocols, "Protocol", config.protocol, false);
@@ -244,9 +260,9 @@ bool Worker::SendConfigPage(bool head) {
    if (config.icmp) {
       body += " checked";
    } // if
-   body += " /> (ping etc.)<br />\n";
-   body += "<fieldset>\n";
-   body += "<legend>Ports</legend>\n";
+   body += " /> (ping etc.)<p />\n"
+           "<fieldset>\n"
+           "<legend>Ports</legend>\n";
    unsigned selection = 1;
    for (const auto &p : config.ports) {
       body += Ports(selection, p);
@@ -254,12 +270,12 @@ bool Worker::SendConfigPage(bool head) {
       ++selection;
    } // for
    body += Ports(selection);
-   body += "</fieldset>\n";
-   body += "</fieldset>\n";
-   body += "<p />\n";
-   body += "<input type=submit value=Reset formaction=\"/config/reset\" />\n"; // Not a Reset button!
-   body += "<input type=submit />\n";
-   body += "</form>\n";
+   body += "</fieldset>\n"
+           "</fieldset>\n"
+           "<p />\n"
+           "<input type=submit value=Reset formaction=\"/config/reset\" />\n" // Not a Reset button!
+           "<input type=submit />\n"
+           "</form>\n";
    body += tail;
 
    Response response(HTTP11, Response::OK, body.length());
@@ -364,9 +380,13 @@ bool Worker::Refresh() {
 bool Worker::Quit() {
    static const String body =
       html +
-      fullHeading +
+      heading +
+      "<script>\n"
+      " document.getElementById(\"heading\").innerHTML = \"Finished\";"
+      "</script>\n"
       "<p>Thank you for using PitM!</p>\n" +
       tail;
+
    Response response(HTTP11, Response::OK, body);
    response.Add(HTTP::Connection, HTTP::Close);
    Write(response);
