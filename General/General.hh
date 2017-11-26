@@ -5,8 +5,6 @@
 #ifndef General_hh
 #define General_hh
 
-#include <strings.h>
-
 #include <string>
 
 // The opposite of explicit
@@ -39,6 +37,10 @@ inline String ToString(unsigned number) {
    return std::to_string(number);
 } // ToString(number)
 
+String ToCommas(int number);
+
+String ToCommas(unsigned number);
+
 inline String &operator +=(String &lhs, int number) {
    return lhs += ToString(number);
 } // operator +=(String, number)
@@ -49,14 +51,8 @@ inline String &operator +=(String &lhs, unsigned number) {
 
 // For case-insensitive comparisons in the STL
 struct NoCase {
-
-   inline bool operator()(const String &lhs, const String &rhs) const noexcept;
-
+   bool operator()(const String &lhs, const String &rhs) const noexcept;
 }; // NoCase
-
-inline bool NoCase::operator()(const String &lhs, const String &rhs) const noexcept {
-   return ::strcasecmp(lhs.c_str(), rhs.c_str()) < 0;
-} // operator()(lhs, rhs)
 
 class _General_ {
 }; // _General_
