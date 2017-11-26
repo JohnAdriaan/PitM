@@ -45,8 +45,8 @@ static const String heading =
       "<h1 class=right>\n"
       "Pi in the Middle\n"
       "<div style=\"font-size:10pt\">"
-      "Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
-      "<div id=heading style=\"font-size:16pt;font-family:sans-serif\">&nbsp;</div>\n"
+      "&nbsp;Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
+      "<div id=heading style=\"font-size:16pt;padding:4px;border-style:solid;border-width:1px;border-color:transparent\">&nbsp;</div>\n"
       "</h1>\n";
 
 static const String tail =
@@ -98,8 +98,8 @@ bool Worker::SendHomePage(bool head) {
    static const String body =
       html +
       heading +
-      "<h3><a href=\"/stats\">Statistics</a></h3>\n"
       "<h3><a href=\"/config\">Configuration</a></h3>\n"
+      "<h3><a href=\"/stats\">Statistics</a></h3>\n"
       "<h3><a href=\"/logs\">Logs</a></h3>\n"
       "<form action=\"/quit\" method=POST"
       " onsubmit=\"return confirm('Are you sure you want to quit?')\">\n"
@@ -108,12 +108,14 @@ bool Worker::SendHomePage(bool head) {
 
    String status = body;
    status += "<script>\n"
-             " document.getElementById(\"heading\").innerHTML = \""
+             " var h = document.getElementById(\"heading\");\n"
+             " h.innerHTML = \""
              "Packets: ";
    status += ToCommas(Packet::Total());
    status += " Logged: ";
    status += ToCommas(Packet::Logged());
    status += "\";\n"
+             " h.style.borderColor = \"Black\";\n"
              "</script>\n";
    status += tail;
 
