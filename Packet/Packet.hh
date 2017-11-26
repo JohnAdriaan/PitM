@@ -15,6 +15,10 @@ public: // Static methods
 
    static void Reconfigure();
 
+   static unsigned Total();
+
+   static unsigned Logged();
+
 }; // Packet
 
 #endif // Packet_hh
