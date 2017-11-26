@@ -2,8 +2,6 @@
 // Packet.cc
 //
 
-#include <random> // TODO
-
 #include "Packet.hh"
 
 using namespace PitM;
@@ -20,9 +18,9 @@ void Packet::Reconfigure() {
 } // Packet::Reconfigure()
 
 unsigned Packet::Total() {
-   return total = 100 + logged*2 + rand() % 100; // TODO
+   return total;
 } // Packet::Total()
 
 unsigned Packet::Logged() {
-   return logged += rand() % 100; // TODO
+   return logged;
 } // Packet::Logged()
