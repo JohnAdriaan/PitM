@@ -164,7 +164,7 @@ String Selection(const std::list<Element> &list,
    String selection;
    selection.reserve(256);
    selection += "<label for=" + label + ">" + label + ": </label>\n";
-   selection += "<select name=" + label + " id=" + label + ">\n";
+   selection += "<select id=" + label + " name=" + label + ">\n";
    if (hasNone) {
       selection += "  <option value=\"\"";
       if (current.empty()) {
@@ -269,7 +269,8 @@ bool Worker::SendConfigPage(bool head) {
            "<fieldset>\n"
            "<legend>Control</legend>\n";
    body += Selection(up, "Server", config.server, true);
-   body +=" Port: <input style=\"width:5em\" type=number min=1 max=65535 name=Port value=";
+   body += " <label for=Port>Port: </label>";
+   body += " <input type=number min=1 max=65535 id=Port name=Port style=\"width:5em\" value=";
    body += ToString(config.port);
    body += " />\n"
            "</fieldset><p />\n"
@@ -278,7 +279,8 @@ bool Worker::SendConfigPage(bool head) {
    body += Selection(upDown, "Left ", config.left, true);
    body += Selection(upDown, "Right", config.right, true);
    body += Selection(protocols, "Protocol", config.protocol, false);
-   body += " ICMP: <input type=checkbox name=ICMP value=Y"; // If checked - not present if not
+   body += " <label for=ICMP>ICMP: </label>";
+   body += " <input type=checkbox id=ICMP name=ICMP value=Y"; // If checked - not present if not
    if (config.icmp) {
       body += " checked";
    } // if
