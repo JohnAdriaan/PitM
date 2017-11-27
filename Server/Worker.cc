@@ -36,22 +36,34 @@ static const String html =
       "<title>PitM: Pi in the Middle</title>\n"
       "</head>\n";
 
-static const String heading =
-      "<body>\n"
-      "<h1 class=left>\n"
-      "<a style=\"color:black\" href=\"/\">\n"
-      "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />\n"
-      "PitM</a></h1>\n"
-      "<h1 class=right>\n"
-      "Pi in the Middle\n"
-      "<div style=\"font-size:10pt\">"
-      "&nbsp;Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
-      "<div id=heading style=\"font-size:16pt;padding:4px;border-style:solid;border-width:1px;border-color:transparent\">&nbsp;</div>\n"
-      "</h1>\n";
-
 static const String tail =
       "</body>\n"
       "</html>";
+
+static String Heading(String header, bool border=false) {
+   static const String preface =
+         "<body>\n"
+         "<h1 class=left>\n"
+         "<a style=\"color:black\" href=\"/\">\n"
+         "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />\n"
+         "PitM</a></h1>\n"
+         "<h1 class=right>Pi in the Middle\n"
+         "<div style=\"font-size:10pt\">"
+         "&nbsp;Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
+         "<div style=\"font-size:16pt;padding:4px;border-style:solid;border-width:1px";
+   static const String postface =
+         "</div>\n"
+         "</h1>\n";
+
+   String heading = preface;
+   if (!border) {
+      heading += ";border-color:transparent";
+   } // if
+   heading += "\">\n";
+   heading += header;
+   heading += postface;
+   return heading;
+} // Heading(header, border)
 
 Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
         TCP(client),
@@ -96,8 +108,6 @@ bool Worker::GET(bool head) {
 
 bool Worker::SendHomePage(bool head) {
    static const String body =
-      html +
-      heading +
       "<h3><a href=\"/config\">Configuration</a></h3>\n"
       "<h3><a href=\"/stats\">Statistics</a></h3>\n"
       "<h3><a href=\"/logs\">Logs</a></h3>\n"
@@ -106,24 +116,23 @@ bool Worker::SendHomePage(bool head) {
       "<input type=submit value=\"Quit\" style=\"color:red\" />\n"
       "</form>\n";
 
-   String status = body;
-   status += "<script>\n"
-             " var h = document.getElementById(\"heading\");\n"
-             " h.innerHTML = \""
-             "Packets: ";
+   String status;
+   status += "Packets: ";
    status += ToCommas(Packet::Total());
    status += " Logged: ";
    status += ToCommas(Packet::Logged());
-   status += "\";\n"
-             " h.style.borderColor = \"Black\";\n"
-             "</script>\n";
-   status += tail;
 
-   Response response(HTTP11, Response::OK, status.length());
+   String page;
+   page += html;
+   page += Heading(status, true);
+   page += body;
+   page += tail;
+
+   Response response(HTTP11, Response::OK, page.length());
    if (!Write(response)) {
       return false;
    } // if
-   if (!head && !Write(status)) {
+   if (!head && !Write(page)) {
       return false;
    } // if
    return true;
@@ -150,14 +159,17 @@ String Selection(const std::list<Element> &list,
                  const String &label,
                  const String &current,
                  bool hasNone) {
+   bool selected = false;
+
    String selection;
    selection.reserve(256);
    selection += "<label for=" + label + ">" + label + ": </label>\n";
    selection += "<select name=" + label + " id=" + label + ">\n";
    if (hasNone) {
-      selection += "  <option value=\"None\"";
+      selection += "  <option value=\"\"";
       if (current.empty()) {
          selection += " selected";
+         selected = true;
       } // if
       selection += ">None</option>\n";
    } // if
@@ -167,11 +179,19 @@ String Selection(const std::list<Element> &list,
       selection += '"';
       if (current==(String)i) {
          selection += " selected";
+         selected = true;
       } // if
       selection += '>';
       selection += i;
       selection += "</option>\n";
    } // for
+   if (!selected && !current.empty()) {
+      selection += "  <option value=\"";
+      selection += current;
+      selection += "\" selected disabled>";
+      selection += current;
+      selection += "</option>\n";
+   } // if
    selection += "</select>\n";
    return selection;
 } // Selection(list, label, current, hasNone)
@@ -194,26 +214,28 @@ static String Ports(unsigned selection,const String &current=String()) {
    } // else
    select += "</option>\n";
 
+   select += " <optgroup label=Numeric>\n";
    for (const auto &p : BSD::Service::Ports()) {
       String port = ToString(p.first);
-      select += " <option value=";
+      select += "  <option value=";
       select += port;
       if (current==port) {
          select += " selected";
       } // if
       select += '>';
       select += port;
+      String sep = " - ";
       for (const auto &s : p.second) {
-         if (!s.second.Alias()) {
-            select += " - ";
-            select += s.first;
-            break;
-         } // if
+         select += sep;
+         select += s.first;
+         sep = ",";
       } // for
       select += "</option>\n";
    } // for
+   select += " </optgroup>\n";
+   select += " <optgroup label=Name>\n";
    for (const auto &s : BSD::Service::Services()) {
-      select += " <option value=\"";
+      select += "  <option value=\"";
       select += s.first;
       select += "\"";
       if (current==s.first) {
@@ -225,6 +247,7 @@ static String Ports(unsigned selection,const String &current=String()) {
       select += ToString(s.second.Port());
       select += "</option>\n";
    } // for
+   select += " </optgroup>\n";
 
    select += "</select>\n";
    return select;
@@ -233,10 +256,7 @@ static String Ports(unsigned selection,const String &current=String()) {
 bool Worker::SendConfigPage(bool head) {
    static const String header =
       html +
-      heading +
-      "<script>\n"
-      " document.getElementById(\"heading\").innerHTML = \"Configuration\";"
-      "</script>\n";
+      Heading("Configuration");
 
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
    BSD::Interfaces upDown = BSD::Interface::List(BSD::NoProtocol, BSD::Down);
@@ -349,10 +369,10 @@ bool Worker::Config() {
 } // Worker::Config()
 
 bool Worker::POSTConfig() {
-   config.server   = request.Get("Server=", "None");
+   config.server   = request.Get("Server=");
    config.port     = BSD::Service::Find(request.Get("Port="));
-   config.left     = request.Get("Left=",   "None");
-   config.right    = request.Get("Right=",  "None");
+   config.left     = request.Get("Left=");
+   config.right    = request.Get("Right=");
    config.protocol = request.Get("Protocol=");
    config.icmp     = request.Get("ICMP=")=="Y";
 
@@ -382,10 +402,7 @@ bool Worker::Refresh() {
 bool Worker::Quit() {
    static const String body =
       html +
-      heading +
-      "<script>\n"
-      " document.getElementById(\"heading\").innerHTML = \"Finished\";"
-      "</script>\n"
+      Heading("Finished") +
       "<p>Thank you for using PitM!</p>\n" +
       tail;
 

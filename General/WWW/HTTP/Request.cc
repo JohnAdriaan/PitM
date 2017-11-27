@@ -94,7 +94,7 @@ void Request::Body(const String &body) {
    this->body = body;
 } // Request::Body(body)
 
-String Request::Get(const String &field, const String &none) const {
+String Request::Get(const String &field) const {
    Pos pos = body.find(field);
    if (pos==String::npos) {
       return String();
@@ -102,8 +102,5 @@ String Request::Get(const String &field, const String &none) const {
    pos += field.length();
    Pos end = body.find('&', pos);
    String value = body.substr(pos, end-pos);
-   if (value==none) {
-      return String();
-   } // if
    return value;
-} // Request::Get(field, none)
+} // Request::Get(field)

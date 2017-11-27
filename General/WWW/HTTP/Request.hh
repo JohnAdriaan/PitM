@@ -40,8 +40,8 @@ public: // Methods
 
    void Body(const String &body);
 
-   // Get "field=" from POST body. If value==none, return empty string
-   String Get(const String &field, const String &none=String()) const;
+   // Get value after "field=" from POST body
+   String Get(const String &field) const;
 
    inline Methods Method() const;
 
