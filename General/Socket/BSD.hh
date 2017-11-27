@@ -33,6 +33,8 @@ namespace BSD {
    typedef in_port_t Port;
 
    static const Port NoPort = 0;
+   static const Port ReservedPorts = 1023;
+   static const Port MaxPort = 65535;
 
    typedef in_addr IPv4Addr;
 

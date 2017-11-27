@@ -23,6 +23,8 @@ public: // Typedefs
 
 public: // Static variables
 
+   static const BSD::Port MaxPort = BSD::MaxPort; // BSD::ReservedPorts;
+
    // You can look at Config::master - but you can only Config::Set() it
    static const Config &master;
 

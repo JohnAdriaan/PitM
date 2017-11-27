@@ -2,8 +2,6 @@
 // Worker.cc
 //
 
-#include <iostream> // TODO
-
 #include "../General/File/File.hh"
 
 #include "../General/Socket/Service.hh"
@@ -31,7 +29,7 @@ static const String html =
       "<head>\n"
       "<meta charset=UTF-8 />\n"
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
-      "<link rel=\"shortcut icon\" href=/favicon.ico />\n"
+      "<link rel='shortcut icon' href=/favicon.ico />\n"
       "<link rel=stylesheet type=text/css href=style.css />\n"
       "<title>PitM: Pi in the Middle</title>\n"
       "</head>\n";
@@ -44,13 +42,13 @@ static String Heading(String header, bool border=false) {
    static const String preface =
          "<body>\n"
          "<h1 class=left>\n"
-         "<a style=\"color:black\" href=\"/\">\n"
-         "<img src=favicon.ico alt=\"John Burger\" height=64 width=64 />\n"
+         "<a style='color:black' href='/'>\n"
+         "<img src=favicon.ico alt='John Burger' height=64 width=64 />\n"
          "PitM</a></h1>\n"
          "<h1 class=right>Pi in the Middle\n"
-         "<div style=\"font-size:10pt\">"
+         "<div style='font-size:10pt'>"
          "&nbsp;Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
-         "<div style=\"font-size:16pt;padding:4px;border-style:solid;border-width:1px";
+         "<div style='font-size:16pt;padding:4px;border-style:solid;border-width:1px";
    static const String postface =
          "</div>\n"
          "</h1>\n";
@@ -59,7 +57,7 @@ static String Heading(String header, bool border=false) {
    if (!border) {
       heading += ";border-color:transparent";
    } // if
-   heading += "\">\n";
+   heading += "'>\n";
    heading += header;
    heading += postface;
    return heading;
@@ -89,7 +87,6 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
 } // Worker::Worker(client, address)
 
 bool Worker::GET(bool head) {
-   std::cout << "GET " << request.Path() << std::endl;
    if (request.Path()=="/") {
       return SendHomePage(head);
    } // if
@@ -108,12 +105,12 @@ bool Worker::GET(bool head) {
 
 bool Worker::SendHomePage(bool head) {
    static const String body =
-      "<h3><a href=\"/config\">Configuration</a></h3>\n"
-      "<h3><a href=\"/stats\">Statistics</a></h3>\n"
-      "<h3><a href=\"/logs\">Logs</a></h3>\n"
-      "<form action=\"/quit\" method=POST"
-      " onsubmit=\"return confirm('Are you sure you want to quit?')\">\n"
-      "<input type=submit value=\"Quit\" style=\"color:red\" />\n"
+      "<h3><a href='/config'>Configuration</a></h3>\n"
+      "<h3><a href='/stats'>Statistics</a></h3>\n"
+      "<h3><a href='/logs'>Logs</a></h3>\n"
+      "<form action='/quit' method=POST"
+      " onsubmit='return confirm(\"Are you sure you want to quit?\")'>\n"
+      "<input type=submit value='Quit' style='color:red' />\n"
       "</form>\n";
 
    String status;
@@ -163,10 +160,10 @@ String Selection(const std::list<Element> &list,
 
    String selection;
    selection.reserve(256);
-   selection += "<label for=" + label + ">" + label + ": </label>\n";
-   selection += "<select id=" + label + " name=" + label + ">\n";
+   selection += "<label for=" + label + ">" + label + ":</label>\n";
+   selection += " <select id=" + label + " name=" + label + ">\n";
    if (hasNone) {
-      selection += "  <option value=\"\"";
+      selection += "  <option value=''";
       if (current.empty()) {
          selection += " selected";
          selected = true;
@@ -174,9 +171,9 @@ String Selection(const std::list<Element> &list,
       selection += ">None</option>\n";
    } // if
    for (const auto &i : list) {
-      selection += "  <option value=\"";
+      selection += "  <option value='";
       selection += i;
-      selection += '"';
+      selection += '\'';
       if (current==(String)i) {
          selection += " selected";
          selected = true;
@@ -186,69 +183,93 @@ String Selection(const std::list<Element> &list,
       selection += "</option>\n";
    } // for
    if (!selected && !current.empty()) {
-      selection += "  <option value=\"";
+      selection += "  <option value='";
       selection += current;
-      selection += "\" selected disabled>";
+      selection += "' selected disabled>";
       selection += current;
       selection += "</option>\n";
    } // if
-   selection += "</select>\n";
+   selection += " </select>\n";
    return selection;
 } // Selection(list, label, current, hasNone)
 
+static String Fill() {
+   static const String divider = " - ";
+   String prefix;
+   String fill;
+   fill.reserve(2048);
+   fill += "<script>\n";
+   fill += "var ports = [";
+   prefix = "'";
+   for (const auto &p : BSD::Service::Ports()) {
+      if (p.first>Config::MaxPort) {
+         continue;
+      } // if
+      fill += prefix;
+      fill += p.first;
+      String sep = divider;
+      for (const auto &s : p.second) {
+         fill += sep;
+         fill += s.first;
+         sep = ",";
+      } // for
+      prefix = "','";
+   } // for
+   fill += "'];\n";
+   fill += "var names = [";
+   prefix = "'";
+   for (const auto &s : BSD::Service::Services()) {
+      BSD::Port port = s.second.Port();
+      if (port>Config::MaxPort) {
+         continue;
+      } // if
+      fill += prefix;
+      fill += s.first;
+      fill += divider;
+      fill += port;
+      prefix = "','";
+   } // for
+   fill += "'];\n";
+   fill += "function Fill(id,c) {\n"  // id,current
+           " var s = document.getElementById(id);\n"
+           " var n = c=='' ? 'Select\u2026' : 'REMOVE';\n" // HEllip
+           " var o = new Option(n,'',true,c=='');\n"
+           " s.appendChild(o);\n"
+           " var g = document.createElement('OPTGROUP');\n"
+           " g.label = 'Numeric';\n"
+           " for (var p=0;p<ports.length;++p) {\n"
+           "  var t = ports[p];\n"
+           "  var v = t.substring(0,t.indexOf('"+divider+"'));\n"
+           "  var o = new Option(t,v,false,v==c);\n"
+           "  g.appendChild(o);\n"
+           " } // for\n"
+           " s.appendChild(g);\n"
+           " g = document.createElement('OPTGROUP');\n"
+           " g.label = 'Name';\n"
+           " for (var n=0;n<names.length;++n) {\n"
+           "  var t = names[n];\n"
+           "  var v = t.substring(0,t.indexOf('"+divider+"'));\n"
+           "  var o = new Option(t,v,false,v==c);\n"
+           "  g.appendChild(o);\n"
+           " } // for\n"
+           " s.appendChild(g);\n"
+           "} // Fill(id,c)\n";
+   fill += "</script>\n";
+   return fill;
+} // Fill()
+
 // If current is empty, then show "Select..."
 static String Ports(unsigned selection,const String &current=String()) {
+   String id = 'P' + ToString(selection);
    String select;
    select.reserve(1024);
 
-   select += "<select name=P";
-   select += ToString(selection);
-   select += " onchange=\"this.form.submit()\">\n";
-
-   select += "<option value=\"\"";
-   if (current.empty()) {
-      select += " selected>Select&hellip;"; // ellipsis
-   } // if
-   else {
-      select += ">REMOVE";
-   } // else
-   select += "</option>\n";
-
-   select += " <optgroup label=Numeric>\n";
-   for (const auto &p : BSD::Service::Ports()) {
-      String port = ToString(p.first);
-      select += "  <option value=";
-      select += port;
-      if (current==port) {
-         select += " selected";
-      } // if
-      select += '>';
-      select += port;
-      String sep = " - ";
-      for (const auto &s : p.second) {
-         select += sep;
-         select += s.first;
-         sep = ",";
-      } // for
-      select += "</option>\n";
-   } // for
-   select += " </optgroup>\n";
-   select += " <optgroup label=Name>\n";
-   for (const auto &s : BSD::Service::Services()) {
-      select += "  <option value=\"";
-      select += s.first;
-      select += "\"";
-      if (current==s.first) {
-         select += " selected";
-      } // if
-      select += '>';
-      select += s.first;
-      select += " - ";
-      select += ToString(s.second.Port());
-      select += "</option>\n";
-   } // for
-   select += " </optgroup>\n";
-
+   select += "<select id=";
+   select += id;
+   select += " name=";
+   select += id;
+   select += " onchange='this.form.submit();'>\n";
+   select += " <script>Fill('"+id+"','"+current+"');</script>\n";
    select += "</select>\n";
    return select;
 } // Ports(current)
@@ -265,39 +286,39 @@ bool Worker::SendConfigPage(bool head) {
    String body;
    body.reserve(2048);
    body += header;
+   body += Fill();
    body += "<form method=POST>\n" // action="/config" is assumed
            "<fieldset>\n"
            "<legend>Control</legend>\n";
    body += Selection(up, "Server", config.server, true);
-   body += " <label for=Port>Port: </label>";
-   body += " <input type=number min=1 max=65535 id=Port name=Port style=\"width:5em\" value=";
+   body += "<label for=Port>Port:</label>\n";
+   body += " <input type=number min=1 max=65535 id=Port name=Port style='width:5em' value=";
    body += ToString(config.port);
    body += " />\n"
            "</fieldset><p />\n"
            "<fieldset>\n"
            "<legend>Monitor</legend>\n";
-   body += Selection(upDown, "Left ", config.left, true);
+   body += Selection(upDown, "Left", config.left, true);
    body += Selection(upDown, "Right", config.right, true);
    body += Selection(protocols, "Protocol", config.protocol, false);
-   body += " <label for=ICMP>ICMP: </label>";
+   body += "<label for=ICMP>ICMP:</label>\n";
    body += " <input type=checkbox id=ICMP name=ICMP value=Y"; // If checked - not present if not
    if (config.icmp) {
       body += " checked";
    } // if
-   body += " /> (ping etc.)<p />\n"
-           "<fieldset>\n"
+   body += " /> (ping etc.)<p />\n";
+   body += "<fieldset>\n"
            "<legend>Ports</legend>\n";
    unsigned selection = 1;
    for (const auto &p : config.ports) {
-      body += Ports(selection, p);
+      body += Ports(selection++, p);
       body += ' ';
-      ++selection;
    } // for
    body += Ports(selection);
    body += "</fieldset>\n"
            "</fieldset>\n"
            "<p />\n"
-           "<input type=submit value=Reset formaction=\"/config/reset\" />\n" // Not a Reset button!
+           "<input type=submit value=Reset formaction='/config/reset' />\n" // Not a Reset button!
            "<input type=submit />\n"
            "</form>\n";
    body += tail;
@@ -345,8 +366,6 @@ bool Worker::SendObj(bool head, const void *obj, const void *size) {
 } // Worker::SendObj(head,obj,size)
 
 bool Worker::POST() {
-   std::cout << "POST " << request.Path() << std::endl;
-   std::cout << request.Body() << std::endl;
    if (request.Path()=="/config") {
       return Config();
    } // if
@@ -390,9 +409,11 @@ bool Worker::POSTConfig() {
       } // if
    } // for
 
-   bool same = config.ports==ports;
+   if (config.ports==ports) {
+      return true;
+   } // if
    config.ports = ports;
-   return same;
+   return false;
 } // Worker::POSTConfig()
 
 bool Worker::Refresh() {
@@ -529,7 +550,6 @@ bool Worker::Reply() {
 } // Worker::Reply()
 
 void *Worker::Run() {
-   std::cout << "Starting " << fd << std::endl;
    while (Parse()) {
       if (!Process()) {
          break;
@@ -542,7 +562,6 @@ void *Worker::Run() {
       } // if
       line.clear();
    } // while
-   std::cout << "Stopping " << fd << std::endl;
    Close();
    delete this;
    return nullptr;
