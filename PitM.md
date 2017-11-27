@@ -79,6 +79,7 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
    - `[x]` Which packet types to log
       - `[x]` ICMP
       - `[x]` /etc/services
+   - `[x]` Load and Save to disk
 - `[ ]` Packet pass-through
    - `[ ]` Statistics accumulation
    - `[ ]` Packet logging using pcap format

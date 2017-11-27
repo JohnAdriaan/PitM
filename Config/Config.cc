@@ -2,12 +2,18 @@
 // Config.cc
 //
 
+#include <fstream>
+
+#include "../General/File/File.hh"
+
 #include "../Packet/Packet.hh"
 #include "../Server/Server.hh"
 
 #include "Config.hh"
 
 using namespace PitM;
+
+static const String fileName = File::Expand("~/.PitM");
 
 Config config;
 
@@ -19,7 +25,43 @@ Config::Config() {
    } // if
 } // Config::Config()
 
-void Config::Load() { // TODO
+void Config::Load() {
+   String line;
+   std::ifstream f(fileName);
+
+   while (std::getline(f,line)) {
+      Pos pos = line.find('=');
+      String field = line.substr(0,pos);
+      String value = line.substr(pos+1);
+      if (field=="Left") {
+         left = value;
+         continue;
+      } // if
+      if (field=="Right") {
+         right = value;
+         continue;
+      } // if
+      if (field=="Protocol") {
+         protocol = value;
+         continue;
+      } // if
+      if (field=="ICMP") {
+         icmp = (value=="Y");
+         continue;
+      } // if
+      if (field=="Server") {
+         server = value;
+         continue;
+      } // if
+      if (field=="Port") {
+         port = ToNumber(value);
+         continue;
+      } // if
+      if (field.find("Port")==0) {
+         ports.push_back(value);
+         continue;
+      } // if
+   } // while
 } // Config::Load()
 
 void Config::Set(const Config &newConfig) {
@@ -74,5 +116,20 @@ void Config::Set(const Config &newConfig) {
    } // if
 } // Config::Set(newConfig)
 
-void Config::Save() { // TODO
+void Config::Save() {
+   std::ofstream f(fileName, std::ofstream::trunc);
+
+   f << "Left="     << left     << std::endl;
+   f << "Right="    << right    << std::endl;
+   f << "Protocol=" << protocol << std::endl;
+   f << "ICMP="     << (icmp ?
+                        'Y' :
+                        'N')    << std::endl;
+   f << "Server="   << server   << std::endl;
+   f << "Port="     << port     << std::endl;
+
+   unsigned i = 1;
+   for (const auto &p : ports) {
+      f << "Port" << i++ << '=' << (String)p << std::endl;
+   } // for
 } // Config::Save()

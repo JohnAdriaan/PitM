@@ -24,6 +24,10 @@ public: // Enums
       ReadWrite
    }; // Accesses
 
+public: // Static methods
+
+   static String Expand(const String &name);
+
 public: // Methods
 
    explicit File(const char *path,
