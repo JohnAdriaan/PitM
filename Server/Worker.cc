@@ -13,9 +13,9 @@
 
 #include "Worker.hh"
 
-extern const char favicon[];
+extern const byte icon[];
 
-extern char faviconSize; // Get the ADDRESS of this!!!
+extern char iconSize; // Get the ADDRESS of this!!!
 
 using namespace WWW;
 
@@ -42,8 +42,8 @@ static String Heading(String header, bool border=false) {
    static const String preface =
          "<body>\n"
          "<h1 class=left>\n"
-         "<a style='color:black' href='/'>\n"
-         "<img src=favicon.ico alt='John Burger' height=64 width=64 />\n"
+         "<a href='/'>\n"
+         "<img src=/icon.ico alt='John Burger' height=64 width=64 />\n"
          "PitM</a></h1>\n"
          "<h1 class=right>Pi in the Middle\n"
          "<div style='font-size:10pt'>"
@@ -90,8 +90,11 @@ bool Worker::GET(bool head) {
    if (request.Path()=="/") {
       return SendHomePage(head);
    } // if
+   if (request.Path()=="/icon.ico") {
+      return SendObj(head, icon, &iconSize);
+   } // if
    if (request.Path()=="/favicon.ico") {
-      return SendObj(head, favicon, &faviconSize);
+      return SendObj(head, icon, &iconSize);
    } // if
    if (request.Path()=="/style.css") {
       return SendStyleSheet(head);
@@ -137,9 +140,14 @@ bool Worker::SendHomePage(bool head) {
 
 bool Worker::SendStyleSheet(bool head) {
    static const String body =
+      "*        { font-family: sans-serif }\n"
+      "noscript { color: red }\n"
+      "h1 a     { color: black }\n"
       "h1.left  { display: inline-block; position: relative; width: 96px }\n"
       "h1.right { display: inline-block; position: relative }\n"
-      "fieldset { display: inline-block }\n";
+      "fieldset { display: inline-block }\n"
+      "legend   { color: #404040 }\n"
+      "label    { color: #404040 }\n";
    Response response(HTTP11, Response::OK, body.length());
    response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do!
    if (!Write(response)) {
@@ -277,7 +285,8 @@ static String Ports(unsigned selection,const String &current=String()) {
 bool Worker::SendConfigPage(bool head) {
    static const String header =
       html +
-      Heading("Configuration");
+      Heading("<noscript>This page requires JavaScript.</noscript>\n"
+              "<script>document.write('Configuration');</script>");
 
    BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
    BSD::Interfaces upDown = BSD::Interface::List(BSD::NoProtocol, BSD::Down);
@@ -306,7 +315,7 @@ bool Worker::SendConfigPage(bool head) {
    if (config.icmp) {
       body += " checked";
    } // if
-   body += " /> (ping etc.)<p />\n";
+   body += " /> <label for=ICMP>(ping etc.)</label><p />\n";
    body += "<fieldset>\n"
            "<legend>Ports</legend>\n";
    unsigned selection = 1;
