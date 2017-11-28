@@ -43,7 +43,7 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.userobjs.957950961" name="Other objects" superClass="gnu.cpp.link.option.userobjs" valueType="userObjs">
-									<listOptionValue builtIn="false" value="../Server/favicon.o"/>
+									<listOptionValue builtIn="false" value="../Server/icon.o"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.322049555" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -55,19 +55,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.162539754.362683273" name="favicon.o" rcbsApplicability="disable" resourcePath="Server/favicon.o" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.916321134.70446136">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.916321134.70446136" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.916321134">
-							<option id="gnu.cpp.link.option.userobjs.1496450413" name="Other objects" superClass="gnu.cpp.link.option.userobjs" valueType="userObjs">
-								<listOptionValue builtIn="false" value="/home/pi/Projects/PitM/Server/favicon.o"/>
-							</option>
-							<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1001035037" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
-								<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-								<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-								<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-							</inputType>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="Server|Packet|Config|General" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Config"/>
@@ -127,7 +114,7 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.userobjs.2081546883" name="Other objects" superClass="gnu.cpp.link.option.userobjs" valueType="userObjs">
-									<listOptionValue builtIn="false" value="../Server/favicon.o"/>
+									<listOptionValue builtIn="false" value="../Server/icon.o"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1386307159" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -139,19 +126,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.release.1966719720.142461148" name="favicon.o" rcbsApplicability="disable" resourcePath="Server/favicon.o" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.633436173.1134038681">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.633436173.1134038681" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.633436173">
-							<option id="gnu.cpp.link.option.userobjs.763401314" name="Other objects" superClass="gnu.cpp.link.option.userobjs" valueType="userObjs">
-								<listOptionValue builtIn="false" value="/home/pi/Projects/PitM/Server/favicon.o"/>
-							</option>
-							<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1259338793" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
-								<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-								<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-								<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
-								<additionalInput kind="additionalinput" paths="$(LIBS)"/>
-							</inputType>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="General/File|General/WWW|General/Thread|General/FD|General/Socket|Config" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Config"/>
