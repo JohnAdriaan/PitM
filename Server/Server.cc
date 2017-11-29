@@ -2,20 +2,20 @@
 // Server.cc
 //
 
-#include "Worker.hh"
+#include "Client.hh"
 #include "Server.hh"
 
 using namespace PitM;
 
-MT::Atomic<Server *> Server::current;
+MT::Atomic<Server *> Server::server;
 
 bool Server::Start() {
    Server *s = new Server();
-   return current==s;
+   return server==s;
 } // Server::Start()
 
 void Server::Quit(Server *swap) {
-   swap = current.Swap(swap);
+   swap = server.Swap(swap);
    if (swap!=nullptr) {
       swap->Listen::Close();
    } // if
@@ -37,7 +37,7 @@ Server::Server() :
 } // Server::Server()
 
 void Server::Heard(BSD::TCP &client, const BSD::Address &address) {
-   new Worker(client, address);
+   new Client(client, address);
 } // Server::Heard(TCP, Address)
 
 void *Server::Run() {
@@ -48,5 +48,5 @@ void *Server::Run() {
 } // Server::Run()
 
 Server::~Server() {
-   current.Swap(nullptr, this); // If this, set null
+   server.Swap(nullptr, this); // If this, set null
 } // Server::~Server()

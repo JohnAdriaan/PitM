@@ -39,11 +39,11 @@ private: // Thread overrides
 
 private: // Classes
 
-   class Worker;
+   class Client;
 
 private: // Static variables
 
-   static MT::Atomic<Server *> current;
+   static MT::Atomic<Server *> server;
 
 }; // Server
 

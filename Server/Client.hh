@@ -1,9 +1,9 @@
 //
-// Worker.hh
+// Client.hh
 //
 
-#ifndef Worker_hh
-#define Worker_hh
+#ifndef Client_hh
+#define Client_hh
 
 #include <Socket/TCP.hh>
 
@@ -13,54 +13,54 @@
 
 #include "Server.hh"
 
-class PitM::Server::Worker : public BSD::TCP,
+class PitM::Server::Client : public BSD::TCP,
                              private MT::Thread {
 
 friend Server;
 
 private: // Methods
 
-   Worker(BSD::TCP &client, const BSD::Address &address);
+   Client(BSD::TCP &client, const BSD::Address &address);
 
-   virtual ~Worker() = default;
+   virtual ~Client() = default;
 
 private: // GET Responses
 
    // Reply to GET or HEAD Request
    bool GET(bool head);
 
-   // Create and send Home Page
-   bool SendHomePage(bool head);
+      // Create and send Home Page
+      bool SendHomePage(bool head);
 
-   // Create and send Style Sheet
-   bool SendStyleSheet(bool head);
+      // Create and send Style Sheet
+      bool SendStyleSheet(bool head);
 
-   // Create and send Config Page
-   bool SendConfigPage(bool head);
+      // Create and send Config Page
+      bool SendConfigPage(bool head);
 
-   // Send file using Linux's ::sendfile()
-   bool SendFile(bool head,const char *path);
+      // Send file using Linux's ::sendfile()
+      bool SendFile(bool head,const char *path);
 
-   // Send a linked-in binary 'file'
-   bool SendObj(bool head,const void *obj, const void *size);
+      // Send a linked-in binary 'file'
+      bool SendObj(bool head,const void *obj, const void *size);
 
 private: // POST Responses
 
    // Accept submitted data
    bool POST();
 
-   // Configure
-   bool Config();
+      // Configure
+      bool Config();
 
-      // Copy config from POST.
-      // Return false if the Ports have changed (thus no Config::Set())
-      bool POSTConfig();
+         // Copy config from POST.
+         // Return false if the Ports have changed (thus no Config::Set())
+         bool POSTConfig();
 
-      // Re-display current config
-      bool Refresh();
+         // Re-display current config
+         bool Refresh();
 
-   // Close the application
-   bool Quit();
+      // Close the application
+      bool Quit();
 
 private: // Run() methods
 
@@ -106,6 +106,6 @@ private: // Variables
 
    unsigned contentLength;
 
-}; // Worker
+}; // Client
 
-#endif // Worker_hh
+#endif // Client_hh
