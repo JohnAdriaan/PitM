@@ -8,8 +8,6 @@
 
 using namespace PitM;
 
-static MT::Atomic<unsigned> total(0);
-
 Monitor Monitor::left(right);
 
 Monitor Monitor::right(left);
@@ -30,9 +28,21 @@ void Monitor::Reconfigure() {
    new Reader(right);
 } // Monitor::Reconfigure()
 
+unsigned Monitor::Left() {
+   return left.count;
+} // Monitor::Left()
+
+unsigned Monitor::Right() {
+   return right.count;
+} // Monitor::Right()
+
 unsigned Monitor::Total() {
-   return total;
+   return left.count+right.count;
 } // Monitor::Total()
+
+unsigned Monitor::Dropped() {
+   return left.dropped+right.dropped;
+} // Monitor::Dropped()
 
 unsigned Monitor::Logged() {
    return Log::logged;
@@ -47,7 +57,9 @@ void Monitor::Quit() {
 Monitor::Monitor(Monitor &other) :
          other(other),
          queue(),
-         reader() {
+         reader(),
+         count(0),
+         dropped(0) {
 } // Monitor::Monitor(other)
 
 void *Monitor::Run() {
@@ -56,10 +68,14 @@ void *Monitor::Run() {
       if (packet==nullptr) {
          break;
       } // if
+      ++count;
+
+      Size read;
       Reader *r = reader;
-      if (r!=nullptr) {
-         Size read;
-         r->Write(packet->buffer,sizeof packet->buffer,read);
+      if (r==nullptr ||
+          !r->Write(packet->buffer,sizeof packet->buffer,read)) {
+         ++dropped;
+         continue;
       } // if
       Log::log.queue.Push(*packet);
    } // for

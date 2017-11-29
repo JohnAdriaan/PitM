@@ -19,7 +19,13 @@ public: // Static methods
 
    static void Reconfigure();
 
+   static unsigned Left();
+
+   static unsigned Right();
+
    static unsigned Total();
+
+   static unsigned Dropped();
 
    static unsigned Logged();
 
@@ -57,6 +63,10 @@ private: // Variables
    Packets queue;
 
    MT::Atomic<Reader *> reader;
+
+   unsigned count;
+
+   unsigned dropped;
 
 private: // Static variables
 

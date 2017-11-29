@@ -32,6 +32,10 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1698326118" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/General}&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1232615374" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-fdata-sections -ffunction-sections" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.warnings.pedantic.294637407" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.extrawarn.1806298236" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.wconversion.1123740240" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1013034783" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.833867374" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -51,7 +55,7 @@
 								<option id="gnu.cpp.link.option.paths.1740528286" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/General}/${config_name:${ProjName}}&quot;"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.409927368" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pthread" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.409927368" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pthread -Wl,--gc-sections" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.322049555" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -100,6 +104,10 @@
 								<option id="gnu.cpp.compiler.option.include.paths.599826839" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/General}&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1436266536" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-fdata-sections -ffunction-sections" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.warnings.pedantic.497250475" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.extrawarn.267748694" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.wconversion.1151940096" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1959096093" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1852202183" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">
@@ -121,7 +129,8 @@
 								<option id="gnu.cpp.link.option.paths.615634827" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/General}/${config_name:${ProjName}}&quot;"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1933488254" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pthread" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1933488254" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pthread -Wl,--gc-sections" valueType="string"/>
+								<option id="gnu.cpp.link.option.strip.954281586" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1386307159" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

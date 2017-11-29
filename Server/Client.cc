@@ -61,7 +61,7 @@ static String Heading(String header, bool border=false) {
    return heading;
 } // Heading(header, border)
 
-Server::Client::Client(BSD::TCP &client, const BSD::Address &address) :
+Server::Client::Client(BSD::TCP &client, const BSD::Address &/*address*/) :
                 TCP(client),
                 Thread(),
                 config(Config::master),
@@ -208,11 +208,12 @@ static String Fill() {
    fill += "var ports = [";
    prefix = "'";
    for (const auto &p : BSD::Service::Ports()) {
-      if (p.first>Config::MaxPort) {
+      unsigned port = p.first;
+      if (port>Config::MaxPort) {
          continue;
       } // if
       fill += prefix;
-      fill += p.first;
+      fill += port;
       String sep = divider;
       for (const auto &s : p.second) {
          fill += sep;
@@ -225,7 +226,7 @@ static String Fill() {
    fill += "var names = [";
    prefix = "'";
    for (const auto &s : BSD::Service::Services()) {
-      BSD::Port port = s.second.Port();
+      unsigned port = s.second.Port();
       if (port>Config::MaxPort) {
          continue;
       } // if

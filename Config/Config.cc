@@ -55,7 +55,7 @@ void Config::Load() {
          continue;
       } // if
       if (field=="Port") {
-         port = ToNumber(value);
+         port = (BSD::Port)ToNumber(value);
          continue;
       } // if
       if (field.find("Port")==0) {
