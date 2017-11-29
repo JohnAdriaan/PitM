@@ -107,11 +107,8 @@ void Config::Set(const Config &newConfig) {
    } // if
    config.Save();
    if (monitorChanged) {
-      Monitor::Start();
-   } // if
-   else if (configChanged) { // If the former, no need to do this!
       Monitor::Reconfigure();
-   } // else if
+   } // if
    if (serverChanged) {
       Server::Start();
    } // if

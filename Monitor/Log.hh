@@ -6,7 +6,6 @@
 #define Log_hh
 
 #include <File/File.hh>
-
 #include <Thread/Thread.hh>
 
 #include "Monitor.hh"
@@ -18,6 +17,8 @@ friend Monitor;
 private: // Methods
 
    Log();
+
+   void Stop();
 
 private: // Thread overrides
 

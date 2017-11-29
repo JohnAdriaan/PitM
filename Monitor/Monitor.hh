@@ -6,10 +6,12 @@
 #define Monitor_hh
 
 #include <Thread/Queue.tt>
+#include <Thread/Atomic.tt>
+#include <Thread/Thread.hh>
 
 #include "../PitM.hh"
 
-class PitM::Monitor : private _PitM_ {
+class PitM::Monitor : private MT::Thread {
 
 public: // Static methods
 
@@ -29,6 +31,10 @@ private: // Typedefs and classes
 
    class Packet;
 
+   class Writer;
+
+   class Reader; friend Reader;
+
    typedef MT::Queue<Packet,MT::Mutex> Packets;
 
 private: // Methods
@@ -36,11 +42,21 @@ private: // Methods
    // Not a move constructor - just looks like one
    explicit Monitor(Monitor &other);
 
+   void Stop(Reader *swap=nullptr);
+
+   virtual ~Monitor() = default;
+
+private: // Thread overrides
+
+   overrides void *Run();
+
 private: // Variables
 
    Monitor &other;
 
    Packets queue;
+
+   MT::Atomic<Reader *> reader;
 
 private: // Static variables
 

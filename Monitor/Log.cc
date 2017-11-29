@@ -16,6 +16,10 @@ Monitor::Log::Log() :
               queue() {
 } // Log::Log()
 
+void Monitor::Log::Stop() {
+   queue.Quit();
+} // Log::Stop()
+
 void *Monitor::Log::Run() {
    for (;;) {
       Packet *packet = queue.Pop();
