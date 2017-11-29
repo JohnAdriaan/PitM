@@ -6,9 +6,7 @@
 #define Client_hh
 
 #include <Socket/TCP.hh>
-
 #include <Thread/Thread.hh>
-
 #include <WWW/HTTP/Request.hh>
 
 #include "Server.hh"

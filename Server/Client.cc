@@ -3,10 +3,8 @@
 //
 
 #include <File/File.hh>
-
 #include <Socket/Service.hh>
 #include <Socket/Interface.hh>
-
 #include <WWW/HTTP/Response.hh>
 
 #include "../Monitor/Monitor.hh"

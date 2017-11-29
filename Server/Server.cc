@@ -2,6 +2,8 @@
 // Server.cc
 //
 
+#include <Socket/Address.hh>
+
 #include "Client.hh"
 #include "Server.hh"
 
@@ -22,9 +24,9 @@ void Server::Quit(Server *swap) {
 } // Server::Quit(swap)
 
 Server::Server() :
-        BSD::Listen(BSD::Address::any4,
-                    Config::master.port),
+        BSD::Listen(BSD::Address::any4.Family()),
         MT::Thread() {
+   Quit(this);
    if (!Listen::Valid()) {
       delete this;
       return;
@@ -33,7 +35,6 @@ Server::Server() :
       delete this;
       return;
    } // if
-   Quit(this);
 } // Server::Server()
 
 void Server::Heard(BSD::TCP &client, const BSD::Address &address) {
@@ -41,12 +42,14 @@ void Server::Heard(BSD::TCP &client, const BSD::Address &address) {
 } // Server::Heard(TCP, Address)
 
 void *Server::Run() {
-   while (Accept()) {
-   } // while
+   if (Hear(BSD::Address::any4, Config::master.port)) {
+      while (Accept()) {
+      } // while
+   } // if
    delete this;
    return nullptr;
 } // Server::Run()
 
 Server::~Server() {
-   server.Swap(nullptr, this); // If this, set null
+   server.Swap(nullptr, this); // Set nullptr, but only if this
 } // Server::~Server()

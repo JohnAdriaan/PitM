@@ -6,7 +6,6 @@
 #define Server_hh
 
 #include <Socket/Listen.hh>
-
 #include <Thread/Thread.hh>
 #include <Thread/Atomic.tt>
 
