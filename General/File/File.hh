@@ -14,7 +14,7 @@ public: // Enums
    enum Creates {
       Exists,     // Open only if exists
       Create,     // Create if doesn't exist
-      Exclusive,  // Only create if doesn't exist
+      Exclusive,  // Only open if doesn't exist
       Truncate    // Start with empty file
    }; // Creates
 

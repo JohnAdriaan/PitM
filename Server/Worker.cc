@@ -441,6 +441,7 @@ bool Worker::Quit() {
    Response response(HTTP11, Response::OK, body);
    response.Add(HTTP::Connection, HTTP::Close);
    Write(response);
+   PitM::quit.Unlink(); // Clean shutdown
    PitM::quit.Post();
    return false; // Might as well close; shutting down anyway!
 } // Worker::Quit()
