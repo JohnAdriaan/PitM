@@ -5,12 +5,10 @@
 #ifndef FD_hh
 #define FD_hh
 
-#include "../List.tt"
+#include "../General.hh"
 
 class _FD_ : private _General_ {
 }; // _FD_
-
-class Pool;
 
 class FD : private _FD_ {
 
@@ -48,7 +46,7 @@ protected: // Methods
 
    explicit FD(FD &fd);
 
-   virtual ~FD();
+   ~FD();
 
 protected: // Variables
 
@@ -57,20 +55,6 @@ protected: // Variables
 private: // Enums
 
    enum { Invalid = (Type)-1 };
-
-private: // Pool hooks
-
-   friend Pool;
-
-   friend List<FD>;
-
-   void Add(Pool &pool);
-
-   hook void Readable();
-
-   hook void Writable();
-
-   List<FD>::Node node;
 
 }; // FD
 

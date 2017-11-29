@@ -6,28 +6,16 @@
 #include <unistd.h>
 #include <sys/sendfile.h>
 
-#include "Pool.hh"
+#include "FD.hh"
 
 FD::FD(Type fd) :
-    fd(fd),
-    node(*this) {
+    fd(fd) {
 } // FD::FD(fd)
 
 FD::FD(FD &fd) :
-    fd(fd.fd),
-    node(*this) {
+    fd(fd.fd) {
    fd.fd = Invalid;
 } // FD::FD(FD)
-
-void FD::Add(Pool &pool) {
-   if (!Valid()) {
-      return;
-   } // if
-   // There are times when despite a poll(), an operation will still block.
-   // Mark the FD as non-blocking to guarantee it'll never block
-   ::fcntl(fd, F_SETFL, O_NONBLOCK);
-   node.Add(pool);
-} // FD::Add(Pool)
 
 bool FD::Read(void *buffer, unsigned size, unsigned &read) {
    if (!Valid()) {
@@ -86,16 +74,6 @@ bool FD::SendFile(FD &source, unsigned size) {
    } // for
    return true;
 } // FD::SendFile(FD, size)
-
-// If this ends up being called, something's wrong!
-void FD::Readable() {
-   Close();
-} // FD::Readable()
-
-// If this ends up being called, something's wrong!
-void FD::Writable() {
-   Close();
-} // FD::Writable()
 
 void FD::Close() {
    Type old = fd;
