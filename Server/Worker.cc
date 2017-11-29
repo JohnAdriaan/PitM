@@ -63,18 +63,18 @@ static String Heading(String header, bool border=false) {
    return heading;
 } // Heading(header, border)
 
-Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
-        TCP(client),
-        Thread(),
-        config(Config::master),
-        request(),
-        state(RequestLine),
-        line(),
-        buffer(),
-        read(),
-        pos(),
-        start(),
-        contentLength() {
+Server::Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
+                TCP(client),
+                Thread(),
+                config(Config::master),
+                request(),
+                state(RequestLine),
+                line(),
+                buffer(),
+                read(),
+                pos(),
+                start(),
+                contentLength() {
    line.reserve(2048);
    if (!TCP::Valid()) {
       delete this;
@@ -86,7 +86,7 @@ Worker::Worker(BSD::TCP &client, const BSD::Address &address) :
    } // if
 } // Worker::Worker(client, address)
 
-bool Worker::GET(bool head) {
+bool Server::Worker::GET(bool head) {
    if (request.Path()=="/") {
       return SendHomePage(head);
    } // if
@@ -106,7 +106,7 @@ bool Worker::GET(bool head) {
    return false;
 } // Worker::GET(head)
 
-bool Worker::SendHomePage(bool head) {
+bool Server::Worker::SendHomePage(bool head) {
    static const String body =
       "<h3><a href='/config'>Configuration</a></h3>\n"
       "<h3><a href='/stats'>Statistics</a></h3>\n"
@@ -138,7 +138,7 @@ bool Worker::SendHomePage(bool head) {
    return true;
 } // Worker::SendHomePage(head)
 
-bool Worker::SendStyleSheet(bool head) {
+bool Server::Worker::SendStyleSheet(bool head) {
    static const String body =
       "*        { font-family: sans-serif }\n"
       "noscript { color: red }\n"
@@ -282,7 +282,7 @@ static String Ports(unsigned selection,const String &current=String()) {
    return select;
 } // Ports(current)
 
-bool Worker::SendConfigPage(bool head) {
+bool Server::Worker::SendConfigPage(bool head) {
    static const String header =
       html +
       Heading("<noscript>This page requires JavaScript.</noscript>\n"
@@ -342,7 +342,7 @@ bool Worker::SendConfigPage(bool head) {
    return true;
 } // Worker::SendConfigPage(head)
 
-bool Worker::SendFile(bool head,const char *path) {
+bool Server::Worker::SendFile(bool head,const char *path) {
    File file(path);
    if (!file.Valid()) {
       return false;
@@ -360,7 +360,7 @@ bool Worker::SendFile(bool head,const char *path) {
    return true;
 } // Worker::SendFile(head,path)
 
-bool Worker::SendObj(bool head, const void *obj, const void *size) {
+bool Server::Worker::SendObj(bool head, const void *obj, const void *size) {
    Size length = (Size)size; // Convert (absolute) address to size
 
    Response response(HTTP11, Response::OK, length);
@@ -374,7 +374,7 @@ bool Worker::SendObj(bool head, const void *obj, const void *size) {
    return true;
 } // Worker::SendObj(head,obj,size)
 
-bool Worker::POST() {
+bool Server::Worker::POST() {
    if (request.Path()=="/config") {
       return Config();
    } // if
@@ -389,7 +389,7 @@ bool Worker::POST() {
    return false;
 } // Worker::POST()
 
-bool Worker::Config() {
+bool Server::Worker::Config() {
    if (!POSTConfig()) {
       return Refresh();
    } // if
@@ -398,7 +398,7 @@ bool Worker::Config() {
    return Write(response);
 } // Worker::Config()
 
-bool Worker::POSTConfig() {
+bool Server::Worker::POSTConfig() {
    config.server   = request.Get("Server=");
    config.port     = BSD::Service::Find(request.Get("Port="));
    config.left     = request.Get("Left=");
@@ -425,13 +425,13 @@ bool Worker::POSTConfig() {
    return false;
 } // Worker::POSTConfig()
 
-bool Worker::Refresh() {
+bool Server::Worker::Refresh() {
    Response response(HTTP11, Response::SeeOther);
    response.Add(HTTP::Location, "/config");
    return Write(response);
 } // Worker::Refresh()
 
-bool Worker::Quit() {
+bool Server::Worker::Quit() {
    static const String body =
       html +
       Heading("Finished") +
@@ -445,7 +445,7 @@ bool Worker::Quit() {
    return false; // Might as well close; shutting down anyway!
 } // Worker::Quit()
 
-bool Worker::Parse() {
+bool Server::Worker::Parse() {
    for (;;) {
       while (pos<read) {
          // Don't manipulate CR/LF in Request Body...
@@ -486,7 +486,7 @@ bool Worker::Parse() {
    return false; // Impossible!
 } // Worker::Parse()
 
-bool Worker::Process() {
+bool Server::Worker::Process() {
    switch (state) {
    case RequestLine :
       request = Request::Parse(line);
@@ -529,7 +529,7 @@ bool Worker::Process() {
    return true;
 } // Worker::Process()
 
-bool Worker::Reply() {
+bool Server::Worker::Reply() {
    switch (request.Method()) {
    case Request::Unknown :
       Write(Response(HTTP10, Response::BadRequest));
@@ -558,7 +558,7 @@ bool Worker::Reply() {
    return false;
 } // Worker::Reply()
 
-void *Worker::Run() {
+void *Server::Worker::Run() {
    while (Parse()) {
       if (!Process()) {
          break;

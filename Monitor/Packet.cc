@@ -8,13 +8,13 @@
 
 using namespace PitM;
 
-Packets Packet::pool;
+Monitor::Packets Monitor::Packet::pool;
 
-Packet::Packet() :
-        Node() {
+Monitor::Packet::Packet() :
+                 Node() {
 } // Packet::Packet()
 
-bool Packet::Stamp(Size length) {
+bool Monitor::Packet::Stamp(Size length) {
    pcap.incl_len = length;
    pcap.orig_len = length;
    return ::gettimeofday(&time, nullptr)==0;

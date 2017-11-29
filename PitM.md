@@ -67,9 +67,8 @@ By writing a simple Web server as part of _this_ program, I could "serve up" the
 - And with a bit more work, that same Web server could be used to reconfigure the program.
 
 ## Modules
-- `[x]` Framework
-   - `[x]` main()
-   - `[x]` Threads
+To link this project, you'll also need the [`Linux`](../Linux) repository.
+
 - `[x]` Configuration
    - `[x]` Which interfaces to use for what
    - `[x]` Which protocols to process:

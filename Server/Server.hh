@@ -37,6 +37,10 @@ private: // Thread overrides
 
    overrides void *Run();
 
+private: // Classes
+
+   class Worker;
+
 private: // Static variables
 
    static MT::Atomic<Server *> current;

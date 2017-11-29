@@ -5,7 +5,7 @@
 #ifndef PitM_hh
 #define PitM_hh
 
-#include <Thread/Queue.tt>
+#include <General.hh>
 
 namespace PitM {
 
@@ -15,15 +15,7 @@ namespace PitM {
 
    class Monitor;
 
-      class Packet;
-
-      class Log;
-
-      typedef MT::Queue<Packet,MT::Mutex> Packets;
-
    class Server;
-
-      class Worker;
 
    const String &Version();
 

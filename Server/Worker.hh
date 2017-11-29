@@ -5,16 +5,16 @@
 #ifndef Worker_hh
 #define Worker_hh
 
-#include <Thread/Thread.hh>
-
 #include <Socket/TCP.hh>
+
+#include <Thread/Thread.hh>
 
 #include <WWW/HTTP/Request.hh>
 
-#include "../Config/Config.hh"
+#include "Server.hh"
 
-class PitM::Worker : public BSD::TCP,
-                     private MT::Thread {
+class PitM::Server::Worker : public BSD::TCP,
+                             private MT::Thread {
 
 friend Server;
 

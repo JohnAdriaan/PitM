@@ -7,9 +7,9 @@
 
 #include "PCap.hh"
 
-#include "../PitM.hh"
+#include "Monitor.hh"
 
-class PitM::Packet : public Packets::Node {
+class PitM::Monitor::Packet : public Packets::Node {
 
 public: // Static variables
 

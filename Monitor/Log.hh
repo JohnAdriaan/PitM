@@ -9,9 +9,9 @@
 
 #include <Thread/Thread.hh>
 
-#include "../PitM.hh"
+#include "Monitor.hh"
 
-class PitM::Log : private MT::Thread {
+class PitM::Monitor::Log : private MT::Thread {
 
 friend Monitor;
 
@@ -25,11 +25,13 @@ private: // Thread overrides
 
 private: // Variables
 
-   PitM::Packets queue;
+   Packets queue;
 
-private: // Classes
+private: // Static variables
 
    static Log log;
+
+   static unsigned logged;
 
 }; // Log
 

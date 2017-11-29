@@ -5,8 +5,6 @@
 #ifndef PCap_hh
 #define PCap_hh
 
-#include <General.hh>
-
 namespace PCap {
 
 enum LinkTypes {

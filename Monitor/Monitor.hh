@@ -7,7 +7,7 @@
 
 #include <Thread/Queue.tt>
 
-#include "Packet.hh"
+#include "../PitM.hh"
 
 class PitM::Monitor : private _PitM_ {
 
@@ -23,8 +23,17 @@ public: // Static methods
 
    static void Quit();
 
+private: // Typedefs and classes
+
+   class Log;
+
+   class Packet;
+
+   typedef MT::Queue<Packet,MT::Mutex> Packets;
+
 private: // Methods
 
+   // Not a move constructor - just looks like one
    explicit Monitor(Monitor &other);
 
 private: // Variables

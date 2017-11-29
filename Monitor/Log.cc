@@ -7,14 +7,16 @@
 
 using namespace PitM;
 
-Log Log::log;
+unsigned Monitor::Log::logged = 0;
 
-Log::Log() :
-     Thread(),
-     queue() {
+Monitor::Log Monitor::Log::log;
+
+Monitor::Log::Log() :
+              Thread(),
+              queue() {
 } // Log::Log()
 
-void *Log::Run() {
+void *Monitor::Log::Run() {
    for (;;) {
       Packet *packet = queue.Pop();
       if (packet==nullptr) {

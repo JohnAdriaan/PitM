@@ -3,13 +3,12 @@
 //
 
 #include "Log.hh"
+#include "Packet.hh"
 #include "Monitor.hh"
 
 using namespace PitM;
 
 static unsigned total = 0;
-
-static unsigned logged = 0;
 
 Monitor Monitor::left(right);
 
@@ -33,7 +32,7 @@ unsigned Monitor::Total() {
 } // Monitor::Total()
 
 unsigned Monitor::Logged() {
-   return logged;
+   return Log::logged;
 } // Monitor::Logged()
 
 Monitor::Monitor(Monitor &other) :
