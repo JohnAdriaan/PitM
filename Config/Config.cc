@@ -6,7 +6,8 @@
 
 #include "../General/File/File.hh"
 
-#include "../Packet/Packet.hh"
+#include "../Monitor/Monitor.hh"
+
 #include "../Server/Server.hh"
 
 #include "Config.hh"
@@ -65,14 +66,14 @@ void Config::Load() {
 } // Config::Load()
 
 void Config::Set(const Config &newConfig) {
-   bool packetChanged = false;
+   bool monitorChanged = false;
    if (config.left!=newConfig.left) {
       config.left = newConfig.left;
-      packetChanged = true;
+      monitorChanged = true;
    } // if
    if (config.right!=newConfig.right) {
       config.right = newConfig.right;
-      packetChanged = true;
+      monitorChanged = true;
    } // if
 
    bool configChanged = false;
@@ -99,17 +100,17 @@ void Config::Set(const Config &newConfig) {
       serverChanged = true;
    } // if
 
-   if (!packetChanged &&
+   if (!monitorChanged &&
        !configChanged &&
        !serverChanged) {
       return;
    } // if
    config.Save();
-   if (packetChanged) {
-      Packet::Start();
+   if (monitorChanged) {
+      Monitor::Start();
    } // if
    else if (configChanged) { // If the former, no need to do this!
-      Packet::Reconfigure();
+      Monitor::Reconfigure();
    } // else if
    if (serverChanged) {
       Server::Start();

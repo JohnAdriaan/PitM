@@ -9,7 +9,7 @@
 
 #include "../General/WWW/HTTP/Response.hh"
 
-#include "../Packet/Packet.hh"
+#include "../Monitor/Monitor.hh"
 
 #include "Worker.hh"
 
@@ -118,9 +118,9 @@ bool Worker::SendHomePage(bool head) {
 
    String status;
    status += "Packets: ";
-   status += ToCommas(Packet::Total());
+   status += ToCommas(Monitor::Total());
    status += " Logged: ";
-   status += ToCommas(Packet::Logged());
+   status += ToCommas(Monitor::Logged());
 
    String page;
    page += html;

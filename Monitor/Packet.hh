@@ -15,21 +15,26 @@ typedef MT::Queue<PitM::Packet,MT::Mutex> Packets;
 
 class PitM::Packet : public Packets::Node {
 
-public: // Static methods
+public: // Static variables
 
-   static bool Start();
+   // Pool of used packets
+   static Packets pool;
 
-   static void Reconfigure();
+public: // Methods
 
-   static unsigned Total();
+   Packet();
 
-   static unsigned Logged();
+   // Encode timestamp and length
+   bool Stamp(Size length);
 
 public: // Variables
 
-#pragma pack(push,1)
+#pragma pack(push,1) // Ensure header and data are adjacent
 
-   PCap::Packet pcap;
+   union {
+      ::timeval    time;
+      PCap::Packet pcap;
+   }; // Unnamed
 
    byte buffer[1500]; // Ethernet packet size
 

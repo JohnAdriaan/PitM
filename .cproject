@@ -66,7 +66,6 @@
 						<entry excluding="HTML|HTTP|URI" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW/HTML"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW/HTTP"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Packet"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Server"/>
 					</sourceEntries>
 				</configuration>

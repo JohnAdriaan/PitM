@@ -13,11 +13,15 @@ namespace PitM {
 
    class Config;
 
-   class Packet;
+   class Monitor;
+
+      class Packet;
+
+      class Log;
 
    class Server;
 
-   class Worker;
+      class Worker;
 
    const String &Version();
 

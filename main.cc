@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "Packet/Packet.hh"
+#include "Monitor/Monitor.hh"
 #include "Server/Server.hh"
 
 bool alreadyPitM;
@@ -36,7 +36,7 @@ int main(int /*argc*/,
    if (!PitM::Server::Start()) {
       return 1;
    } // if
-   if (!PitM::Packet::Start()) {
+   if (!PitM::Monitor::Start()) {
       return 2;
    } // if
    PitM::quit.Wait();
