@@ -23,11 +23,11 @@ namespace MT {
 
    class _Queue_;
 
-   template <typename Element, class Mutex, class Lock>
-   class Queue;
-
    template <typename Type>
    struct Atomic;
+
+   template <typename Element, class Mutex>
+   class Queue;
 
 } // MT
 

@@ -23,8 +23,13 @@ protected:
    class _Node_;
 }; // _Queue_
 
-template <typename Element, class Mutex=MT::NoMutex, class Lock=MT::NoMutex::Lock>
+template <typename Element, class Mutex=MT::NoMutex>
 class MT::Queue : private _Queue_ {
+
+public: // Classes
+
+   // Derive Element off Node
+   class Node; friend Node;
 
 public: // Methods
 
@@ -45,10 +50,6 @@ public: // Methods
 
    ~Queue();
 
-private: // Classes
-
-   class Node; friend Node;
-
 private: // Methods
 
    Queue(const Queue &) = delete;
@@ -61,9 +62,9 @@ private: // Variables
 
    MT::Semaphore semaphore;
 
-   Node *head;
+   Element *head;
 
-   Node *tail;
+   Element *tail;
 
    unsigned count;
 
@@ -71,43 +72,39 @@ private: // Variables
 
 #include "Queue.Node.ii"
 
-template <typename Element, class Mutex, class Lock>
-MT::Queue<Element,Mutex,Lock>::Queue() :
-                               mutex(),
-                               semaphore(),
-                               head(nullptr),
-                               tail(nullptr),
-                               count(0) {
+template <typename Element, class Mutex>
+MT::Queue<Element,Mutex>::Queue() :
+                          mutex(),
+                          semaphore(),
+                          head(nullptr),
+                          tail(nullptr),
+                          count(0) {
 } // Queue::Queue()
 
-template <typename Element, class Mutex, class Lock>
-inline unsigned MT::Queue<Element,Mutex,Lock>::Count() const {
+template <typename Element, class Mutex>
+inline unsigned MT::Queue<Element,Mutex>::Count() const {
    return count;
 } // Queue::Count()
 
-template <typename Element, class Mutex, class Lock>
-bool MT::Queue<Element,Mutex,Lock>::Push(Element &element) {
-   Node *node = new Node(element);
-   if (node==nullptr) {
-      return false;
-   } // if
+template <typename Element, class Mutex>
+bool MT::Queue<Element,Mutex>::Push(Element &element) {
    {
-      Lock lock(mutex);
+      class Mutex::Lock lock(mutex);
       if (head==nullptr) {
-         head = node;
+         head = &element;
       } // if
       if (tail!=nullptr) {
-         tail->next = node;
+         tail->Node::next = &element;
       } // if
-      tail = node;
+      tail = &element;
       ++count;
    }
    semaphore.Post();
    return true;
 } // Queue::Push(element)
 
-template <typename Element, class Mutex, class Lock>
-bool MT::Queue<Element,Mutex,Lock>::TryPop(Element *&element) {
+template <typename Element, class Mutex>
+bool MT::Queue<Element,Mutex>::TryPop(Element *&element) {
    if (!semaphore.Try()) {
       return false;
    } // if
@@ -115,41 +112,38 @@ bool MT::Queue<Element,Mutex,Lock>::TryPop(Element *&element) {
    return true;
 } // Queue::TryPop()
 
-template <typename Element, class Mutex, class Lock>
-Element *MT::Queue<Element,Mutex,Lock>::Pop() {
+template <typename Element, class Mutex>
+Element *MT::Queue<Element,Mutex>::Pop() {
    semaphore.Wait();
    return Get();
 } // Queue::Pop()
 
-template <typename Element, class Mutex, class Lock>
-void MT::Queue<Element,Mutex,Lock>::Quit() {
+template <typename Element, class Mutex>
+void MT::Queue<Element,Mutex>::Quit() {
    semaphore.Post(); // Post semaphore, with nothing to "back" it
 } // Queue::Quit()
 
-template <typename Element, class Mutex, class Lock>
-Element *MT::Queue<Element,Mutex,Lock>::Get() {
-   Node *node;
+template <typename Element, class Mutex>
+Element *MT::Queue<Element,Mutex>::Get() {
+   Element *element;
    {
-      Lock lock(mutex);
-      node = head;
-      if (node==nullptr) {
+      class Mutex::Lock lock(mutex);
+      element = head;
+      if (element==nullptr) {
          return nullptr;
       } // if
-      head = node->next;
+      head = element->Node::next;
       if (head==nullptr) {
          tail = nullptr;
       } // if
       --count;
    }
-   return &node->element;
+   element->Node::next = nullptr;
+   return element;
 } // Queue::Get()
 
-template <typename Element, class Mutex, class Lock>
-MT::Queue<Element,Mutex,Lock>::~Queue() {
-   Element *element;
-   Lock lock(mutex);
-   while (TryPop(element)) {
-   } // while
+template <typename Element, class Mutex>
+MT::Queue<Element,Mutex>::~Queue() {
 } // Queue::~Queue()
 
 #endif // Queue_tt

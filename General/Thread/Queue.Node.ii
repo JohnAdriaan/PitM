@@ -5,25 +5,22 @@
 class MT::_Queue_::_Node_ : private _Queue_ {
 }; // _Queue_::_Node_
 
-template <typename Element, class Mutex, class Lock>
-class MT::Queue<Element,Mutex,Lock>::Node : private Queue::_Node_ {
+template <typename Element, class Mutex>
+class MT::Queue<Element,Mutex>::Node : private Queue::_Node_ {
 
-   friend Queue<Element,Mutex,Lock>;
+   friend Queue<Element,Mutex>;
 
-private: // Methods
+protected: // Methods
 
-   inline explicit Node(Element &element);
+   inline Node();
 
 private: // Variables
 
-   Element &element;
-
-   Node *next;
+   Element *next;
 
 }; // Queue::Node
 
-template <typename Element, class Mutex, class Lock>
-inline MT::Queue<Element,Mutex,Lock>::Node::Node(Element &element) :
-                                            element(element),
-                                            next(nullptr) {
-} // Node::Node(Eement)
+template <typename Element, class Mutex>
+inline MT::Queue<Element,Mutex>::Node::Node() :
+                                       next(nullptr) {
+} // Node::Node()

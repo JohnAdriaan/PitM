@@ -5,11 +5,15 @@
 #ifndef Packet_hh
 #define Packet_hh
 
+#include "../General/Thread/Queue.tt"
+
 #include "PCap.hh"
 
 #include "../PitM.hh"
 
-class PitM::Packet : private _PitM_ {
+typedef MT::Queue<PitM::Packet,MT::Mutex> Packets;
+
+class PitM::Packet : public Packets::Node {
 
 public: // Static methods
 
@@ -21,7 +25,7 @@ public: // Static methods
 
    static unsigned Logged();
 
-private: // Variables
+public: // Variables
 
 #pragma pack(push,1)
 
