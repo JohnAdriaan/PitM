@@ -19,6 +19,8 @@ public: // Static methods
 
    static bool Start();
 
+   static void Quit(Server *swap=nullptr);
+
 public: // Methods
 
    Server();

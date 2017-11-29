@@ -56,16 +56,17 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Server|Packet|Config|General" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Monitor|Packet|General|Server|Config" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Config"/>
-						<entry excluding="File|FD|Socket|WWW|Thread" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General"/>
+						<entry excluding="File|Thread|FD|Socket|WWW" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/FD"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/File"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/Socket"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/Thread"/>
-						<entry excluding="HTML|HTTP|URI" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW"/>
+						<entry excluding="HTML|URI|HTTP" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW/HTML"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW/HTTP"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Monitor"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Server"/>
 					</sourceEntries>
 				</configuration>
@@ -126,15 +127,16 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="General/File|General/WWW|General/Thread|General/FD|General/Socket|Config" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Monitor|General/File|Config|General/Thread|General/FD|General/Socket|General/WWW" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Config"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/FD"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/File"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/Socket"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/Thread"/>
-						<entry excluding="HTML|HTTP|URI" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW"/>
+						<entry excluding="HTML|URI|HTTP" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW/HTML"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="General/WWW/HTTP"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Monitor"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

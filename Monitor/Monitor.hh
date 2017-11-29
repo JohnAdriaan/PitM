@@ -21,9 +21,23 @@ public: // Static methods
 
    static unsigned Logged();
 
-public: // Methods
+   static void Quit();
 
-   Monitor();
+private: // Methods
+
+   explicit Monitor(Monitor &other);
+
+private: // Variables
+
+   Monitor &other;
+
+   Packets queue;
+
+private: // Static variables
+
+   static Monitor left;
+
+   static Monitor right;
 
 }; // Monitor
 

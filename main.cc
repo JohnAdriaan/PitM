@@ -3,25 +3,33 @@
 //
 
 #include <unistd.h>
-
 #include <iostream>
+
+#include "General/Thread/Semaphore.hh"
 
 #include "Monitor/Monitor.hh"
 #include "Server/Server.hh"
 
-bool alreadyPitM;
-MT::Semaphore PitM::quit("/PitM", alreadyPitM);
+static bool alreadyPitM;
+static MT::Semaphore quit("/PitM", alreadyPitM);
 
 const String &PitM::Version() {
    static const String version = "0.4.0.0";
    return version;
 } // PitM::Version()
 
+void PitM::Quit() {
+   Server::Quit();
+   Monitor::Quit();
+   quit.Unlink(); // No more PitMs
+   quit.Post();
+} // PitM::Quit()
+
 static void TakeOver() {
-   PitM::quit.Post(); // Tell other one to quit
+   quit.Post(); // Tell other one to quit
    std::cout << "Shutting down existing PitM..." << std::flush;
    ::sleep(1);
-   while (PitM::quit.Try()) { // After a second, it oughta've finished!
+   while (quit.Try()) { // After a second, it oughta've finished!
       std::cout << '!';
    } // while
    std::cout << std::endl;
@@ -39,6 +47,6 @@ int main(int /*argc*/,
    if (!PitM::Monitor::Start()) {
       return 2;
    } // if
-   PitM::quit.Wait();
+   quit.Wait();
    return 0;
 } // main(argc, argv, env)

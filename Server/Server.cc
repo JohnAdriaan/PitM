@@ -14,6 +14,13 @@ bool Server::Start() {
    return current==s;
 } // Server::Start()
 
+void Server::Quit(Server *swap) {
+   swap = current.Swap(swap);
+   if (swap!=nullptr) {
+      swap->Listen::Close();
+   } // if
+} // Server::Quit(swap)
+
 Server::Server() :
         BSD::Listen(BSD::Address::any4,
                     Config::master.port),
@@ -26,11 +33,7 @@ Server::Server() :
       delete this;
       return;
    } // if
-
-   Server *old = current.Swap(this);
-   if (old!=nullptr) {
-      old->Close();
-   } // if
+   Quit(this);
 } // Server::Server()
 
 void Server::Heard(BSD::TCP &client, const BSD::Address &address) {

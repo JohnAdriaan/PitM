@@ -5,7 +5,7 @@
 #ifndef PitM_hh
 #define PitM_hh
 
-#include "General/Thread/Semaphore.hh"
+#include "General/Thread/Queue.tt"
 
 namespace PitM {
 
@@ -19,13 +19,15 @@ namespace PitM {
 
       class Log;
 
+      typedef MT::Queue<Packet,MT::Mutex> Packets;
+
    class Server;
 
       class Worker;
 
    const String &Version();
 
-   extern MT::Semaphore quit;
+   void Quit();
 
 } // PitM
 

@@ -5,13 +5,9 @@
 #ifndef Packet_hh
 #define Packet_hh
 
-#include "../General/Thread/Queue.tt"
-
 #include "PCap.hh"
 
 #include "../PitM.hh"
-
-typedef MT::Queue<PitM::Packet,MT::Mutex> Packets;
 
 class PitM::Packet : public Packets::Node {
 
