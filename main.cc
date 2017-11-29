@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "General/Thread/Semaphore.hh"
+#include <Thread/Semaphore.hh>
 
 #include "Monitor/Monitor.hh"
 #include "Server/Server.hh"

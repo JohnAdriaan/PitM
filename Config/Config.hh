@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "../General/Socket/BSD.hh"
+#include <Socket/BSD.hh>
 
 #include "../PitM.hh"
 

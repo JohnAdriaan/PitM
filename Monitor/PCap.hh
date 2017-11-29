@@ -5,7 +5,7 @@
 #ifndef PCap_hh
 #define PCap_hh
 
-#include "../General/General.hh"
+#include <General.hh>
 
 namespace PCap {
 

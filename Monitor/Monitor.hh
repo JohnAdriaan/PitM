@@ -5,7 +5,7 @@
 #ifndef Monitor_hh
 #define Monitor_hh
 
-#include "../General/Thread/Queue.tt"
+#include <Thread/Queue.tt>
 
 #include "Packet.hh"
 

@@ -5,7 +5,7 @@
 #ifndef PitM_hh
 #define PitM_hh
 
-#include "General/Thread/Queue.tt"
+#include <Thread/Queue.tt>
 
 namespace PitM {
 

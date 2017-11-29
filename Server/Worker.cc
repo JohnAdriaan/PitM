@@ -2,12 +2,12 @@
 // Worker.cc
 //
 
-#include "../General/File/File.hh"
+#include <File/File.hh>
 
-#include "../General/Socket/Service.hh"
-#include "../General/Socket/Interface.hh"
+#include <Socket/Service.hh>
+#include <Socket/Interface.hh>
 
-#include "../General/WWW/HTTP/Response.hh"
+#include <WWW/HTTP/Response.hh>
 
 #include "../Monitor/Monitor.hh"
 

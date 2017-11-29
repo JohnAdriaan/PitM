@@ -5,11 +5,11 @@
 #ifndef Worker_hh
 #define Worker_hh
 
-#include "../General/Thread/Thread.hh"
+#include <Thread/Thread.hh>
 
-#include "../General/Socket/TCP.hh"
+#include <Socket/TCP.hh>
 
-#include "../General/WWW/HTTP/Request.hh"
+#include <WWW/HTTP/Request.hh>
 
 #include "../Config/Config.hh"
 

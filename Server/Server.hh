@@ -5,10 +5,10 @@
 #ifndef Server_hh
 #define Server_hh
 
-#include "../General/Socket/Listen.hh"
+#include <Socket/Listen.hh>
 
-#include "../General/Thread/Thread.hh"
-#include "../General/Thread/Atomic.tt"
+#include <Thread/Thread.hh>
+#include <Thread/Atomic.tt>
 
 #include "../Config/Config.hh"
 

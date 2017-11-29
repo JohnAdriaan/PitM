@@ -3,6 +3,7 @@
 	<name>PitM</name>
 	<comment></comment>
 	<projects>
+		<project>General</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

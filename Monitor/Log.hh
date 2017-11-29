@@ -5,9 +5,9 @@
 #ifndef Log_hh
 #define Log_hh
 
-#include "../General/File/File.hh"
+#include <File/File.hh>
 
-#include "../General/Thread/Thread.hh"
+#include <Thread/Thread.hh>
 
 #include "../PitM.hh"
 
