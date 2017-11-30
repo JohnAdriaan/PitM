@@ -3,9 +3,9 @@
 //
 
 #include <File/File.hh>
+#include <Socket/Service.hh>
+#include <Socket/Interface.hh>
 #include <WWW/HTTP/Response.hh>
-#include <Socket/Query/Service.hh>
-#include <Socket/Query/Interface.hh>
 
 #include "../Monitor/Monitor.hh"
 
@@ -18,8 +18,6 @@ extern char iconSize; // Get the ADDRESS of this!!!
 using namespace WWW;
 
 using namespace WWW::HTTP;
-
-using namespace BSD::Query;
 
 using namespace PitM;
 
@@ -209,7 +207,7 @@ static String Fill() {
    fill += "<script>\n";
    fill += "var ports = [";
    prefix = "'";
-   for (const auto &p : Service::Ports()) {
+   for (const auto &p : Query::Service::Ports()) {
       unsigned port = p.first;
       if (port>Config::MaxPort) {
          continue;
@@ -227,7 +225,7 @@ static String Fill() {
    fill += "'];\n";
    fill += "var names = [";
    prefix = "'";
-   for (const auto &s : Service::Services()) {
+   for (const auto &s : Query::Service::Services()) {
       unsigned port = s.second.Port();
       if (port>Config::MaxPort) {
          continue;
@@ -289,6 +287,7 @@ bool Server::Client::SendConfigPage(bool head) {
       Heading("<noscript>This page requires JavaScript.</noscript>\n"
               "<script>document.write('Configuration');</script>");
 
+   using namespace Query;
    Interfaces up     = Interface::List(Interface::IPv4,
                                        Interface::Up);
    Interfaces upDown = Interface::List(Interface::NoProtocol,
@@ -403,7 +402,7 @@ bool Server::Client::Config() {
 
 bool Server::Client::POSTConfig() {
    config.server   = request.Get("Server=");
-   config.port     = Service::Find(request.Get("Port="));
+   config.port     = Query::Service::Find(request.Get("Port="));
    config.left     = request.Get("Left=");
    config.right    = request.Get("Right=");
    config.protocol = request.Get("Protocol=");
