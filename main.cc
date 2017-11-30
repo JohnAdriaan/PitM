@@ -20,10 +20,12 @@ const String &PitM::Version() {
    return version;
 } // PitM::Version()
 
-void PitM::Quit() {
-   Server::Quit();
-   Monitor::Quit();
-   quit.Unlink(); // No more PitMs
+void PitM::Quit(bool complete/*=true*/) {
+   if (complete) {
+      Server::Quit();
+      Monitor::Quit();
+      quit.Unlink(); // No more PitMs
+   } // if
    quit.Post();
 } // PitM::Quit()
 
@@ -37,8 +39,16 @@ static void TakeOver() {
    std::cout << std::endl;
 } // TakeOver()
 
-static void Handler(int /*sig*/) {
-   PitM::Quit();
+static void Handler(int sig) {
+   switch (sig) {
+   case SIGINT :
+      PitM::Quit(true);  // Try shutting down everything
+      return;
+   case SIGTERM :
+      PitM::Quit(false); // Nope. Just shut down the minimum
+      return;
+// case SIGKILL : // Ah, if only!
+   } // switch
 } // Handler(sig)
 
 int main(int /*argc*/,

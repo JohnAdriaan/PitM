@@ -19,7 +19,9 @@ namespace PitM {
 
    const String &Version();
 
-   void Quit();
+   // If complete, shut down everything.
+   // Otherwise, let everything collapse on its own
+   void Quit(bool complete=true);
 
 } // PitM
 
