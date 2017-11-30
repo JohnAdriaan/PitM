@@ -290,8 +290,8 @@ bool Server::Client::SendConfigPage(bool head) {
    using namespace Query;
    Interfaces up     = Interface::List(Interface::IPv4,
                                        Interface::Up);
-   Interfaces upDown = Interface::List(Interface::NoProtocol,
-                                       Interface::Down);
+   Interfaces upDown = Interface::List(Interface::AnyProtocol,
+                                       Interface::Up);
 
    std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
    String body;

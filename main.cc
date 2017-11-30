@@ -2,6 +2,7 @@
 // main.cc
 //
 
+#include <signal.h>
 #include <unistd.h>
 
 #include <iostream>
@@ -36,17 +37,26 @@ static void TakeOver() {
    std::cout << std::endl;
 } // TakeOver()
 
+static void Handler(int /*sig*/) {
+   PitM::Quit();
+} // Handler(sig)
+
 int main(int /*argc*/,
          char * /*argv*/[],
          char * /*env*/[]) {
+   if (::geteuid()!=0) {
+      std::cerr << "Need to run as root." << std::endl;
+      return 1;
+   } // if
+   ::signal(SIGINT, &Handler);
    if (alreadyPitM) {
       TakeOver();
    } // if
    if (!PitM::Server::Start()) {
-      return 1;
+      return 2;
    } // if
    if (!PitM::Monitor::Start()) {
-      return 2;
+      return 3;
    } // if
    quit.Wait();
    return 0;
