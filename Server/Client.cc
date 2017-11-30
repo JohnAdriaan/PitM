@@ -27,8 +27,8 @@ static const String html =
       "<head>\n"
       "<meta charset=UTF-8 />\n"
       "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
-      "<link rel='shortcut icon' href=/favicon.ico />\n"
-      "<link rel=stylesheet type=text/css href=style.css />\n"
+      "<link rel='shortcut icon' href='/favicon.ico' />\n"
+      "<link rel=stylesheet type='text/css' href='/style.css' />\n"
       "<title>PitM: Pi in the Middle</title>\n"
       "</head>\n";
 
@@ -41,7 +41,7 @@ static String Heading(String header, bool border=false) {
          "<body>\n"
          "<h1 class=left>\n"
          "<a href='/'>\n"
-         "<img src=/icon.ico alt='John Burger' height=64 width=64 />\n"
+         "<img src='/icon.ico' alt='John Burger' height=64 width=64 />\n"
          "PitM</a></h1>\n"
          "<h1 class=right>Pi in the Middle\n"
          "<div style='font-size:10pt'>"

@@ -2,7 +2,7 @@
 // Reader.cc
 //
 
-#include <net/ethernet.h>
+#include <net/ethernet.h>    // For ETHER_ADDR_LEN // TODO?
 
 #include <Socket/Address.hh>
 
