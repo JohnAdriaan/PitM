@@ -2,13 +2,17 @@
 // Reader.cc
 //
 
+#include <net/ethernet.h>
+
+#include <Socket/Address.hh>
+
 #include "Packet.hh"
 #include "Reader.hh"
 
 using namespace PitM;
 
-Monitor::Reader::Reader(Monitor &monitor) :
-                 BSD::Raw(),
+Monitor::Reader::Reader(Monitor &monitor, const String &interface) :
+                 BSD::Raw(interface, Protocols::All),
                  MT::Thread(),
                  monitor(monitor) {
    monitor.Stop(this);
@@ -20,7 +24,13 @@ Monitor::Reader::Reader(Monitor &monitor) :
       delete this;
       return;
    } // if
-} // Reader::Reader(Monitor)
+} // Reader::Reader(Monitor, interface)
+
+bool Monitor::Reader::Send(const Monitor::Packet &packet) {
+   Size wrote;
+   BSD::Address to(All, index, packet.buffer, ETHER_ADDR_LEN);
+   return Raw::Send(packet.buffer,packet.Size(),wrote,to);
+} // Reader::Send(Packet)
 
 void *Monitor::Reader::Run() {
    Monitor::Packet *packet;
@@ -32,13 +42,11 @@ void *Monitor::Reader::Run() {
          break;
       } // if
       Size read;
-      if (!Read(packet->buffer, sizeof packet->buffer, read)) {
+      if (!Recv(packet->buffer, sizeof packet->buffer, read,
+                packet->address, MSG_TRUNC)) {
          break;
       } // if
-      packet->Stamp(read);
-      if (read==0) {
-         break;
-      } // if
+      IOCtl(SIOCGSTAMP, packet->Stamp(read, sizeof packet->buffer));
       monitor.other.queue.Push(*packet);
    } // for
    Socket::Close();

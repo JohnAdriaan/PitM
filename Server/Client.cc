@@ -3,9 +3,9 @@
 //
 
 #include <File/File.hh>
-#include <Socket/Service.hh>
-#include <Socket/Interface.hh>
 #include <WWW/HTTP/Response.hh>
+#include <Socket/Query/Service.hh>
+#include <Socket/Query/Interface.hh>
 
 #include "../Monitor/Monitor.hh"
 
@@ -18,6 +18,8 @@ extern char iconSize; // Get the ADDRESS of this!!!
 using namespace WWW;
 
 using namespace WWW::HTTP;
+
+using namespace BSD::Query;
 
 using namespace PitM;
 
@@ -207,7 +209,7 @@ static String Fill() {
    fill += "<script>\n";
    fill += "var ports = [";
    prefix = "'";
-   for (const auto &p : BSD::Service::Ports()) {
+   for (const auto &p : Service::Ports()) {
       unsigned port = p.first;
       if (port>Config::MaxPort) {
          continue;
@@ -225,7 +227,7 @@ static String Fill() {
    fill += "'];\n";
    fill += "var names = [";
    prefix = "'";
-   for (const auto &s : BSD::Service::Services()) {
+   for (const auto &s : Service::Services()) {
       unsigned port = s.second.Port();
       if (port>Config::MaxPort) {
          continue;
@@ -287,8 +289,10 @@ bool Server::Client::SendConfigPage(bool head) {
       Heading("<noscript>This page requires JavaScript.</noscript>\n"
               "<script>document.write('Configuration');</script>");
 
-   BSD::Interfaces up     = BSD::Interface::List(BSD::IPv4, BSD::Up);
-   BSD::Interfaces upDown = BSD::Interface::List(BSD::NoProtocol, BSD::Down);
+   Interfaces up     = Interface::List(Interface::IPv4,
+                                       Interface::Up);
+   Interfaces upDown = Interface::List(Interface::NoProtocol,
+                                       Interface::Down);
 
    std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
    String body;
@@ -319,10 +323,10 @@ bool Server::Client::SendConfigPage(bool head) {
            "<legend>Ports</legend>\n";
    unsigned selection = 1;
    for (const auto &p : config.ports) {
-      body += Ports(selection++, p);
+      body += ::Ports(selection++, p);
       body += ' ';
    } // for
-   body += Ports(selection);
+   body += ::Ports(selection);
    body += "</fieldset>\n"
            "</fieldset>\n"
            "<p />\n"
@@ -399,7 +403,7 @@ bool Server::Client::Config() {
 
 bool Server::Client::POSTConfig() {
    config.server   = request.Get("Server=");
-   config.port     = BSD::Service::Find(request.Get("Port="));
+   config.port     = Service::Find(request.Get("Port="));
    config.left     = request.Get("Left=");
    config.right    = request.Get("Right=");
    config.protocol = request.Get("Protocol=");

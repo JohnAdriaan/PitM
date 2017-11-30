@@ -20,9 +20,9 @@ enum LinkTypes {
    RawIPv6    = 229
 }; // LinkTypes
 
-typedef int            gint32;
-typedef unsigned       guint32;
-typedef unsigned short guint16;
+typedef int      gint32;
+typedef unsigned guint32;
+typedef word     guint16;
 
 #pragma pack(push,1)
 struct Global {

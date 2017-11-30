@@ -2,6 +2,10 @@
 // Monitor.cc
 //
 
+#include <Socket/Address.hh>
+
+#include "../Config/Config.hh"
+
 #include "Log.hh"
 #include "Packet.hh"
 #include "Reader.hh"
@@ -24,8 +28,8 @@ bool Monitor::Start() {
 } // Monitor::Start()
 
 void Monitor::Reconfigure() {
-   new Reader(left);
-   new Reader(right);
+   new Reader(left,  Config::master.left);
+   new Reader(right, Config::master.right);
 } // Monitor::Reconfigure()
 
 unsigned Monitor::Left() {
@@ -70,10 +74,9 @@ void *Monitor::Run() {
       } // if
       ++count;
 
-      Size read;
       Reader *r = reader;
       if (r==nullptr ||
-          !r->Write(packet->buffer,sizeof packet->buffer,read)) {
+          !r->Send(*packet)) {
          ++dropped;
          continue;
       } // if

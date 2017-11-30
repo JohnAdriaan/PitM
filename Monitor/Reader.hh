@@ -16,7 +16,9 @@ friend Monitor;
 
 private: // Methods
 
-   explicit Reader(Monitor &monitor);
+   Reader(Monitor &monitor, const String &interface);
+
+   bool Send(const Monitor::Packet &packet);
 
    virtual ~Reader();
 

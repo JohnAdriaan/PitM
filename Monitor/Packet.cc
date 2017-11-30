@@ -14,8 +14,8 @@ Monitor::Packet::Packet() :
                  Node() {
 } // Packet::Packet()
 
-bool Monitor::Packet::Stamp(Size length) {
-   pcap.incl_len = length;
+::timeval *Monitor::Packet::Stamp(::Size length, ::Size max) {
+   pcap.incl_len = length<max ? length : max;
    pcap.orig_len = length;
-   return ::gettimeofday(&time, nullptr)==0;
-} // Packet::Stamp(length)
+   return &time;
+} // Packet::Stamp(length, max)
