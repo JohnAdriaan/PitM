@@ -12,7 +12,7 @@
 using namespace PitM;
 
 Monitor::Reader::Reader(Monitor &monitor, const String &interface) :
-                 BSD::Raw(interface, Protocols::All),
+                 BSD::Raw(interface, Protocols::All, true), // Promiscuous
                  MT::Thread(),
                  monitor(monitor) {
    monitor.Stop(this);
@@ -28,8 +28,8 @@ Monitor::Reader::Reader(Monitor &monitor, const String &interface) :
 
 bool Monitor::Reader::Send(const Monitor::Packet &packet) {
    Size wrote;
-   BSD::Address to(All, index, packet.buffer, ETHER_ADDR_LEN);
-   return Raw::Send(packet.buffer,packet.Size(),wrote,to);
+// BSD::Address to(All, index, packet.buffer, ETHER_ADDR_LEN); // TODO?
+   return BSD::Raw::Send(packet.buffer,packet.Size(),wrote);
 } // Reader::Send(Packet)
 
 void *Monitor::Reader::Run() {
