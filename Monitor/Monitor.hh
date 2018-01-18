@@ -37,8 +37,6 @@ private: // Typedefs and classes
 
    class Packet;
 
-   class Writer;
-
    class Reader; friend Reader;
 
    typedef MT::Queue<Packet,MT::Mutex> Packets;

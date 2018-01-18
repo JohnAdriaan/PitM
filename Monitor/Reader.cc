@@ -29,25 +29,25 @@ Monitor::Reader::Reader(Monitor &monitor, const String &interface) :
 bool Monitor::Reader::Send(const Monitor::Packet &packet) {
    Size wrote;
 // BSD::Address to(All, index, packet.buffer, ETHER_ADDR_LEN); // TODO?
-   return BSD::Raw::Send(packet.buffer,packet.Size(),wrote);
+   return Raw::Send(packet.buffer,packet.Size(),wrote);
 } // Reader::Send(Packet)
 
 void *Monitor::Reader::Run() {
    Monitor::Packet *packet;
    for (;;) {
-      if (!Monitor::Packet::pool.TryPop(packet)) {
-         packet = new Monitor::Packet();
+      if (!Monitor::Packet::pool.TryPop(packet)) { // Try to get empty packet
+         packet = new Monitor::Packet();           // Couldn't, so create one
       } // if
       if (packet==nullptr) {
          break;
       } // if
       Size read;
-      if (!Recv(packet->buffer, sizeof packet->buffer, read,
-                packet->address, MSG_TRUNC)) {
+      if (!RecvFrom(packet->buffer, sizeof packet->buffer, read,
+                    packet->address, MSG_TRUNC)) {
          break;
       } // if
       IOCtl(SIOCGSTAMP, packet->Stamp(read, sizeof packet->buffer));
-      monitor.other.queue.Push(*packet);
+      monitor.other.queue.Push(*packet); // Push filled packet onto other queue
    } // for
    Socket::Close();
    if (packet!=nullptr) {

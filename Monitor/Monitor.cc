@@ -78,6 +78,7 @@ void *Monitor::Run() {
       if (r==nullptr ||
           !r->Send(*packet)) {
          ++dropped;
+         Packet::pool.Push(*packet); // Return to free pool
          continue;
       } // if
       Log::log.queue.Push(*packet);
@@ -91,6 +92,6 @@ void Monitor::Stop(Reader *swap) {
    } // if
    swap = reader.Swap(swap);
    if (swap!=nullptr) {
-      swap->Raw::Close();
+      swap->Close();
    } // if
 } // Monitor::Stop(Reader)
