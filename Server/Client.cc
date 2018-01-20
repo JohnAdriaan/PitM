@@ -162,12 +162,12 @@ bool Server::Client::Process() {
 bool Server::Client::Reply() {
    switch (request.Method()) {
    case Request::Unknown :
-      Write(Response(HTTP10, Response::BadRequest));
+      Write(HTTP::Response(HTTP10, Response::BadRequest));
       return false;
    case Request::GET :
-      return GET(false);
+      return GET(/*head=*/false);
    case Request::HEAD    :
-      return GET(true);
+      return GET(/*head=*/true);
    case Request::POST    :
       return POST();
    case Request::PUT     :
@@ -176,13 +176,13 @@ bool Server::Client::Reply() {
    case Request::OPTIONS :
    case Request::CONNECT :
    case Request::PATCH   :
-      Write(Response(HTTP10, Response::NotImplemented));
+      Write(HTTP::Response(HTTP10, Response::NotImplemented));
       return false;
    default :
       break;
    } // switch
    WWW::Set set = { "GET", "HEAD", "POST" };
-   Response response(HTTP10, Response::MethodNotAllowed);
+   HTTP::Response response(HTTP10, Response::MethodNotAllowed);
    response.Add(Allow, set);
    Write(response);
    return false;

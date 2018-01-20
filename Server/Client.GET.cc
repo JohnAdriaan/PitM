@@ -37,7 +37,7 @@ bool Server::Client::GET(bool head) {
    if (request.Path()=="/config") {
       return SendConfigPage(head);
    } // if
-   Write(Response(HTTP10, Response::NotFound));
+   Write(HTTP::Response(HTTP10, Response::NotFound));
    return false;
 } // Client::GET(head)
 
@@ -63,7 +63,7 @@ bool Server::Client::SendHomePage(bool head) {
    page += body;
    page += tail;
 
-   Response response(HTTP11, Response::OK, page.length());
+   HTTP::Response response(HTTP11, Response::OK, page.length());
    if (!Write(response)) {
       return false;
    } // if
@@ -83,7 +83,7 @@ bool Server::Client::SendStyleSheet(bool head) {
       "fieldset { display: inline-block }\n"
       "legend   { color: #404040 }\n"
       "label    { color: #404040 }\n";
-   Response response(HTTP11, Response::OK, body.length());
+   HTTP::Response response(HTTP11, Response::OK, body.length());
    response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do!
    if (!Write(response)) {
       return false;
@@ -276,7 +276,7 @@ bool Server::Client::SendConfigPage(bool head) {
            "</form>\n";
    body += tail;
 
-   Response response(HTTP11, Response::OK, body.length());
+   HTTP::Response response(HTTP11, Response::OK, body.length());
    if (!Write(response)) {
       return false;
    } // if
@@ -293,7 +293,7 @@ bool Server::Client::SendFile(bool head,const char *path) {
    } // if
    Size length = file.Size();
 
-   Response response(HTTP11, Response::OK, length);
+   HTTP::Response response(HTTP11, Response::OK, length);
 
    if (!Write(response)) {
       return false;
@@ -307,7 +307,7 @@ bool Server::Client::SendFile(bool head,const char *path) {
 bool Server::Client::SendObj(bool head, const void *obj, const void *size) {
    Size length = (Size)size; // Convert (absolute) address to size
 
-   Response response(HTTP11, Response::OK, length);
+   HTTP::Response response(HTTP11, Response::OK, length);
    response.Add(CacheControl, MaxAge, 60*60); // An hour ought to do!
    if (!Write(response)) {
       return false;

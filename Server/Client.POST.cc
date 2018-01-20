@@ -24,7 +24,7 @@ bool Server::Client::POST() {
    if (request.Path()=="/quit") {
       return Quit();
    } // if
-   Write(Response(HTTP10, Response::NotFound));
+   Write(HTTP::Response(HTTP10, Response::NotFound));
    return false;
 } // Client::POST()
 
@@ -33,7 +33,7 @@ bool Server::Client::Config() {
       return Refresh();
    } // if
    Config::master.Set(config);
-   Response response(HTTP11, Response::NoContent);
+   HTTP::Response response(HTTP11, Response::NoContent);
    return Write(response);
 } // Client::Config()
 
@@ -64,7 +64,7 @@ bool Server::Client::POSTConfig() {
 } // Client::POSTConfig()
 
 bool Server::Client::Refresh() {
-   Response response(HTTP11, Response::SeeOther);
+   HTTP::Response response(HTTP11, Response::SeeOther);
    response.Add(HTTP::Location, "/config");
    return Write(response);
 } // Client::Refresh()
@@ -76,7 +76,7 @@ bool Server::Client::Quit() {
       "<p>Thank you for using PitM!</p>\n" +
       tail;
 
-   Response response(HTTP11, Response::OK, body);
+   HTTP::Response response(HTTP11, Response::OK, body);
    response.Add(HTTP::Connection, HTTP::Close);
    Write(response);
    PitM::Quit();
