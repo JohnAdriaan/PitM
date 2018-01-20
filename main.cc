@@ -64,7 +64,6 @@ int main(int argc,
       std::cerr << "PitM needs to be run as root." << std::endl;
       return 2;
    } // if
-   ::signal(SIGINT, &Handler);
    if (alreadyPitM) {
       if (argc<2 || argv[1][0]!='!') {
          std::cerr << "PitM is already running. Use 'PitM !' to override." << std::endl;
@@ -72,6 +71,7 @@ int main(int argc,
       } // if
       TakeOver();
    } // if
+   ::signal(SIGINT, &Handler);
    if (!PitM::Server::Start()) {
       return 4;
    } // if
