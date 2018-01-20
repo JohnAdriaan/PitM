@@ -299,9 +299,9 @@ bool Server::Client::SendConfigPage(bool head) {
    body += "<form method=POST>\n"; // action="/config" is assumed
 
    body += "<fieldset>\n"
-           "<legend>Control</legend>\n";
-   body += "<label for=Port>Port:</label>\n";
-   body += " <input type=number min=1 max=65535 id=Port name=Port style='width:5em' value=";
+           "<legend>Server</legend>\n";
+   body += "<label for=Server>Port:</label>\n";
+   body += " <input type=number min=1 max=65535 id=Server name=Server style='width:5em' value=";
    body += ToString(config.server);
    body += " />\n"
            "</fieldset><p />\n";
