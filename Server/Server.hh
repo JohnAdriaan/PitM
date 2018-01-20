@@ -11,8 +11,8 @@
 
 #include "../Config/Config.hh"
 
-class PitM::Server : public BSD::Listen,
-                     private MT::Thread {
+class PitM::Server : private MT::Thread, // Thread first, so destructed last
+                     public BSD::Listen {
 
 public: // Static methods
 

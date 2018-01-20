@@ -62,8 +62,8 @@ static String Heading(String header, bool border=false) {
 } // Heading(header, border)
 
 Server::Client::Client(BSD::TCP &client, const BSD::Address &/*address*/) :
-                TCP(client),
                 Thread(),
+                TCP(client),
                 config(Config::master),
                 request(),
                 state(RequestLine),
@@ -73,12 +73,12 @@ Server::Client::Client(BSD::TCP &client, const BSD::Address &/*address*/) :
                 pos(),
                 start(),
                 contentLength() {
-   line.reserve(2048);
    if (!TCP::Valid()) {
       delete this;
       return;
    } // if
-   if (!Start()) {
+   line.reserve(2048);
+   if (!Thread::Start()) {
       delete this;
       return;
    } // if

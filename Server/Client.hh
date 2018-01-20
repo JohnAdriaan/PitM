@@ -11,8 +11,8 @@
 
 #include "Server.hh"
 
-class PitM::Server::Client : public BSD::TCP,
-                             private MT::Thread {
+class PitM::Server::Client : private MT::Thread, // Thread first, so destructed last
+                             public BSD::TCP {
 
 friend Server;
 

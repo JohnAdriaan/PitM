@@ -12,10 +12,9 @@
 using namespace PitM;
 
 Monitor::Reader::Reader(Monitor &monitor, const String &interface) :
-                 BSD::Raw(interface, Protocols::All, true), // Promiscuous
                  MT::Thread(),
+                 BSD::Raw(interface, Protocols::All, true), // Promiscuous
                  monitor(monitor) {
-   monitor.Stop(this);
    if (!Raw::Valid()) {
       delete this;
       return;
@@ -24,6 +23,7 @@ Monitor::Reader::Reader(Monitor &monitor, const String &interface) :
       delete this;
       return;
    } // if
+   monitor.Stop(this);
 } // Reader::Reader(Monitor, interface)
 
 bool Monitor::Reader::Send(const Monitor::Packet &packet) {
@@ -58,5 +58,5 @@ void *Monitor::Reader::Run() {
 } // Reader::Run()
 
 Monitor::Reader::~Reader() {
-   monitor.reader.Swap(nullptr, this); // Set nullptr, but only if this
+   monitor.reader.Swap(nullptr, this); // Set nullptr, but only if ==this
 } // Reader::~Reader()

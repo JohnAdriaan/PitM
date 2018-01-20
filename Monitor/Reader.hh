@@ -9,8 +9,8 @@
 
 #include "Monitor.hh"
 
-class PitM::Monitor::Reader : public BSD::Raw,
-                              private MT::Thread {
+class PitM::Monitor::Reader : private MT::Thread, // Thread first, so destructed last
+                              public BSD::Raw {
 
 friend Monitor;
 

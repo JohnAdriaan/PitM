@@ -24,9 +24,9 @@ void Server::Quit(Server *swap) {
 } // Server::Quit(swap)
 
 Server::Server() :
-        BSD::Listen(BSD::Address::any4.Family()),
-        MT::Thread() {
-   Quit(this);
+        MT::Thread(),
+        BSD::Listen(BSD::Address::any4.Family()) {
+   Quit(this);             // Close any existing server for this one
    if (!Listen::Valid()) {
       delete this;
       return;

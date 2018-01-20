@@ -59,6 +59,7 @@ void Monitor::Quit() {
 } // Monitor::Quit()
 
 Monitor::Monitor(Monitor &other) :
+         Thread(),
          other(other),
          queue(),
          reader(),
