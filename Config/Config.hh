@@ -46,6 +46,9 @@ public: // Methods
 
 public: // Variables
 
+   // Server port
+   BSD::Port server = 8080;
+
    // These are the names of the Interfaces, with their defaults.
    // Note that from the middle, there's no real difference between the two sides...
    String left   = "eth0";
@@ -56,11 +59,8 @@ public: // Variables
    // Monitor ICMP?
    bool icmp = true;
 
+   // All the ports to monitor
    Ports ports;
-
-   String server = "wlan0";
-
-   BSD::Port port = 8080;
 
 private: // Methods
 

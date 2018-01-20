@@ -64,7 +64,7 @@ static String Heading(String header, bool border=false) {
 Server::Client::Client(BSD::TCP &client, const BSD::Address &/*address*/) :
                 Thread(),
                 TCP(client),
-                config(Config::master),
+                config(Config::master), // Copy existing Config
                 request(),
                 state(RequestLine),
                 line(),
@@ -288,8 +288,6 @@ bool Server::Client::SendConfigPage(bool head) {
               "<script>document.write('Configuration');</script>");
 
    using namespace Query;
-   Interfaces up     = Interface::List(Interface::IPv4,
-                                       Interface::Up);
    Interfaces upDown = Interface::List(Interface::AnyProtocol,
                                        Interface::Up);
 
@@ -298,16 +296,17 @@ bool Server::Client::SendConfigPage(bool head) {
    body.reserve(2048);
    body += header;
    body += Fill();
-   body += "<form method=POST>\n" // action="/config" is assumed
-           "<fieldset>\n"
+   body += "<form method=POST>\n"; // action="/config" is assumed
+
+   body += "<fieldset>\n"
            "<legend>Control</legend>\n";
-   body += Selection(up, "Server", config.server, true);
    body += "<label for=Port>Port:</label>\n";
    body += " <input type=number min=1 max=65535 id=Port name=Port style='width:5em' value=";
-   body += ToString(config.port);
+   body += ToString(config.server);
    body += " />\n"
-           "</fieldset><p />\n"
-           "<fieldset>\n"
+           "</fieldset><p />\n";
+
+   body += "<fieldset>\n"
            "<legend>Monitor</legend>\n";
    body += Selection(upDown, "Left", config.left, true);
    body += Selection(upDown, "Right", config.right, true);
@@ -327,8 +326,9 @@ bool Server::Client::SendConfigPage(bool head) {
    } // for
    body += ::Ports(selection);
    body += "</fieldset>\n"
-           "</fieldset>\n"
-           "<p />\n"
+           "</fieldset>\n";
+
+   body += "<p />\n"
            "<input type=submit value=Reset formaction='/config/reset' />\n" // Not a Reset button!
            "<input type=submit />\n"
            "</form>\n";
@@ -401,8 +401,7 @@ bool Server::Client::Config() {
 } // Client::Config()
 
 bool Server::Client::POSTConfig() {
-   config.server   = request.Get("Server=");
-   config.port     = Query::Service::Find(request.Get("Port="));
+   config.server   = Query::Service::Find(request.Get("Server="));
    config.left     = request.Get("Left=");
    config.right    = request.Get("Right=");
    config.protocol = request.Get("Protocol=");

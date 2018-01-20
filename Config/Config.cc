@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <iostream>
 
 #include <File/File.hh>
 
@@ -34,6 +35,10 @@ void Config::Load() {
       Pos pos = line.find('=');
       String field = line.substr(0,pos);
       String value = line.substr(pos+1);
+      if (field=="Server") {
+         server = (BSD::Port)ToNumber(value);
+         continue;
+      } // if
       if (field=="Left") {
          left = value;
          continue;
@@ -50,18 +55,13 @@ void Config::Load() {
          icmp = (value=="Y");
          continue;
       } // if
-      if (field=="Server") {
-         server = value;
-         continue;
-      } // if
-      if (field=="Port") {
-         port = (BSD::Port)ToNumber(value);
-         continue;
-      } // if
       if (field.find("Port")==0) {
          ports.push_back(value);
          continue;
       } // if
+#ifndef NDEBUG
+      std::cerr << "Unknown Config field: " << field << "=" << value << std::endl;
+#endif // !NDEBUG
    } // while
 } // Config::Load()
 
@@ -95,10 +95,6 @@ void Config::Set(const Config &newConfig) {
       config.server = newConfig.server;
       serverChanged = true;
    } // if
-   if (config.port!=newConfig.port) {
-      config.port = newConfig.port;
-      serverChanged = true;
-   } // if
 
    if (!monitorChanged &&
        !configChanged &&
@@ -117,17 +113,16 @@ void Config::Set(const Config &newConfig) {
 void Config::Save() {
    std::ofstream f(fileName, std::ofstream::trunc);
 
+   f << "Server="   << server   << std::endl;
    f << "Left="     << left     << std::endl;
    f << "Right="    << right    << std::endl;
    f << "Protocol=" << protocol << std::endl;
    f << "ICMP="     << (icmp ?
                         'Y' :
                         'N')    << std::endl;
-   f << "Server="   << server   << std::endl;
-   f << "Port="     << port     << std::endl;
 
-   unsigned i = 1;
+   unsigned i = 0;
    for (const auto &p : ports) {
-      f << "Port" << i++ << '=' << (String)p << std::endl;
+      f << "Port" << ++i << '=' << (String)p << std::endl;
    } // for
 } // Config::Save()
