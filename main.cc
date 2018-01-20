@@ -26,8 +26,7 @@ void PitM::Quit(bool graceful/*=true*/) {
       Server::Quit();
    } // if
    quit.Post();   // Quit nicely
-   quit.Close();  // Better than Post()!
-   quit.Unlink(); // No more PitMs
+   quit.SetUnlink(true); // No more PitMs
 } // PitM::Quit(graceful)
 
 static bool TakeOver() {
