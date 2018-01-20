@@ -22,8 +22,8 @@ const String &PitM::Version() {
 
 void PitM::Quit(bool graceful/*=true*/) {
    if (graceful) {
-      Server::Quit();
       Monitor::Quit();
+      Server::Quit();
    } // if
    quit.Unlink(); // No more PitMs
    quit.Post();
@@ -64,14 +64,15 @@ int main(int argc,
       std::cerr << "PitM needs to be run as root." << std::endl;
       return 2;
    } // if
+   ::signal(SIGINT, &Handler);
    if (alreadyPitM) {
       if (argc<2 || argv[1][0]!='!') {
          std::cerr << "PitM is already running. Use 'PitM !' to override." << std::endl;
          return 3;
       } // if
+      quit.SetUnlink(true); // Taking over, so I'm allowed to Unlink quit
       TakeOver();
    } // if
-   ::signal(SIGINT, &Handler);
    if (!PitM::Server::Start()) {
       return 4;
    } // if
