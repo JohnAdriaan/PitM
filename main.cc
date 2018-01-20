@@ -25,20 +25,26 @@ void PitM::Quit(bool graceful/*=true*/) {
       Monitor::Quit();
       Server::Quit();
    } // if
+   quit.Post();   // Quit nicely
+   quit.Close();  // Better than Post()!
    quit.Unlink(); // No more PitMs
-   quit.Post();
 } // PitM::Quit(graceful)
 
-static void TakeOver() {
-   quit.Post(); // Tell other one to quit
+static bool TakeOver() {
    std::cout << "Shutting down existing PitM..." << std::flush;
+   if (!quit.Post()) { // Tell other one to quit
+      return false;
+   } // if
    ::sleep(1);
-   while (quit.Try()) { // After a second, it oughta've finished!
-      quit.Post();      // ...but it looks like I took it. Try again
+   while (quit.Try()) {   // After a second, it oughta've finished!
+      if (!quit.Post()) { // ...but it looks like I took it. Try again
+         return false;
+      } // if
       std::cout << '!' << std::flush;
       ::sleep(1);
    } // while
    std::cout << std::endl;
+   return quit.Valid();
 } // TakeOver()
 
 static void Handler(int sig) {
@@ -67,17 +73,20 @@ int main(int argc,
    ::signal(SIGINT, &Handler);
    if (alreadyPitM) {
       if (argc<2 || argv[1][0]!='!') {
-         std::cerr << "PitM is already running. Use 'PitM !' to override." << std::endl;
+         std::cerr << "PitM is already running. Use 'PitM !' to shut it down." << std::endl;
          return 3;
       } // if
-      quit.SetUnlink(true); // Taking over, so I'm allowed to Unlink quit
-      TakeOver();
+      quit.SetUnlink(true); // Shutting down, so I'm allowed to Unlink quit too
+      if (!TakeOver()) {
+         return 4;
+      } // if
+      return 0;
    } // if
    if (!PitM::Server::Start()) {
-      return 4;
+      return 5;
    } // if
    if (!PitM::Monitor::Start()) {
-      return 5;
+      return 6;
    } // if
    quit.SetUnlink(false); // Don't automatically Unlink quit any more
    quit.Wait();
