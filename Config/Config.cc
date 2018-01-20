@@ -22,7 +22,7 @@ Config config;
 const Config &Config::master = config;
 
 Config::Config() {
-   if (this==&master) {
+   if (this==&master) { // Only Load() Config::master
       Load();
    } // if
 } // Config::Config()

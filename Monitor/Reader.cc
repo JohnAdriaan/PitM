@@ -47,7 +47,7 @@ void *Monitor::Reader::Run() {
          break;
       } // if
       IOCtl(SIOCGSTAMP, packet->Stamp(read, sizeof packet->buffer));
-      monitor.other.queue.Push(*packet); // Push filled packet onto other queue
+      monitor.other.Transmit(*packet); // Transmit packet on other
    } // for
    Socket::Close();
    if (packet!=nullptr) {

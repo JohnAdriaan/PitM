@@ -19,15 +19,15 @@ public: // Static methods
 
    static void Reconfigure();
 
-   static unsigned Left();
+   static unsigned NumLeft();
 
-   static unsigned Right();
+   static unsigned NumRight();
 
-   static unsigned Total();
+   static unsigned NumTotal();
 
-   static unsigned Dropped();
+   static unsigned NumDropped();
 
-   static unsigned Logged();
+   static unsigned NumLogged();
 
    static void Quit();
 
@@ -45,6 +45,8 @@ private: // Methods
 
    // Not a move constructor - just looks like one
    explicit Monitor(Monitor &other);
+
+   void Transmit(Packet &packet);
 
    void Stop(Reader *swap=nullptr);
 

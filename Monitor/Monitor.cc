@@ -28,31 +28,48 @@ bool Monitor::Start() {
 } // Monitor::Start()
 
 void Monitor::Reconfigure() {
+   bool valid = true;
+   if (Config::master.left.empty()) {
+      left.Stop();
+      valid = false;
+   } // if
+   if (Config::master.right.empty()) {
+      right.Stop();
+      valid = false;
+   } // if
+   if (Config::master.left==Config::master.right) {
+      valid = false;
+   } // if
+   if (!valid) {
+      return;
+   } // if
    new Reader(left,  Config::master.left);
    new Reader(right, Config::master.right);
 } // Monitor::Reconfigure()
 
-unsigned Monitor::Left() {
+unsigned Monitor::NumLeft() {
    return left.count;
-} // Monitor::Left()
+} // Monitor::NumLeft()
 
-unsigned Monitor::Right() {
+unsigned Monitor::NumRight() {
    return right.count;
-} // Monitor::Right()
+} // Monitor::NumRight()
 
-unsigned Monitor::Total() {
+unsigned Monitor::NumTotal() {
    return left.count+right.count;
-} // Monitor::Total()
+} // Monitor::NumTotal()
 
-unsigned Monitor::Dropped() {
+unsigned Monitor::NumDropped() {
    return left.dropped+right.dropped;
-} // Monitor::Dropped()
+} // Monitor::NumDropped()
 
-unsigned Monitor::Logged() {
+unsigned Monitor::NumLogged() {
    return Log::logged;
-} // Monitor::Logged()
+} // Monitor::NumLogged()
 
 void Monitor::Quit() {
+   left.queue.Quit();
+   right.queue.Quit();
    left.Stop();
    right.Stop();
    Log::log.Stop();
@@ -66,6 +83,17 @@ Monitor::Monitor(Monitor &other) :
          count(0),
          dropped(0) {
 } // Monitor::Monitor(other)
+
+void Monitor::Transmit(Packet &packet) {
+   Reader *r = reader;
+   if (r==nullptr ||
+       !r->Socket::Valid()) {
+      ++dropped;
+      Packet::pool.Push(packet);
+      return;
+   } // if
+   queue.Push(packet);
+} // Monitor::Transmit(Packet)
 
 void *Monitor::Run() {
    for (;;) {
@@ -82,15 +110,12 @@ void *Monitor::Run() {
          Packet::pool.Push(*packet); // Return to free pool
          continue;
       } // if
-      Log::log.queue.Push(*packet);
+      Log::log.queue.Push(*packet); // Save as processed packet
    } // for
    return nullptr;
 } // Monitor::Run()
 
 void Monitor::Stop(Reader *swap) {
-   if (swap==nullptr) {
-      queue.Quit();
-   } // if
    swap = reader.Swap(swap);
    if (swap!=nullptr) {
       swap->Close();
