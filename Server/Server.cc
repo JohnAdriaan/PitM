@@ -42,7 +42,7 @@ void Server::Heard(BSD::TCP &client, const BSD::Address &address) {
 } // Server::Heard(TCP, Address)
 
 void *Server::Run() {
-   if (Hear(BSD::Address::any4, Config::master.port)) {
+   if (Hear(BSD::Address::any4, Config::master.server)) {
       while (Accept()) {
       } // while
    } // if

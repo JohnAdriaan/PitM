@@ -20,13 +20,11 @@ public: // Static methods
 
    static void Quit(Server *swap=nullptr);
 
-public: // Methods
+private: // Methods
 
    Server();
 
-private: // Methods
-
-   virtual ~Server();
+   virtual ~Server(); // Ensure can only be created by new
 
 private: // Listen overrides
 

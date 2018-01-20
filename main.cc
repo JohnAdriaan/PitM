@@ -56,7 +56,7 @@ static void Handler(int sig) {
 int main(int argc,
          char *argv[],
          char * /*env*/[]) {
-   std::cout << "PitM " << PitM::Version() << std::endl;
+   std::cout << "PitM: version " << PitM::Version() << std::endl;
    if (!quit.Valid()) {
       return 1;
    } // if

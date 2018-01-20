@@ -20,7 +20,7 @@ private: // Methods
 
    bool Send(const Monitor::Packet &packet);
 
-   virtual ~Reader();
+   virtual ~Reader(); // Ensure can only be created by new
 
 private: // Thread overrides
 

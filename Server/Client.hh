@@ -20,7 +20,7 @@ private: // Methods
 
    Client(BSD::TCP &client, const BSD::Address &address);
 
-   virtual ~Client() = default;
+   virtual ~Client() = default; // Ensure can only be created by new
 
 private: // GET Responses
 
