@@ -21,6 +21,7 @@ const String &PitM::Version() {
 } // PitM::Version()
 
 void PitM::Quit(bool graceful/*=true*/) {
+   quit.SetUnlink(true); // No more PitMs
    if (graceful) {
       Monitor::Quit();
       Server::Quit();
@@ -29,7 +30,6 @@ void PitM::Quit(bool graceful/*=true*/) {
    else {
       quit.Close(); // Less nice!
    } // else
-   quit.SetUnlink(true); // No more PitMs
 } // PitM::Quit(graceful)
 
 static bool TakeOver() {

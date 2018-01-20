@@ -258,11 +258,14 @@ bool Server::Client::SendConfigPage(bool head) {
    body += " /> <label for=ICMP>(ping etc.)</label><p />\n";
    body += "<fieldset>\n"
            "<legend>Ports</legend>\n";
+
+   // First, show existing ports as drop-downs
    unsigned selection = 1;
    for (const auto &p : config.ports) {
       body += ::Ports(selection++, p);
       body += ' ';
    } // for
+   // Then show a new one, with simply "Select..."
    body += ::Ports(selection);
    body += "</fieldset>\n"
            "</fieldset>\n";
