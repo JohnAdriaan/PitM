@@ -57,11 +57,11 @@ int main(int argc,
          char *argv[],
          char * /*env*/[]) {
    std::cout << "PitM: version " << PitM::Version() << std::endl;
-   if (!quit.Valid()) {
-      return 1;
-   } // if
    if (::geteuid()!=0) {
       std::cerr << "PitM needs to be run as root." << std::endl;
+      return 1;
+   } // if
+   if (!quit.Valid()) {
       return 2;
    } // if
    ::signal(SIGINT, &Handler);
