@@ -288,8 +288,8 @@ bool Server::Client::SendConfigPage(bool head) {
               "<script>document.write('Configuration');</script>");
 
    using namespace Query;
-   Interfaces upDown = Interface::List(Interface::AnyProtocol,
-                                       Interface::Up);
+   Interfaces interfaces = Interface::List(Interface::NoProtocol,
+                                           Interface::Up);
 
    std::list<String> protocols = { "Ethernet", "PPPoE", "PPPoA" };
    String body;
@@ -310,8 +310,8 @@ bool Server::Client::SendConfigPage(bool head) {
 
    body += "<fieldset>\n"
            "<legend>Monitor</legend>\n";
-   body += Selection(upDown, "Left", config.left, true);
-   body += Selection(upDown, "Right", config.right, true);
+   body += Selection(interfaces, "Left", config.left, true);
+   body += Selection(interfaces, "Right", config.right, true);
    body += Selection(protocols, "Protocol", config.protocol, false);
    body += "<label for=ICMP>ICMP:</label>\n";
    body += " <input type=checkbox id=ICMP name=ICMP value=Y"; // If checked - not present if not

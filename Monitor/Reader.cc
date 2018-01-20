@@ -49,7 +49,7 @@ void *Monitor::Reader::Run() {
       IOCtl(SIOCGSTAMP, packet->Stamp(read, sizeof packet->buffer));
       monitor.other.Transmit(*packet); // Transmit packet on other
    } // for
-   Socket::Close();
+   Raw::Close();
    if (packet!=nullptr) {
       Packet::pool.Push(*packet);
    } // if
@@ -58,5 +58,6 @@ void *Monitor::Reader::Run() {
 } // Reader::Run()
 
 Monitor::Reader::~Reader() {
+   Raw::Close();
    monitor.reader.Swap(nullptr, this); // Set nullptr, but only if ==this
 } // Reader::~Reader()
