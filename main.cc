@@ -16,7 +16,7 @@ static bool alreadyPitM;
 static MT::Semaphore::Global quit("/PitM", alreadyPitM);
 
 const String &PitM::Version() {
-   static const String version = "0.4.0.0";
+   static const String version = "0.5.0.0";
    return version;
 } // PitM::Version()
 
@@ -24,8 +24,11 @@ void PitM::Quit(bool graceful/*=true*/) {
    if (graceful) {
       Monitor::Quit();
       Server::Quit();
+      quit.Post();  // Quit nicely
    } // if
-   quit.Post();   // Quit nicely
+   else {
+      quit.Close(); // Less nice!
+   } // else
    quit.SetUnlink(true); // No more PitMs
 } // PitM::Quit(graceful)
 
@@ -49,12 +52,23 @@ static bool TakeOver() {
 static void Handler(int sig) {
    switch (sig) {
    case SIGINT :
-      PitM::Quit(true);  // Try shutting down everything
-      return;
+      static bool first = true;
+      if (first) {
+         first = false;
+         PitM::Quit(true);  // Try shutting down everything
+         return;
+      } // if
+   // Fall through
    case SIGTERM :
-      PitM::Quit(false); // That didn't work. Just shut down the minimum
+      static bool second = true;
+      if (second) {
+         PitM::Quit(false); // That didn't work. Just shut down the minimum
+         return;
+      } // if
+   // Fall through
+   case SIGKILL : // Ah, if only! Doesn't mean we can't pretend...
+      exit(-1);
       return;
-// case SIGKILL : // Ah, if only!
    } // switch
 } // Handler(sig)
 
