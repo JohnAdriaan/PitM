@@ -104,6 +104,16 @@ private: // Variables
 
    unsigned contentLength;
 
+private: // Static variables
+
+   static const String html;
+
+   static const String tail;
+
+private: // Static functions
+
+   static String Heading(String header, bool border=false);
+
 }; // Client
 
 #endif // Client_hh
