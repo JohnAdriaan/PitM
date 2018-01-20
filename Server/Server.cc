@@ -2,6 +2,9 @@
 // Server.cc
 //
 
+#include <iostream>
+
+#include <Thread/Atomic.tt>
 #include <Socket/Address.hh>
 
 #include "Client.hh"
@@ -9,24 +12,28 @@
 
 using namespace PitM;
 
-MT::Atomic<Server *> Server::server;
+static MT::Atomic<Server *> server; // Only one server 'live' at a time
 
 bool Server::Start() {
    Server *s = new Server();
    return server==s;
 } // Server::Start()
 
-void Server::Quit(Server *swap) {
+void Server::Quit() {
+   Replace(nullptr);
+} // Server::Quit()
+
+void Server::Replace(Server *swap) {
    swap = server.Swap(swap);
    if (swap!=nullptr) {
       swap->Listen::Close();
    } // if
-} // Server::Quit(swap)
+} // Server::Replace(swap)
 
 Server::Server() :
         MT::Thread(),
         BSD::Listen(BSD::Address::any4.Family()) {
-   Quit(this);             // Close any existing server for this one
+   Replace(this);          // Close any existing server for this one
    if (!Listen::Valid()) {
       delete this;
       return;
@@ -51,5 +58,6 @@ void *Server::Run() {
 } // Server::Run()
 
 Server::~Server() {
-   server.Swap(nullptr, this); // Set nullptr, but only if this
+   Listen::Close();
+   server.Swap(nullptr, this); // Set nullptr, but only if ==this
 } // Server::~Server()

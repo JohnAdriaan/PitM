@@ -116,9 +116,9 @@ bool Server::Client::SendHomePage(bool head) {
 
    String status;
    status += "Packets: ";
-   status += ToCommas(Monitor::Total());
+   status += ToCommas(Monitor::NumTotal());
    status += " Logged: ";
-   status += ToCommas(Monitor::Logged());
+   status += ToCommas(Monitor::NumLogged());
 
    String page;
    page += html;

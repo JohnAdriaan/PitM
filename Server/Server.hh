@@ -7,7 +7,6 @@
 
 #include <Socket/Listen.hh>
 #include <Thread/Thread.hh>
-#include <Thread/Atomic.tt>
 
 #include "../Config/Config.hh"
 
@@ -18,7 +17,7 @@ public: // Static methods
 
    static bool Start();
 
-   static void Quit(Server *swap=nullptr);
+   static void Quit();
 
 private: // Methods
 
@@ -38,9 +37,9 @@ private: // Classes
 
    class Client;
 
-private: // Static variables
+private: // Static methods
 
-   static MT::Atomic<Server *> server;
+   static void Replace(Server *swap);
 
 }; // Server
 
