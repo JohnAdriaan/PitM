@@ -17,6 +17,8 @@ public: // Static methods
 
    static bool Start();
 
+   static bool Reconfigure();
+
    static void Quit();
 
 private: // Methods

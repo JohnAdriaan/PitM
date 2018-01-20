@@ -106,7 +106,7 @@ void Config::Set(const Config &newConfig) {
       Monitor::Reconfigure();
    } // if
    if (serverChanged) {
-      Server::Start();
+      Server::Reconfigure();
    } // if
 } // Config::Set(newConfig)
 

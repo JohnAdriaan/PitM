@@ -17,7 +17,7 @@ public: // Static methods
 
    static bool Start();
 
-   static void Reconfigure();
+   static bool Reconfigure();
 
    static unsigned NumLeft();
 

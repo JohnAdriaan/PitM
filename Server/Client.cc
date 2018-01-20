@@ -301,7 +301,9 @@ bool Server::Client::SendConfigPage(bool head) {
    body += "<fieldset>\n"
            "<legend>Server</legend>\n";
    body += "<label for=Server>Port:</label>\n";
-   body += " <input type=number min=1 max=65535 id=Server name=Server style='width:5em' value=";
+   body += " <input type=number min=1 max=";
+   body += ToString(Config::MaxPort);
+   body += " id=Server name=Server style='width:5em' value=";
    body += ToString(config.server);
    body += " />\n"
            "</fieldset><p />\n";

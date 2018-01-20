@@ -24,10 +24,10 @@ bool Monitor::Start() {
       return false;
    } // if
    Reconfigure();
-   return true;
+   return true;  // If configuration is bad, don't not Start()
 } // Monitor::Start()
 
-void Monitor::Reconfigure() {
+bool Monitor::Reconfigure() {
    bool valid = true;
    if (Config::master.left.empty()) {
       left.Stop();
@@ -41,10 +41,11 @@ void Monitor::Reconfigure() {
       valid = false;
    } // if
    if (!valid) {
-      return;
+      return false;
    } // if
    new Reader(left,  Config::master.left);
    new Reader(right, Config::master.right);
+   return true;
 } // Monitor::Reconfigure()
 
 unsigned Monitor::NumLeft() {

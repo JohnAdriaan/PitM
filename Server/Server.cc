@@ -15,9 +15,13 @@ using namespace PitM;
 static MT::Atomic<Server *> server; // Only one server 'live' at a time
 
 bool Server::Start() {
+   return Reconfigure();
+} // Server::Start()
+
+bool Server::Reconfigure() {
    Server *s = new Server();
    return server==s;
-} // Server::Start()
+} // Server::Reconfigure()
 
 void Server::Quit() {
    Replace(nullptr);
