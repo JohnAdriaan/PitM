@@ -30,23 +30,26 @@ const String Server::Client::tail =
 String Server::Client::Heading(String header, bool border) {
    static const String preface =
          "<body>\n"
-         "<h1 class=left>\n"
-         "<a href='/'>\n"
-         "<img src='/icon.ico' alt='John Burger' height=64 width=64 />\n"
-         "PitM</a></h1>\n"
-         "<h1 class=right>Pi in the Middle\n"
-         "<div style='font-size:10pt'>"
-         "&nbsp;Ver: " + PitM::Version() + ", by John Burger<br /><br /></div>\n"
-         "<div style='font-size:16pt;padding:4px;border-style:solid;border-width:1px";
+         "<div class=banner>\n"
+         " <div class=left>\n"
+         "  <h1><a href='/'>\n"
+         "  <img src='/icon.ico' alt='John Burger' height=64 width=64 />\n"
+         "  PitM</a></h1>\n"
+         " </div>\n"
+         " <div class=right>\n"
+         "  <h1>Pi in the Middle</h1>\n"
+         "  <address>&nbsp;Ver: " + PitM::Version() + ", by John Burger</address>\n"
+         "  <h2"; // Note angle bracket closed in code
    static const String postface =
-         "</div>\n"
-         "</h1>\n";
+         "</h2>\n"
+         " </div>\n"
+         "</div>\n";
 
    String heading = preface;
    if (!border) {
-      heading += ";border-color:transparent";
+      heading += " style='border-color:transparent'";
    } // if
-   heading += "'>\n";
+   heading += ">";
    heading += header;
    heading += postface;
    return heading;

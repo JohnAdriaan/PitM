@@ -77,9 +77,11 @@ bool Server::Client::SendStyleSheet(bool head) {
    static const String body =
       "*        { font-family: sans-serif }\n"
       "noscript { color: red }\n"
+      ".banner .left  { display: inline-block; position: relative; width: 96px }\n"
+      ".banner .right { display: inline-block; position: relative }\n"
+      "h1       { margin-bottom: 0px }\n"
       "h1 a     { color: black }\n"
-      "h1.left  { display: inline-block; position: relative; width: 96px }\n"
-      "h1.right { display: inline-block; position: relative }\n"
+      "h2       { font-size:16pt; padding:4px; border-style:solid; border-width:1px }\n"
       "fieldset { display: inline-block }\n"
       "legend   { color: #404040 }\n"
       "label    { color: #404040 }\n";
@@ -243,7 +245,8 @@ bool Server::Client::SendConfigPage(bool head) {
    body += " id=Server name=Server style='width:5em' value=";
    body += ToString(config.server);
    body += " />\n"
-           "</fieldset><p />\n";
+           "</fieldset>\n"
+           "<p></p>\n";
 
    body += "<fieldset>\n"
            "<legend>Monitor</legend>\n";
@@ -255,7 +258,8 @@ bool Server::Client::SendConfigPage(bool head) {
    if (config.icmp) {
       body += " checked";
    } // if
-   body += " /> <label for=ICMP>(ping etc.)</label><p />\n";
+   body += " /> <label for=ICMP>(ping etc.)</label>\n"
+           "<p></p>\n";
    body += "<fieldset>\n"
            "<legend>Ports</legend>\n";
 
@@ -270,7 +274,7 @@ bool Server::Client::SendConfigPage(bool head) {
    body += "</fieldset>\n"
            "</fieldset>\n";
 
-   body += "<p />\n"
+   body += "<p></p>\n"
            "<input type=submit value=Reset formaction='/config/reset' />\n" // Not a Reset button!
            "<input type=submit />\n"
            "</form>\n";
