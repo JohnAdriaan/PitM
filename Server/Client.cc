@@ -16,11 +16,11 @@ const String Server::Client::html =
       "<!DOCTYPE html>\n"
       "<html lang=en-AU>\n"
       "<head>\n"
-      "<meta charset=UTF-8 />\n"
-      "<meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
-      "<link rel='shortcut icon' href='/favicon.ico' />\n"
-      "<link rel=stylesheet type='text/css' href='/style.css' />\n"
-      "<title>PitM: Pi in the Middle</title>\n"
+      " <meta charset=UTF-8 />\n"
+      " <meta name=viewport content=\"width=device-width, initial-scale=1.0\" />\n"
+      " <link rel='shortcut icon' href='/favicon.ico' />\n"
+      " <link rel=stylesheet type='text/css' href='/style.css' />\n"
+      " <title>PitM: Pi in the Middle</title>\n"
       "</head>\n";
 
 const String Server::Client::tail =
@@ -79,7 +79,7 @@ Server::Client::Client(BSD::TCP &client, const BSD::Address &/*address*/) :
 } // Client::Client(client, address)
 
 bool Server::Client::Parse() {
-   for (;;) {
+   for (ever) {
       while (pos<read) {
          // Don't manipulate CR/LF in Request Body...
          if (state==RequestBody) {

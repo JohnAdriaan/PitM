@@ -223,8 +223,8 @@ static String Ports(unsigned selection,const String &current=String()) {
 bool Server::Client::SendConfigPage(bool head) {
    static const String header =
       html +
-      Heading("<noscript>This page requires JavaScript.</noscript>\n"
-              "<script>document.write('Configuration');</script>");
+      Heading("\n  <noscript>This page requires JavaScript.</noscript>\n"
+              "  <script>document.write('Configuration');</script>");
 
    using namespace Query;
    Interfaces interfaces = Interface::List(Interface::NoProtocol,
@@ -237,31 +237,31 @@ bool Server::Client::SendConfigPage(bool head) {
    body += Fill();
    body += "<form method=POST>\n"; // action="/config" is assumed
 
-   body += "<fieldset>\n"
-           "<legend>Server</legend>\n";
-   body += "<label for=Server>Port:</label>\n";
-   body += " <input type=number min=1 max=";
+   body += " <fieldset>\n"
+           "  <legend>Web Server</legend>\n";
+   body += "  <label for=Server>Port:</label>\n";
+   body += "  <input type=number min=1 max=";
    body += ToString(Config::MaxPort);
    body += " id=Server name=Server style='width:5em' value=";
    body += ToString(config.server);
    body += " />\n"
-           "</fieldset>\n"
-           "<p></p>\n";
+           " </fieldset>\n"
+           " <p></p>\n";
 
-   body += "<fieldset>\n"
-           "<legend>Monitor</legend>\n";
+   body += " <fieldset>\n"
+           "  <legend>Monitor</legend>\n";
    body += Selection(interfaces, "Left", config.left, true);
    body += Selection(interfaces, "Right", config.right, true);
    body += Selection(protocols, "Protocol", config.protocol, false);
-   body += "<label for=ICMP>ICMP:</label>\n";
-   body += " <input type=checkbox id=ICMP name=ICMP value=Y"; // If checked - not present if not
+   body += "  <label for=ICMP>ICMP:</label>\n";
+   body += "  <input type=checkbox id=ICMP name=ICMP value=Y"; // If checked - not present if not
    if (config.icmp) {
       body += " checked";
    } // if
    body += " /> <label for=ICMP>(ping etc.)</label>\n"
-           "<p></p>\n";
-   body += "<fieldset>\n"
-           "<legend>Ports</legend>\n";
+           "  <p></p>\n";
+   body += "  <fieldset>\n"
+           "   <legend>Ports</legend>\n";
 
    // First, show existing ports as drop-downs
    unsigned selection = 1;
@@ -271,12 +271,12 @@ bool Server::Client::SendConfigPage(bool head) {
    } // for
    // Then show a new one, with simply "Select..."
    body += ::Ports(selection);
-   body += "</fieldset>\n"
-           "</fieldset>\n";
+   body += "  </fieldset>\n"
+           " </fieldset>\n";
 
-   body += "<p></p>\n"
-           "<input type=submit value=Reset formaction='/config/reset' />\n" // Not a Reset button!
-           "<input type=submit />\n"
+   body += " <p></p>\n"
+           " <input type=submit value=Reset formaction='/config/reset' />\n" // Not a Reset button!
+           " <input type=submit />\n"
            "</form>\n";
    body += tail;
 
