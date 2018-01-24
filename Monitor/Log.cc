@@ -21,7 +21,7 @@ void Monitor::Log::Stop() {
 } // Log::Stop()
 
 void *Monitor::Log::Run() {
-   for (;;) {
+   for (ever) {
       Packet *packet = queue.Pop();
       if (packet==nullptr) {
          break;

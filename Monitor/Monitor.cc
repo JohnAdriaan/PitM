@@ -2,6 +2,8 @@
 // Monitor.cc
 //
 
+#include <unistd.h> // For sleep()
+
 #include <Socket/Address.hh>
 
 #include "../Config/Config.hh"
@@ -74,6 +76,7 @@ void Monitor::Quit() {
    left.Stop();
    right.Stop();
    Log::log.Stop();
+   ::sleep(1);
 } // Monitor::Quit()
 
 Monitor::Monitor(Monitor &other) :
@@ -97,7 +100,7 @@ void Monitor::Transmit(Packet &packet) {
 } // Monitor::Transmit(Packet)
 
 void *Monitor::Run() {
-   for (;;) {
+   for (ever) {
       Packet *packet = queue.Pop();
       if (packet==nullptr) {
          break;
