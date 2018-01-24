@@ -2,6 +2,8 @@
 // Reader.cc
 //
 
+#include <iostream>
+
 #include <net/ethernet.h>    // For ETHER_ADDR_LEN // TODO?
 
 #include <Socket/Address.hh>
@@ -33,26 +35,36 @@ bool Monitor::Reader::Send(const Monitor::Packet &packet) {
 } // Reader::Send(Packet)
 
 void *Monitor::Reader::Run() {
+//   Raw::ResetFlag(IFF_RUNNING);
+
    Monitor::Packet *packet;
-   for (;;) {
+   for (ever) {
       if (!Monitor::Packet::pool.TryPop(packet)) { // Try to get empty packet
          packet = new Monitor::Packet();           // Couldn't, so create one
       } // if
       if (packet==nullptr) {
          break;
       } // if
+#ifndef NDEBUG
+      std::cout << '.' << std::flush;
+#endif // !NDEBUG
       Size read;
       if (!RecvFrom(packet->buffer, sizeof packet->buffer, read,
                     packet->address, MSG_TRUNC)) {
          break;
       } // if
+#ifndef NDEBUG
+      std::cout << ',' << std::flush;
+#endif // !NDEBUG
       IOCtl(SIOCGSTAMP, packet->Stamp(read, sizeof packet->buffer));
       monitor.other.Transmit(*packet); // Transmit packet on other
    } // for
-   Raw::Close();
    if (packet!=nullptr) {
       Packet::pool.Push(*packet);
    } // if
+#ifndef NDEBUG
+   std::cerr << '!' << std::endl;
+#endif // !NDEBUG
    delete this;
    return nullptr;
 } // Reader::Run()

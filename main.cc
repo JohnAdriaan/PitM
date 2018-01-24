@@ -23,8 +23,6 @@ const String &PitM::Version() {
 void PitM::Quit(bool graceful/*=true*/) {
    quit.SetUnlink(true); // No more PitMs
    if (graceful) {
-      Monitor::Quit();
-      Server::Quit();
       quit.Post();  // Quit nicely
    } // if
    else {
@@ -103,5 +101,7 @@ int main(int argc,
    } // if
    quit.SetUnlink(false); // Don't automatically Unlink quit any more
    quit.Wait();
+   PitM::Monitor::Quit();
+   PitM::Server::Quit();
    return 0;
 } // main(argc, argv, env)
